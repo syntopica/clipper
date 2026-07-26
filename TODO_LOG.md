@@ -6,6 +6,33 @@
 
 ### 2026-07
 
+- [x] 2026-07-26 - **Backend:** Phase 1 complete - GitHub layer, atomic commit
+  orchestration, browser wiring, docs (tasks 6-9).
+  - Result: Git Data API primitives with per-segment branch encoding; `commitClip`
+    uploading blobs once and rebuilding tree and commit against a re-read HEAD on a
+    non-fast-forward, max 3 attempts; a three-way path-exists rule that never
+    overwrites; click and `Cmd+Shift+S` wiring with badge feedback and no silent
+    failure path; README plus static verification.
+  - Evidence: 105 tests passing, `pnpm typecheck` and `pnpm build` clean, `dist/`
+    holding exactly the five expected artifacts with the injected path matching.
+  - Commits: `d3f2d97`, `3af48e1`, `b5cb6f3`, `3eb90d4`, `8009e8c`, `50cd925`,
+    `543e34e`, `0a028f9`, `37e155d`.
+
+- [x] 2026-07-26 - **Bugs:** Whole-branch review corrections - 1 critical, 8 important.
+  - Result: a relative `rel="canonical"` no longer discards the entire capture (it
+    failed `z.string().url()` and threw); relative links and images are absolutized on
+    every non-Readability branch, where they had been rendering as live links to the
+    wrong place; an oversized snapshot is dropped as `snapshot_mode: 'omitted'` instead
+    of taking the markdown down with it; failures now carry their reason in the action
+    title and open the options page when they are settings or token failures; a hostname
+    denylist refuses capture before anything is built; the token storage key has one
+    home; the capture payload logic is extracted and tested.
+  - Evidence: 61 -> 105 tests. The denylist predicate was independently probed against
+    the fifteen hostname forms `URL.hostname` actually produces, including the bracketed
+    `[::1]` and trailing-dot FQDN bypasses that the first fix attempt missed.
+  - Commits: `c5d3fb8`, `338fc8d`, `48822a0`, `8fd3b0b`, `3c70c04`, `8e33504`,
+    `1254b25`, `a2a714d`, `e245ac6`, `c2a9053`.
+
 - [x] 2026-07-26 - **Backend:** Page extraction, clip assembly, and settings/token
   storage (phase 1 tasks 3-5).
   - Result: extraction chain (selection -> Readability -> article -> main -> body ->
