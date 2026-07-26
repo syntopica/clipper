@@ -28,8 +28,14 @@ export function extractContent(doc: Document, selectionHtml: string | null): Ext
   const mainEl = doc.querySelector('main, [role="main"]')
   if (mainEl?.innerHTML.trim()) return { html: mainEl.innerHTML, extractor: 'main' }
 
+  // A body holding only a bare text node has no markup for Turndown to work
+  // with (its innerHTML is just the text, same as textContent), so it is not
+  // really an HTML extraction - fall through to innertext instead of
+  // reporting a false 'body' win.
   const body = doc.body
-  if (body?.innerHTML.trim()) return { html: body.innerHTML, extractor: 'body' }
+  if (body?.innerHTML.trim() && body.children.length > 0) {
+    return { html: body.innerHTML, extractor: 'body' }
+  }
 
   return { html: `<p>${doc.body?.textContent?.trim() ?? ''}</p>`, extractor: 'innertext' }
 }
