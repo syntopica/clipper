@@ -6,6 +6,22 @@
 
 ### 2026-07
 
+- [x] 2026-07-26 - **Backend:** Page extraction, clip assembly, and settings/token
+  storage (phase 1 tasks 3-5).
+  - Result: extraction chain (selection -> Readability -> article -> main -> body ->
+    innertext) with DOMPurify sanitizing and Turndown+GFM; clip assembly emitting
+    `index.md`, `source.html`, `metadata.json` and `state.json` with YAML frontmatter
+    and byte caps that throw; settings in `chrome.storage.sync`, token in
+    `chrome.storage.local` behind `setAccessLevel('TRUSTED_CONTEXTS')`, plus the
+    options page, its manifest declaration and its build entry point.
+  - Evidence: 36 tests passing, `pnpm typecheck` clean, `pnpm build` emitting a
+    loadable `dist/`. Each task passed an independent spec+quality review; tasks 3 and
+    4 also passed a scoped re-review after fixes.
+  - Fixes the reviews forced: `turndown-plugin-gfm` typings that only appeared to work
+    under `skipLibCheck`; a `body` branch that made `innertext` unreachable for any
+    non-empty document; js-yaml 5's `quotingType` -> `quoteStyle` rename.
+  - Commits: `b2c9b09`, `1b9fb19`, `b9e3949`, `1e03fad`.
+
 - [x] 2026-07-26 - **Infrastructure:** Extension loaded unpacked into the daily Chrome
   profile.
   - Result: Registered with `location: 4` (unpacked) and

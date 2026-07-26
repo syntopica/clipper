@@ -24,13 +24,6 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Backend
 
-- [ ] Task 3 - page extraction: selection, Readability chain, DOMPurify
-  sanitizing, Turndown + GFM, page metadata. Files under `src/content/`.
-- [ ] Task 4 - clip assembly: `build-frontmatter` (js-yaml), `build-clip-files`,
-  `normalize-url`, byte-cap enforcement.
-- [ ] Task 5 - settings in `chrome.storage.sync`, token in `chrome.storage.local`
-  with `setAccessLevel('TRUSTED_CONTEXTS')`, options page; adds `options_page` to
-  the manifest and the options entry point to `build.mjs`.
 - [ ] Task 6 - GitHub Git Data API primitives and `check-existing-clip`.
 - [ ] Task 7 - `commit-clip`: atomic commit, rebuild tree and commit on
   non-fast-forward, three-way path-exists rule.
