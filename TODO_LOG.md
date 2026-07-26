@@ -6,6 +6,17 @@
 
 ### 2026-07
 
+- [x] 2026-07-26 - **Infrastructure:** Extension loaded unpacked into the daily Chrome
+  profile.
+  - Result: Registered with `location: 4` (unpacked) and
+    `path: /Users/cristiandeluxe/p/brain-clipper/dist`, id
+    `odfmlmgmcdlmmclnlagohplgpeijjeoa`.
+  - Evidence: entry present in the profile's `Secure Preferences`; the same build had
+    already been verified in a throwaway profile via CDP, where its service worker
+    target started on install.
+  - Note: automation was ruled out first - Chrome ignores `--remote-debugging-port` on
+    the default user data directory, so CDP cannot reach the daily profile.
+
 - [x] 2026-07-26 — **Product:** Design approved for a Chrome extension that clips
   the current page to markdown into a private repo for later brain ingestion.
   - Result: Revision 3 of the design, covering the untrusted-input trust model,

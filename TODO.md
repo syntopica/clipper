@@ -17,15 +17,6 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Blocked Tasks
 
-- [!] Load the extension unpacked from `/Users/cristiandeluxe/p/brain-clipper/dist`
-  into the daily Chrome profile. Blocked on: a human clicking through
-  `chrome://extensions`. Automation was attempted and ruled out — Chrome ignores
-  `--remote-debugging-port` when the default user data directory is in use (a
-  deliberate 136-era anti-cookie-theft change), so CDP `Extensions.loadUnpacked`
-  cannot reach that profile. It works only against a separate profile.
-  Already verified there: the extension loads with id
-  `odfmlmgmcdlmmclnlagohplgpeijjeoa`, its service worker starts, and a
-  CDP-installed unpacked extension survives a normal restart.
 - [!] Create the fine-grained GitHub PAT (repository access limited to
   `BusiRocket/brain-clips`, `Contents: read+write`, 90-day expiry) and record it
   plus its expiry in `~/p/vault`. Blocked on: human GitHub session. Needed before
