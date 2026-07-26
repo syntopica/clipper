@@ -3,6 +3,7 @@ import type { PageMetadata } from '../content/collect-page-metadata'
 import { buildClipFiles } from '../shared/build-clip-files'
 import { getSettings } from '../shared/get-settings'
 import { getToken } from '../shared/get-token'
+import { isDenylistedHostname } from '../shared/is-denylisted-hostname'
 import { newClipId } from '../shared/new-clip-id'
 import { commitClip } from './commit-clip'
 
@@ -17,6 +18,11 @@ export interface CapturedPagePayload {
 }
 
 export async function handleCapturedPage(payload: CapturedPagePayload): Promise<void> {
+  const hostname = new URL(payload.url).hostname
+  if (isDenylistedHostname(hostname)) {
+    throw new Error(`refusing to clip a denylisted host: ${hostname}`)
+  }
+
   const settings = await getSettings()
   if (!settings) throw new Error('settings are incomplete - open the options page')
   const token = await getToken()

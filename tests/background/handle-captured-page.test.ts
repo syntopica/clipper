@@ -63,3 +63,13 @@ test('refuses to clip when the token is missing, before writing anything', async
   await expect(handleCapturedPage(payload)).rejects.toThrow(/token/i)
   expect(github.paths).toHaveLength(0)
 })
+
+test('refuses to clip a denylisted host, before checking settings or writing anything', async () => {
+  installChromeMock()
+  const github = mockGithub()
+
+  await expect(
+    handleCapturedPage({ ...payload, url: 'https://mail.google.com/mail/u/0/' }),
+  ).rejects.toThrow(/denylist/i)
+  expect(github.paths).toHaveLength(0)
+})
