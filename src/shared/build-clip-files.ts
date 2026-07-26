@@ -1,3 +1,4 @@
+import { version as READABILITY_VERSION } from '@mozilla/readability/package.json'
 import type { Extractor } from '../content/extract-content'
 import type { PageMetadata } from '../content/collect-page-metadata'
 import { byteLength } from './byte-length'
@@ -30,16 +31,18 @@ export interface ClipFiles {
   metadata: ClipMetadata
 }
 
-const READABILITY_VERSION = '0.6.0'
-
 export async function buildClipFiles(input: BuildClipFilesInput): Promise<ClipFiles> {
   const body = normalizeMarkdown(input.markdown)
   if (byteLength(body) > LIMITS.MAX_MARKDOWN_BYTES) {
     throw new Error(`markdown exceeds ${LIMITS.MAX_MARKDOWN_BYTES} bytes`)
   }
-  if (byteLength(input.sourceHtml) > LIMITS.MAX_SOURCE_HTML_BYTES) {
-    throw new Error(`source html exceeds ${LIMITS.MAX_SOURCE_HTML_BYTES} bytes`)
-  }
+
+  // The per-file cap exists for git blob hygiene, not correctness: an
+  // oversized snapshot must not take the markdown - the actual payload -
+  // down with it. Drop the snapshot and record that in the metadata instead
+  // of throwing.
+  const sourceHtmlFits = byteLength(input.sourceHtml) <= LIMITS.MAX_SOURCE_HTML_BYTES
+  const snapshotMode = sourceHtmlFits ? input.snapshotMode : 'omitted'
 
   const metadata = ClipMetadataSchema.parse({
     schema_version: 1,
@@ -56,8 +59,8 @@ export async function buildClipFiles(input: BuildClipFilesInput): Promise<ClipFi
     clipped_from: input.clippedFrom,
     extension_version: input.extensionVersion,
     extractor: input.extractor,
-    extractor_version: READABILITY_VERSION,
-    snapshot_mode: input.snapshotMode,
+    extractor_version: input.extractor === 'readability' ? READABILITY_VERSION : null,
+    snapshot_mode: snapshotMode,
     sensitivity: 'public',
     content_sha256: await sha256Hex(body),
     source_html_sha256: await sha256Hex(input.sourceHtml),
@@ -87,9 +90,11 @@ export async function buildClipFiles(input: BuildClipFilesInput): Promise<ClipFi
 
   const files: Record<string, string> = {
     [`${dirPath}/index.md`]: `${buildFrontmatter(metadata)}\n${body}`,
-    [`${dirPath}/source.html`]: input.sourceHtml,
     [`${dirPath}/metadata.json`]: `${JSON.stringify(metadata, null, 2)}\n`,
     [`${dirPath}/state.json`]: `${JSON.stringify(state, null, 2)}\n`,
+  }
+  if (sourceHtmlFits) {
+    files[`${dirPath}/source.html`] = input.sourceHtml
   }
 
   const total = Object.values(files).reduce((sum, value) => sum + byteLength(value), 0)

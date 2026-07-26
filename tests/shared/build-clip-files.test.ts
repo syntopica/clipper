@@ -76,3 +76,25 @@ test('rejects a clip whose markdown exceeds the cap', async () => {
     buildClipFiles({ ...input, markdown: 'x'.repeat(1_000_000) }),
   ).rejects.toThrow(/markdown/i)
 })
+
+test('drops an oversized source.html instead of throwing, keeping the markdown', async () => {
+  const clip = await buildClipFiles({ ...input, sourceHtml: '<p>' + 'x'.repeat(1_000_000) + '</p>' })
+
+  expect(clip.metadata.snapshot_mode).toBe('omitted')
+  expect(Object.keys(clip.files).sort()).toEqual([
+    `${clip.dirPath}/index.md`,
+    `${clip.dirPath}/metadata.json`,
+    `${clip.dirPath}/state.json`,
+  ])
+  const indexMd = clip.files[`${clip.dirPath}/index.md`] as string
+  expect(indexMd).toContain('Body text')
+})
+
+test('extractor_version is set only for readability, read from the package', async () => {
+  const readabilityPackage = (await import('@mozilla/readability/package.json')) as { version: string }
+  const readabilityClip = await buildClipFiles(input)
+  expect(readabilityClip.metadata.extractor_version).toBe(readabilityPackage.version)
+
+  const articleClip = await buildClipFiles({ ...input, extractor: 'article' })
+  expect(articleClip.metadata.extractor_version).toBeNull()
+})
