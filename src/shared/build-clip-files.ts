@@ -1,0 +1,99 @@
+import type { Extractor } from '../content/extract-content'
+import type { PageMetadata } from '../content/collect-page-metadata'
+import { byteLength } from './byte-length'
+import { ClipMetadataSchema, type ClipMetadata } from './clip-metadata-schema'
+import { ClipStateSchema } from './clip-state-schema'
+import { LIMITS } from './limits'
+import { buildFrontmatter } from './build-frontmatter'
+import { clipDirName } from './clip-dir-name'
+import { clipPath } from './clip-path'
+import { normalizeMarkdown } from './normalize-markdown'
+import { normalizeUrl } from './normalize-url'
+import { sha256Hex } from './sha256-hex'
+
+export interface BuildClipFilesInput {
+  clipId: string
+  url: string
+  markdown: string
+  sourceHtml: string
+  snapshotMode: 'extracted' | 'sanitized' | 'full-page'
+  extractor: Extractor
+  page: PageMetadata
+  clippedAt: string
+  clippedFrom: string
+  extensionVersion: string
+}
+
+export interface ClipFiles {
+  dirPath: string
+  files: Record<string, string>
+  metadata: ClipMetadata
+}
+
+const READABILITY_VERSION = '0.6.0'
+
+export async function buildClipFiles(input: BuildClipFilesInput): Promise<ClipFiles> {
+  const body = normalizeMarkdown(input.markdown)
+  if (byteLength(body) > LIMITS.MAX_MARKDOWN_BYTES) {
+    throw new Error(`markdown exceeds ${LIMITS.MAX_MARKDOWN_BYTES} bytes`)
+  }
+  if (byteLength(input.sourceHtml) > LIMITS.MAX_SOURCE_HTML_BYTES) {
+    throw new Error(`source html exceeds ${LIMITS.MAX_SOURCE_HTML_BYTES} bytes`)
+  }
+
+  const metadata = ClipMetadataSchema.parse({
+    schema_version: 1,
+    clip_id: input.clipId,
+    title: input.page.title,
+    url: input.url,
+    normalized_url: normalizeUrl(input.url),
+    canonical_url: input.page.canonicalUrl,
+    site: input.page.site,
+    author: input.page.author,
+    published: input.page.published,
+    language: input.page.language,
+    clipped_at: input.clippedAt,
+    clipped_from: input.clippedFrom,
+    extension_version: input.extensionVersion,
+    extractor: input.extractor,
+    extractor_version: READABILITY_VERSION,
+    snapshot_mode: input.snapshotMode,
+    sensitivity: 'public',
+    content_sha256: await sha256Hex(body),
+    source_html_sha256: await sha256Hex(input.sourceHtml),
+    asset_count: 0,
+    asset_failures: [],
+    note: '',
+    tags: [],
+    word_count: body.split(/\s+/).filter(Boolean).length,
+  } satisfies ClipMetadata)
+
+  const state = ClipStateSchema.parse({
+    status: 'pending',
+    updatedAt: input.clippedAt,
+    failure: null,
+    brainCommit: null,
+  })
+
+  const dirPath = clipPath({
+    clippedAt: input.clippedAt,
+    dirName: clipDirName({
+      clippedAt: input.clippedAt,
+      site: input.page.site,
+      title: input.page.title,
+      clipId: input.clipId,
+    }),
+  })
+
+  const files: Record<string, string> = {
+    [`${dirPath}/index.md`]: `${buildFrontmatter(metadata)}\n${body}`,
+    [`${dirPath}/source.html`]: input.sourceHtml,
+    [`${dirPath}/metadata.json`]: `${JSON.stringify(metadata, null, 2)}\n`,
+    [`${dirPath}/state.json`]: `${JSON.stringify(state, null, 2)}\n`,
+  }
+
+  const total = Object.values(files).reduce((sum, value) => sum + byteLength(value), 0)
+  if (total > LIMITS.MAX_CLIP_BYTES) throw new Error(`clip exceeds ${LIMITS.MAX_CLIP_BYTES} bytes`)
+
+  return { dirPath, files, metadata }
+}
