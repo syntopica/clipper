@@ -1,7 +1,7 @@
 import { beginCapture } from './begin-capture'
-import type { CaptureFailedPayload } from './capture-failed-payload'
-import { handleCapturedPage, type CapturedPagePayload } from './handle-captured-page'
+import { handleCapturedPage } from './handle-captured-page'
 import { hardenTokenStorageSafely } from './harden-token-storage-safely'
+import { isRuntimeMessage } from './is-runtime-message'
 import { reportFailure } from './report-failure'
 import { setBadge } from './set-badge'
 
@@ -16,7 +16,8 @@ chrome.commands.onCommand.addListener((command, tab) => {
   if (command === 'clip-page' && tab?.id !== undefined) beginCapture(tab.id)
 })
 
-chrome.runtime.onMessage.addListener((message: CapturedPagePayload | CaptureFailedPayload) => {
+chrome.runtime.onMessage.addListener((message: unknown) => {
+  if (!isRuntimeMessage(message)) return
   if (message.type === 'clip-failed') {
     reportFailure('capture failed in the page', message.reason)
     return

@@ -4,6 +4,8 @@ const TRACKING_KEYS = ['fbclid', 'gclid', 'mc_cid', 'mc_eid', 'ref_src']
 export function normalizeUrl(url: string): string {
   const parsed = new URL(url)
   parsed.hash = ''
+  parsed.username = ''
+  parsed.password = ''
   for (const key of [...parsed.searchParams.keys()]) {
     const isTracking =
       TRACKING_PREFIXES.some((prefix) => key.startsWith(prefix)) || TRACKING_KEYS.includes(key)
