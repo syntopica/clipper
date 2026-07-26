@@ -22,7 +22,7 @@ test('a normal article goes through Readability and drops nav and footer', () =>
 
 test('a page Readability rejects falls further down the chain', () => {
   const result = extractContent(docFrom('spa-shell.html'), null)
-  expect(['body', 'innertext']).toContain(result.extractor)
+  expect(result.extractor).toBe('body')
   expect(result.html).toContain('Loading dashboard data')
 })
 
