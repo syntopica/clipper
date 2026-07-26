@@ -38,3 +38,23 @@ test('does not mistake an unrelated hostname that merely ends with a denylisted 
   const hostname = DENYLISTED_HOSTNAMES[0] as string
   expect(isDenylistedHostname(`evil-${hostname}`)).toBe(false)
 })
+
+test('refuses the trailing-dot FQDN form of a denylisted hostname', () => {
+  const hostname = DENYLISTED_HOSTNAMES[0] as string
+  expect(isDenylistedHostname(`${hostname}.`)).toBe(true)
+})
+
+test('refuses the bracketed IPv6 loopback form new URL(...).hostname actually returns', () => {
+  expect(isDenylistedHostname('[::1]')).toBe(true)
+  expect(isDenylistedHostname('::1')).toBe(true)
+})
+
+test('refuses bracketed IPv6 link-local and unique-local literals', () => {
+  expect(isDenylistedHostname('[fe80::1]')).toBe(true)
+  expect(isDenylistedHostname('[fd12:3456::1]')).toBe(true)
+})
+
+test('is case-insensitive on a denylisted hostname', () => {
+  const hostname = (DENYLISTED_HOSTNAMES[0] as string).toUpperCase()
+  expect(isDenylistedHostname(hostname)).toBe(true)
+})

@@ -1,4 +1,5 @@
 import { DENYLISTED_HOSTNAMES } from './denylisted-hostnames'
+import { normalizeHostname } from './normalize-hostname'
 
 const LOOPBACK_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1'])
 
@@ -17,10 +18,20 @@ function isPrivateIPv4(hostname: string): boolean {
   )
 }
 
+// Prefix checks, not a full address parse: good enough to catch the common
+// literal forms without pulling in an IPv6 parsing library for phase 1.
+function isPrivateIPv6(hostname: string): boolean {
+  return (
+    /^fe[89ab][0-9a-f]?:/.test(hostname) || // fe80::/10 link-local
+    /^f[cd][0-9a-f]{0,2}:/.test(hostname) // fc00::/7 unique-local
+  )
+}
+
 export function isDenylistedHostname(hostname: string): boolean {
-  const host = hostname.toLowerCase()
+  const host = normalizeHostname(hostname)
   if (LOOPBACK_HOSTNAMES.has(host)) return true
   if (host.endsWith('.local')) return true
   if (isPrivateIPv4(host)) return true
+  if (isPrivateIPv6(host)) return true
   return DENYLISTED_HOSTNAMES.some((entry) => host === entry || host.endsWith(`.${entry}`))
 }

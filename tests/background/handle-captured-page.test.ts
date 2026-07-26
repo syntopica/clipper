@@ -73,3 +73,13 @@ test('refuses to clip a denylisted host, before checking settings or writing any
   ).rejects.toThrow(/denylist/i)
   expect(github.paths).toHaveLength(0)
 })
+
+test('refuses a bracketed IPv6 loopback url the way new URL(...).hostname actually returns it', async () => {
+  installChromeMock()
+  const github = mockGithub()
+
+  await expect(
+    handleCapturedPage({ ...payload, url: 'http://[::1]:8000/x' }),
+  ).rejects.toThrow(/denylist/i)
+  expect(github.paths).toHaveLength(0)
+})
