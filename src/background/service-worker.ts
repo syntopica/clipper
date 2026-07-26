@@ -1,20 +1,26 @@
-import { hardenTokenStorage } from '../shared/harden-token-storage'
+import { beginCapture } from './begin-capture'
+import type { CaptureFailedPayload } from './capture-failed-payload'
 import { handleCapturedPage, type CapturedPagePayload } from './handle-captured-page'
+import { hardenTokenStorageSafely } from './harden-token-storage-safely'
+import { reportFailure } from './report-failure'
 import { setBadge } from './set-badge'
-import { startCapture } from './start-capture'
 
-chrome.runtime.onInstalled.addListener(() => void hardenTokenStorage())
-chrome.runtime.onStartup.addListener(() => void hardenTokenStorage())
+chrome.runtime.onInstalled.addListener(() => void hardenTokenStorageSafely())
+chrome.runtime.onStartup.addListener(() => void hardenTokenStorageSafely())
 
 chrome.action.onClicked.addListener((tab) => {
-  if (tab.id !== undefined) void startCapture(tab.id)
+  if (tab.id !== undefined) beginCapture(tab.id)
 })
 
 chrome.commands.onCommand.addListener((command, tab) => {
-  if (command === 'clip-page' && tab?.id !== undefined) void startCapture(tab.id)
+  if (command === 'clip-page' && tab?.id !== undefined) beginCapture(tab.id)
 })
 
-chrome.runtime.onMessage.addListener((message: CapturedPagePayload) => {
+chrome.runtime.onMessage.addListener((message: CapturedPagePayload | CaptureFailedPayload) => {
+  if (message.type === 'clip-failed') {
+    reportFailure('capture failed in the page', message.reason)
+    return
+  }
   if (message.type !== 'clip-captured') return
   void (async () => {
     await setBadge('working')
@@ -22,8 +28,7 @@ chrome.runtime.onMessage.addListener((message: CapturedPagePayload) => {
       await handleCapturedPage(message)
       await setBadge('ok')
     } catch (error) {
-      console.error('clip failed', error)
-      await setBadge('error')
+      reportFailure('clip failed', error)
     }
   })()
 })
