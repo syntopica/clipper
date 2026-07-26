@@ -1,3 +1,4 @@
+import { readCanonicalUrl } from './read-canonical-url'
 import { readMetaContent } from './read-meta-content'
 
 export interface PageMetadata {
@@ -19,7 +20,7 @@ export function collectPageMetadata(doc: Document, url: string): PageMetadata {
       readMetaContent(doc, 'meta[property="article:published_time"]') ??
       doc.querySelector('time[datetime]')?.getAttribute('datetime') ??
       null,
-    canonicalUrl: doc.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? null,
+    canonicalUrl: readCanonicalUrl(doc, url),
     language: doc.documentElement.getAttribute('lang'),
     site: new URL(url).hostname,
   }
