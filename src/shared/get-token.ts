@@ -1,4 +1,4 @@
-const TOKEN_KEY = 'githubToken'
+import { TOKEN_KEY } from './token-key'
 
 export async function getToken(): Promise<string | null> {
   const stored = await chrome.storage.local.get([TOKEN_KEY])
