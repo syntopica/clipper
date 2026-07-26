@@ -12,14 +12,4 @@ await build({
   target: 'chrome120',
 })
 
-await build({
-  entryPoints: ['src/content/capture-page.ts', 'src/options/options.ts'],
-  outdir: 'dist',
-  bundle: true,
-  format: 'iife',
-  target: 'chrome120',
-  entryNames: '[dir]/[name]',
-})
-
 await cp('src/manifest.json', 'dist/manifest.json')
-await cp('src/options/options.html', 'dist/options/options.html')
