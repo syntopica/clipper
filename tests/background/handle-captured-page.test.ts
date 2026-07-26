@@ -55,10 +55,11 @@ test('a captured page becomes one commit of four files', async () => {
   expect(github.paths.every((path) => path.startsWith('clips/pending/'))).toBe(true)
 })
 
-test('refuses to clip when the token is missing', async () => {
+test('refuses to clip when the token is missing, before writing anything', async () => {
   const stores = installChromeMock()
   Object.assign(stores.sync.data, { owner: 'o', repo: 'r', branch: 'main', machineName: 'm' })
-  mockGithub()
+  const github = mockGithub()
 
   await expect(handleCapturedPage(payload)).rejects.toThrow(/token/i)
+  expect(github.paths).toHaveLength(0)
 })

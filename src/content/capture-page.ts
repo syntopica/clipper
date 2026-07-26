@@ -25,4 +25,11 @@ function capture(): void {
   })
 }
 
-capture()
+try {
+  capture()
+} catch (error) {
+  void chrome.runtime.sendMessage({
+    type: 'clip-failed',
+    reason: error instanceof Error ? error.message : String(error),
+  })
+}
