@@ -37,5 +37,10 @@ export function extractContent(doc: Document, selectionHtml: string | null): Ext
     return { html: body.innerHTML, extractor: 'body' }
   }
 
-  return { html: `<p>${doc.body?.textContent?.trim() ?? ''}</p>`, extractor: 'innertext' }
+  // Build the element and set textContent rather than interpolating into a
+  // template string, so page text containing "<" or "&" is not reinterpreted
+  // as markup.
+  const paragraph = doc.createElement('p')
+  paragraph.textContent = doc.body?.textContent?.trim() ?? ''
+  return { html: paragraph.outerHTML, extractor: 'innertext' }
 }

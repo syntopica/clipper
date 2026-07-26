@@ -63,3 +63,12 @@ test('falls back to innertext when the body has only text', () => {
   expect(result.extractor).toBe('innertext')
   expect(result.html).toContain('bare text')
 })
+
+test('innertext does not reinterpret plain text as markup', () => {
+  const doc = new DOMParser().parseFromString('<html lang="en"><body></body></html>', 'text/html')
+  doc.body.textContent = 'a <script>alert(1)</script> b'
+  const result = extractContent(doc, null)
+  expect(result.extractor).toBe('innertext')
+  expect(result.html).not.toContain('<script>')
+  expect(result.html).toContain('&lt;script&gt;')
+})
