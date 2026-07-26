@@ -6,6 +6,37 @@
 
 ### 2026-07
 
+- [x] 2026-07-26 - **Testing:** Phase 1 acceptance run against the real repo and real
+  Chrome.
+  - Result: 10 of the 12 acceptance items pass. Three real clips were committed to
+    `BusiRocket/brain-clips` by the production code path.
+  - GitHub half (real API, no browser): four files per commit with exactly one parent;
+    `content_sha256` recomputed from the committed `index.md` body matches
+    `metadata.json`; a title carrying a colon and double quotes round-trips through a
+    real YAML parser; `status` appears only in `state.json`; re-committing the same clip
+    returns `alreadyPresent` with a null sha; the same path with a different hash raises
+    `ClipConflictError`; a bad token surfaces `existing clip lookup failed: 401` instead
+    of being swallowed.
+  - Browser half (real Chrome, throwaway profile, production build): the options page
+    saves and puts the token in `chrome.storage.local` only, with `sync` holding just the
+    four non-secret fields; a selection clip records `extractor: selection`,
+    `extractor_version: null` and exactly the selected paragraph; a full-page clip of
+    `github.com/mozilla/readability` records `extractor: readability`, 1035 words, zero
+    relative links, and no navigation, sign-in or footer text; a broken token leaves the
+    reason in the action title; clipping a loopback page is refused with
+    `refusing to clip a denylisted host: 127.0.0.1` and commits nothing.
+  - **`TRUSTED_CONTEXTS` verified properly:** run inside the content script's isolated
+    world, `chrome.storage.local.get(['githubToken'])` throws
+    `Access to storage is not allowed from this context.` The checklist's original
+    version of this test ran in the page's main world, where `chrome.storage` is never
+    exposed regardless of hardening, so it could not have failed.
+  - Harness caveats, stated because they matter: injection was triggered by calling
+    `chrome.scripting.executeScript` the way `startCapture` does, from a harness that
+    granted host permissions, because `activeTab` requires a real user gesture that CDP
+    cannot produce. The toolbar click itself and `Cmd+Shift+S` remain unverified. True
+    offline behaviour was not tested; the bad-token path stands in for it. The token used
+    was the `gh` CLI's classic PAT, in a profile deleted immediately afterwards.
+
 - [x] 2026-07-26 - **Backend:** Phase 1 complete - GitHub layer, atomic commit
   orchestration, browser wiring, docs (tasks 6-9).
   - Result: Git Data API primitives with per-segment branch encoding; `commitClip`
