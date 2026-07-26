@@ -87,3 +87,55 @@ test('updateRef surfaces other errors as plain failures', async () => {
   mockFetch(() => json({ message: 'Bad credentials' }, 401))
   await expect(updateRef(context, 'main', 'commit2')).rejects.toThrow(/401/)
 })
+
+test('every request carries the auth, accept and api-version headers', async () => {
+  let headers: Record<string, string> | undefined
+  mockFetch((_url, init) => {
+    headers = init.headers as Record<string, string>
+    return json({ sha: 'blob1' })
+  })
+
+  await createBlob(context, '# hello')
+  expect(headers?.authorization).toBe('Bearer t')
+  expect(headers?.accept).toBe('application/vnd.github+json')
+  expect(headers?.['x-github-api-version']).toBe('2022-11-28')
+})
+
+test('createTree and createCommit hit their own endpoints', async () => {
+  const urls: string[] = []
+  mockFetch((url) => {
+    urls.push(url)
+    return json({ sha: 'x' })
+  })
+
+  await createTree(context, 'tree1', [{ path: 'a', sha: 'b' }])
+  await createCommit(context, { message: 'm', treeSha: 't', parentSha: 'p' })
+  expect(urls).toEqual([
+    'https://api.github.com/repos/o/r/git/trees',
+    'https://api.github.com/repos/o/r/git/commits',
+  ])
+})
+
+test('updateRef PATCHes the branch ref with a non-forced sha', async () => {
+  let seen: { url: string; method?: string; body: unknown } | undefined
+  mockFetch((url, init) => {
+    seen = { url, method: init.method, body: JSON.parse(String(init.body)) }
+    return json({})
+  })
+
+  await updateRef(context, 'main', 'commit2')
+  expect(seen?.url).toBe('https://api.github.com/repos/o/r/git/refs/heads/main')
+  expect(seen?.method).toBe('PATCH')
+  expect(seen?.body).toEqual({ sha: 'commit2', force: false })
+})
+
+test('a branch name with a slash keeps its separator and escapes the rest', async () => {
+  const urls: string[] = []
+  mockFetch((url) => {
+    urls.push(url)
+    return url.includes('/git/ref/') ? json({ object: { sha: 'c1' } }) : json({ sha: 'c1', tree: { sha: 't1' } })
+  })
+
+  await getHeadCommit(context, 'feature/a&b')
+  expect(urls[0]).toBe('https://api.github.com/repos/o/r/git/ref/heads/feature/a%26b')
+})

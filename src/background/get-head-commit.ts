@@ -1,10 +1,11 @@
 import { githubFetch, type GithubContext } from './github-fetch'
+import { encodeBranchPath } from './encode-branch-path'
 
 export async function getHeadCommit(
   context: GithubContext,
   branch: string,
 ): Promise<{ commitSha: string; treeSha: string }> {
-  const refResponse = await githubFetch(context, `/git/ref/heads/${branch}`)
+  const refResponse = await githubFetch(context, `/git/ref/heads/${encodeBranchPath(branch)}`)
   if (!refResponse.ok) throw new Error(`ref lookup failed: ${refResponse.status}`)
   const ref = (await refResponse.json()) as { object: { sha: string } }
 
