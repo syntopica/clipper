@@ -3,9 +3,18 @@ interface Store {
   accessLevel: string | null
 }
 
-export function installChromeMock(): { sync: Store; local: Store } {
+export interface ChromeMock {
+  sync: Store
+  local: Store
+  actionTitles: string[]
+  openOptionsPageCalls: unknown[]
+}
+
+export function installChromeMock(): ChromeMock {
   const sync: Store = { data: {}, accessLevel: null }
   const local: Store = { data: {}, accessLevel: null }
+  const actionTitles: string[] = []
+  const openOptionsPageCalls: unknown[] = []
 
   const area = (store: Store) => ({
     get: async (keys: string[]) =>
@@ -23,9 +32,20 @@ export function installChromeMock(): { sync: Store; local: Store } {
 
   ;(globalThis as unknown as { chrome: unknown }).chrome = {
     storage: { sync: area(sync), local: area(local) },
-    action: { setBadgeText: async () => {}, setBadgeBackgroundColor: async () => {} },
-    runtime: { getManifest: () => ({ version: '0.1.0' }) },
+    action: {
+      setBadgeText: async () => {},
+      setBadgeBackgroundColor: async () => {},
+      setTitle: async ({ title }: { title: string }) => {
+        actionTitles.push(title)
+      },
+    },
+    runtime: {
+      getManifest: () => ({ version: '0.1.0', action: { default_title: 'Clip to brain' } }),
+      openOptionsPage: async () => {
+        openOptionsPageCalls.push(undefined)
+      },
+    },
   }
 
-  return { sync, local }
+  return { sync, local, actionTitles, openOptionsPageCalls }
 }

@@ -27,6 +27,11 @@ chrome.runtime.onMessage.addListener((message: CapturedPagePayload | CaptureFail
     try {
       await handleCapturedPage(message)
       await setBadge('ok')
+      // A previous failure may have left an explanatory title behind (see
+      // reportFailure); a successful capture clears it back to the manifest
+      // default.
+      const defaultTitle = chrome.runtime.getManifest().action?.default_title ?? ''
+      await chrome.action.setTitle({ title: defaultTitle })
     } catch (error) {
       reportFailure('clip failed', error)
     }
