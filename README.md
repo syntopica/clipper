@@ -93,10 +93,23 @@ Each clip lands in the data repo under:
 ```
 clips/pending/YYYY/MM/<YYYY-MM-DD>-<site>-<title-slug>-<clip_id[:8]>/
   index.md        # YAML frontmatter (from metadata.json) + the clipped markdown body
-  source.html     # the sanitized HTML the markdown was generated from
+  source.html     # sanitized HTML snapshot - see snapshot_mode below (may be absent)
   metadata.json   # schema_version, clip_id, url, site, extractor, content_sha256, etc.
   state.json      # { status: "pending", updatedAt, failure: null, brainCommit: null }
 ```
+
+`metadata.json`'s `snapshot_mode` records what `source.html` actually holds:
+
+- `sanitized` - the whole page run through DOMPurify. DOMPurify's default
+  (`WHOLE_DOCUMENT: false`) drops `<html>`, `<head>`, `<title>` and `lang`,
+  so this is the sanitized **body** of the page, not the full document,
+  even though the input was the whole page.
+- `extracted` - only the extracted content, sanitized; used when the full
+  sanitized page would exceed `MAX_SOURCE_HTML_BYTES`. This is the HTML the
+  markdown was actually generated from.
+- `omitted` - the snapshot exceeded `MAX_SOURCE_HTML_BYTES` and was dropped
+  entirely rather than failing the whole clip; `source.html` does not exist
+  for this clip, but `index.md` and the rest still commit normally.
 
 Every capture gets a fresh `clip_id` (a ULID) and its own directory, so
 re-clipping the same page creates a second, separate clip directory - this
@@ -115,6 +128,21 @@ loudly with `ClipConflictError` instead of overwriting anything.
 `status` in `state.json` starts at `pending` - a later stage (outside this
 extension) is expected to move it to `processed` or `needs-claude` and fill
 in `brainCommit`. This extension only ever writes `pending`.
+
+## Hostname denylist
+
+Before building or uploading anything, `handleCapturedPage` refuses to clip
+a denylisted host: `src/shared/denylisted-hostnames.ts` holds a conservative
+starting list (mail providers, a handful of banks and payment processors),
+and `src/shared/is-denylisted-hostname.ts` also refuses loopback addresses,
+`.local` hostnames and private IPv4 literals (`10.0.0.0/8`, `172.16.0.0/12`,
+`192.168.0.0/16`, `169.254.0.0/16`) regardless of the list. A refusal shows
+up the same way any other failure does: a red badge and an action title you
+can hover to read.
+
+This starting list is not exhaustive - it is a starting point you are
+expected to extend in `denylisted-hostnames.ts` for your own banking, mail
+and admin domains before relying on this extension day to day.
 
 ## Not yet implemented (Phase 1 scope)
 
