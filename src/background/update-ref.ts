@@ -1,12 +1,13 @@
 import { githubFetch, type GithubContext } from './github-fetch'
 import { NotFastForwardError } from './not-fast-forward-error'
+import { encodeBranchPath } from './encode-branch-path'
 
 export async function updateRef(
   context: GithubContext,
   branch: string,
   commitSha: string,
 ): Promise<void> {
-  const response = await githubFetch(context, `/git/refs/heads/${branch}`, {
+  const response = await githubFetch(context, `/git/refs/heads/${encodeBranchPath(branch)}`, {
     method: 'PATCH',
     body: JSON.stringify({ sha: commitSha, force: false }),
   })

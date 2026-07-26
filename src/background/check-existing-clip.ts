@@ -8,7 +8,7 @@ export async function checkExistingClip(
 ): Promise<ExistingClipStatus> {
   const response = await githubFetch(
     context,
-    `/contents/${input.dirPath}/metadata.json?ref=${input.branch}`,
+    `/contents/${input.dirPath}/metadata.json?ref=${encodeURIComponent(input.branch)}`,
     { headers: { accept: 'application/vnd.github.raw+json' } },
   )
   if (response.status === 404) return 'absent'
