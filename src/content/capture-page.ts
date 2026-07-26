@@ -4,6 +4,7 @@ import { collectPageMetadata } from './collect-page-metadata'
 import { extractContent } from './extract-content'
 import { getSelectionHtml } from './get-selection-html'
 import { sanitizeHtml } from './sanitize-html'
+import { sendToBackground } from './send-to-background'
 import { toMarkdown } from './to-markdown'
 
 function capture(): void {
@@ -14,7 +15,7 @@ function capture(): void {
   const wholePage = sanitizeHtml(document.documentElement.outerHTML)
   const fitsWholePage = byteLength(wholePage) <= LIMITS.MAX_SOURCE_HTML_BYTES
 
-  void chrome.runtime.sendMessage({
+  void sendToBackground({
     type: 'clip-captured',
     url: location.href,
     markdown: toMarkdown(cleanExtracted),
@@ -28,7 +29,7 @@ function capture(): void {
 try {
   capture()
 } catch (error) {
-  void chrome.runtime.sendMessage({
+  void sendToBackground({
     type: 'clip-failed',
     reason: error instanceof Error ? error.message : String(error),
   })
