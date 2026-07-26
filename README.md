@@ -98,12 +98,19 @@ clips/pending/YYYY/MM/<YYYY-MM-DD>-<site>-<title-slug>-<clip_id[:8]>/
   state.json      # { status: "pending", updatedAt, failure: null, brainCommit: null }
 ```
 
-`content_sha256` is computed from the normalized markdown body, so clipping
-the same page content twice (even at a different `clipped_at`) yields the
-same hash. If a directory already exists with the same `clip_id` and
-`content_sha256`, the commit is skipped as a no-op; if it exists with
-different content, the commit fails loudly with `ClipConflictError` instead
-of overwriting anything.
+Every capture gets a fresh `clip_id` (a ULID) and its own directory, so
+re-clipping the same page creates a second, separate clip directory - this
+is not deduplication. `content_sha256` is computed from the normalized
+markdown body, so two clips of identical page content have identical
+`content_sha256` values even though their `clip_id` and directory name
+differ; that hash is what lets a later pass recognise duplicate content, not
+anything in this extension. The path-exists check at commit time is an
+integrity guard, not a duplicate filter: if the target directory already has
+a `metadata.json` whose `clip_id` and `content_sha256` both match the clip
+being committed (the same in-flight commit retried, or a resumed job in
+Phase 2 reusing its `clip_id`), the commit is a no-op; if the directory
+exists with a different `clip_id` or a different hash, the commit fails
+loudly with `ClipConflictError` instead of overwriting anything.
 
 `status` in `state.json` starts at `pending` - a later stage (outside this
 extension) is expected to move it to `processed` or `needs-claude` and fill
@@ -132,9 +139,11 @@ plan's exclusion list:
   `https://api.github.com/*`; it does not read arbitrary page content beyond
   the active tab it was explicitly invoked on.
 
-An in-memory guard prevents a double click from producing two clips within
-one service-worker lifetime, but that guard does not survive a service
-worker restart - that protection is deferred to the Phase 2 durable queue.
+An in-memory guard prevents a rapid double click on the same tab from
+producing two clips - it clears itself five seconds after the injection
+call, so it only covers a double click, not the whole service-worker
+lifetime, and it does not survive a service worker restart at all - durable
+cross-restart protection is deferred to the Phase 2 durable queue.
 
 ## Development
 
