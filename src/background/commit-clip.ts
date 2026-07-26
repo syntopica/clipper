@@ -14,14 +14,14 @@ const MAX_ATTEMPTS = 3
 export async function commitClip(
   context: GithubContext,
   input: { branch: string; clip: ClipFiles },
-): Promise<{ commitSha: string; alreadyPresent: boolean }> {
+): Promise<{ commitSha: string | null; alreadyPresent: boolean }> {
   const existing = await checkExistingClip(context, {
     branch: input.branch,
     dirPath: input.clip.dirPath,
     clipId: input.clip.metadata.clip_id,
     contentSha256: input.clip.metadata.content_sha256,
   })
-  if (existing === 'identical') return { commitSha: '', alreadyPresent: true }
+  if (existing === 'identical') return { commitSha: null, alreadyPresent: true }
   if (existing === 'conflict') throw new ClipConflictError(input.clip.dirPath)
 
   const entries = await Promise.all(
@@ -45,5 +45,7 @@ export async function commitClip(
     }
   }
 
+  // Every loop iteration returns or throws; this only satisfies TypeScript's
+  // control-flow analysis, which cannot prove the loop is exhaustive.
   throw new Error('unreachable')
 }

@@ -1,5 +1,6 @@
 import { commitClip } from '../../src/background/commit-clip'
 import { ClipConflictError } from '../../src/background/clip-conflict-error'
+import { NotFastForwardError } from '../../src/background/not-fast-forward-error'
 
 const context = { token: 't', owner: 'o', repo: 'r' }
 
@@ -16,7 +17,7 @@ const clip = {
 
 interface Call { url: string; body: unknown }
 
-function harness(options: { failFirstRefUpdate: boolean; existing?: unknown }) {
+function harness(options: { failFirstRefUpdate: boolean; failEveryRefUpdate?: boolean; existing?: unknown }) {
   const calls: Call[] = []
   let refUpdates = 0
   let head = 'commitA'
@@ -38,6 +39,10 @@ function harness(options: { failFirstRefUpdate: boolean; existing?: unknown }) {
     if (href.endsWith('/git/commits')) return new Response(JSON.stringify({ sha: `commit-new-${head}` }), { status: 200 })
     if (href.includes('/git/refs/heads/')) {
       refUpdates += 1
+      if (options.failEveryRefUpdate) {
+        head = `commit-${refUpdates}`
+        return new Response('{"message":"Update is not a fast forward"}', { status: 422 })
+      }
       if (options.failFirstRefUpdate && refUpdates === 1) {
         head = 'commitB'
         return new Response('{"message":"Update is not a fast forward"}', { status: 422 })
@@ -91,6 +96,36 @@ test('an identical existing clip is a no-op', async () => {
 })
 
 test('a different clip at the same path is a hard failure', async () => {
-  harness({ failFirstRefUpdate: false, existing: { clip_id: 'OTHER', content_sha256: 'b'.repeat(64) } })
+  const h = harness({ failFirstRefUpdate: false, existing: { clip_id: 'OTHER', content_sha256: 'b'.repeat(64) } })
   await expect(commitClip(context, { branch: 'main', clip })).rejects.toBeInstanceOf(ClipConflictError)
+  expect(h.calls.filter((call) => call.url.endsWith('/git/blobs'))).toHaveLength(0)
+})
+
+test('gives up after three conflicting attempts', async () => {
+  const h = harness({ failFirstRefUpdate: false, failEveryRefUpdate: true })
+  await expect(commitClip(context, { branch: 'main', clip })).rejects.toBeInstanceOf(
+    NotFastForwardError,
+  )
+  expect(h.refUpdateCount()).toBe(3)
+})
+
+test('a non-conflict failure propagates on the first attempt', async () => {
+  let refUpdates = 0
+  globalThis.fetch = vi.fn(async (url: string | URL | Request) => {
+    const href = String(url)
+    if (href.includes('/contents/')) return new Response('{"message":"Not Found"}', { status: 404 })
+    if (href.includes('/git/ref/heads/')) return new Response('{"object":{"sha":"c1"}}', { status: 200 })
+    if (href.includes('/git/commits/')) return new Response('{"sha":"c1","tree":{"sha":"t1"}}', { status: 200 })
+    if (href.endsWith('/git/blobs')) return new Response('{"sha":"b1"}', { status: 200 })
+    if (href.endsWith('/git/trees')) return new Response('{"sha":"t2"}', { status: 200 })
+    if (href.endsWith('/git/commits')) return new Response('{"sha":"c2"}', { status: 200 })
+    if (href.includes('/git/refs/heads/')) {
+      refUpdates += 1
+      return new Response('{"message":"Bad credentials"}', { status: 401 })
+    }
+    throw new Error(`unexpected ${href}`)
+  }) as unknown as typeof fetch
+
+  await expect(commitClip(context, { branch: 'main', clip })).rejects.toThrow(/401/)
+  expect(refUpdates).toBe(1)
 })
