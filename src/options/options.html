@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>brain clipper settings</title>
+<style>
+  body { font: 14px system-ui, sans-serif; margin: 2rem; max-width: 34rem; }
+  label { display: block; margin: 0.75rem 0 0.25rem; }
+  input { width: 100%; padding: 0.4rem; }
+  .row { display: flex; gap: 0.5rem; margin-top: 1rem; }
+  #status { margin-top: 1rem; min-height: 1.2em; }
+</style>
+<h1>brain clipper</h1>
+<label for="owner">Owner</label><input id="owner" />
+<label for="repo">Repo</label><input id="repo" />
+<label for="branch">Branch</label><input id="branch" />
+<label for="machineName">Machine name</label><input id="machineName" />
+<label for="token">GitHub token (stored on this device only)</label>
+<input id="token" type="password" autocomplete="off" />
+<div class="row">
+  <button id="save">Save</button>
+  <button id="removeToken">Remove token from this device</button>
+  <button id="openGithub">Open GitHub to revoke token</button>
+</div>
+<p id="status"></p>
+<script src="options.js"></script>

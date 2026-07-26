@@ -11,6 +11,7 @@
     "type": "module"
   },
   "action": { "default_title": "Clip to brain" },
+  "options_page": "options/options.html",
   "commands": {
     "clip-page": {
       "suggested_key": { "default": "Ctrl+Shift+S", "mac": "Command+Shift+S" },

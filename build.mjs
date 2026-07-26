@@ -12,4 +12,16 @@ await build({
   target: 'chrome120',
 })
 
+await build({
+  entryPoints: ['src/options/options.ts'],
+  outdir: 'dist',
+  outbase: 'src',
+  bundle: true,
+  format: 'iife',
+  target: 'chrome120',
+})
+
+await mkdir('dist/options', { recursive: true })
+await cp('src/options/options.html', 'dist/options/options.html')
+
 await cp('src/manifest.json', 'dist/manifest.json')
