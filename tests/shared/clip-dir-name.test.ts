@@ -19,3 +19,13 @@ test('truncates the title so the leaf fits the cap, keeping the id suffix', () =
   expect(name.length).toBeLessThanOrEqual(LIMITS.MAX_DIR_NAME_CHARS)
   expect(name.endsWith('-01j3abcd')).toBe(true)
 })
+
+test('bounds a pathological hostname too, not just the title', () => {
+  const name = clipDirName({ ...base, site: `${'a'.repeat(200)}.example.com` })
+  expect(name.length).toBeLessThanOrEqual(LIMITS.MAX_DIR_NAME_CHARS)
+  expect(name.endsWith('-01j3abcd')).toBe(true)
+})
+
+test('a title that slugifies to nothing leaves no double separator', () => {
+  expect(clipDirName({ ...base, title: '***' })).toBe('2026-07-26-simonwillison-net-01j3abcd')
+})

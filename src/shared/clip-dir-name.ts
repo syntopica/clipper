@@ -10,10 +10,10 @@ interface ClipDirNameInput {
 
 export function clipDirName(input: ClipDirNameInput): string {
   const date = input.clippedAt.slice(0, 10)
-  const site = slugify(input.site)
   const suffix = input.clipId.slice(0, 8).toLowerCase()
-  const prefix = `${date}-${site}-`
-  const budget = LIMITS.MAX_DIR_NAME_CHARS - prefix.length - suffix.length - 1
-  const title = slugify(input.title).slice(0, Math.max(budget, 0)).replace(/-+$/, '')
-  return `${prefix}${title}-${suffix}`
+  const site = slugify(input.site).slice(0, LIMITS.MAX_SITE_SLUG_CHARS).replace(/-+$/, '')
+  const fixedLength = [date, site, suffix].filter(Boolean).join('-').length
+  const budget = LIMITS.MAX_DIR_NAME_CHARS - fixedLength - 1
+  const title = budget > 0 ? slugify(input.title).slice(0, budget).replace(/-+$/, '') : ''
+  return [date, site, title, suffix].filter(Boolean).join('-')
 }
