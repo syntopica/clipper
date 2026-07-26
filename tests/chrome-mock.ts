@@ -23,6 +23,8 @@ export function installChromeMock(): { sync: Store; local: Store } {
 
   ;(globalThis as unknown as { chrome: unknown }).chrome = {
     storage: { sync: area(sync), local: area(local) },
+    action: { setBadgeText: async () => {}, setBadgeBackgroundColor: async () => {} },
+    runtime: { getManifest: () => ({ version: '0.1.0' }) },
   }
 
   return { sync, local }

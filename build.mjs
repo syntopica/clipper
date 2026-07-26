@@ -24,4 +24,13 @@ await build({
 await mkdir('dist/options', { recursive: true })
 await cp('src/options/options.html', 'dist/options/options.html')
 
+await build({
+  entryPoints: ['src/content/capture-page.ts'],
+  outdir: 'dist',
+  outbase: 'src',
+  bundle: true,
+  format: 'iife',
+  target: 'chrome120',
+})
+
 await cp('src/manifest.json', 'dist/manifest.json')
