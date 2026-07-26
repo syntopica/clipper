@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "brain clipper",
+  "version": "0.1.0",
+  "description": "Clip the current page to markdown into the private brain-clips repo.",
+  "key": "<extension-public-key>",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["https://api.github.com/*"],
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "action": { "default_title": "Clip to brain" },
+  "options_page": "options/options.html",
+  "commands": {
+    "clip-page": {
+      "suggested_key": { "default": "Ctrl+Shift+S", "mac": "Command+Shift+S" },
+      "description": "Clip current page to brain"
+    }
+  }
+}
