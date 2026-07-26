@@ -13,3 +13,9 @@ test('reads title, author, published date, canonical and language', () => {
   expect(meta.language).toBe('en')
   expect(meta.site).toBe('example.com')
 })
+
+test('falls back to the hostname when the page has no title', () => {
+  const doc = new DOMParser().parseFromString('<html><head></head><body></body></html>', 'text/html')
+  const meta = collectPageMetadata(doc, 'https://example.com/a')
+  expect(meta.title).toBe('example.com')
+})

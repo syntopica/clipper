@@ -11,8 +11,12 @@ export interface PageMetadata {
 }
 
 export function collectPageMetadata(doc: Document, url: string): PageMetadata {
+  const site = new URL(url).hostname
   return {
-    title: readMetaContent(doc, 'meta[property="og:title"]') ?? doc.title.trim(),
+    // An empty title produces a title-less directory and a commit message
+    // of just "Clip: " - fall back to the hostname rather than an empty
+    // string.
+    title: readMetaContent(doc, 'meta[property="og:title"]') ?? (doc.title.trim() || site),
     author:
       readMetaContent(doc, 'meta[name="author"]') ??
       readMetaContent(doc, 'meta[property="article:author"]'),
@@ -22,6 +26,6 @@ export function collectPageMetadata(doc: Document, url: string): PageMetadata {
       null,
     canonicalUrl: readCanonicalUrl(doc, url),
     language: doc.documentElement.getAttribute('lang'),
-    site: new URL(url).hostname,
+    site,
   }
 }
