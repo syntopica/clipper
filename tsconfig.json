@@ -6,6 +6,7 @@
     "lib": ["ES2022", "DOM"],
     "strict": true,
     "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
     "types": ["chrome", "vitest/globals", "node"],
     "skipLibCheck": true,
     "noEmit": true
