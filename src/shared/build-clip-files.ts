@@ -1,4 +1,3 @@
-import { version as READABILITY_VERSION } from '@mozilla/readability/package.json'
 import type { Extractor } from '../content/extract-content'
 import type { PageMetadata } from '../content/collect-page-metadata'
 import { byteLength } from './byte-length'
@@ -19,6 +18,7 @@ export interface BuildClipFilesInput {
   sourceHtml: string
   snapshotMode: 'extracted' | 'sanitized' | 'full-page'
   extractor: Extractor
+  extractorSite: string | null
   page: PageMetadata
   clippedAt: string
   clippedFrom: string
@@ -59,7 +59,8 @@ export async function buildClipFiles(input: BuildClipFilesInput): Promise<ClipFi
     clipped_from: input.clippedFrom,
     extension_version: input.extensionVersion,
     extractor: input.extractor,
-    extractor_version: input.extractor === 'readability' ? READABILITY_VERSION : null,
+    extractor_site: input.extractorSite,
+    extractor_version: input.extractor === 'defuddle' ? DEFUDDLE_VERSION : null,
     snapshot_mode: snapshotMode,
     sensitivity: 'public',
     content_sha256: await sha256Hex(body),

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { load } from 'js-yaml'
 import { buildClipFiles } from '../../src/shared/build-clip-files'
 import { sha256Hex } from '../../src/shared/sha256-hex'
@@ -9,7 +10,8 @@ const input = {
   markdown: '# Title\r\n\r\n\r\nBody text  \n',
   sourceHtml: '<p>Body text</p>',
   snapshotMode: 'sanitized' as const,
-  extractor: 'readability' as const,
+  extractor: 'defuddle' as const,
+  extractorSite: null,
   page: {
     title: 'Agents are just tools',
     author: 'Simon Willison',
@@ -90,11 +92,18 @@ test('drops an oversized source.html instead of throwing, keeping the markdown',
   expect(indexMd).toContain('Body text')
 })
 
-test('extractor_version is set only for readability, read from the package', async () => {
-  const readabilityPackage = (await import('@mozilla/readability/package.json')) as { version: string }
-  const readabilityClip = await buildClipFiles(input)
-  expect(readabilityClip.metadata.extractor_version).toBe(readabilityPackage.version)
+test('extractor_version is set only for defuddle, read from the installed package', async () => {
+  const defuddlePackage = JSON.parse(
+    readFileSync('node_modules/defuddle/package.json', 'utf8'),
+  ) as { version: string }
+  const defuddleClip = await buildClipFiles(input)
+  expect(defuddleClip.metadata.extractor_version).toBe(defuddlePackage.version)
 
   const articleClip = await buildClipFiles({ ...input, extractor: 'article' })
   expect(articleClip.metadata.extractor_version).toBeNull()
+})
+
+test('the site-specific extractor behind a defuddle extraction is recorded', async () => {
+  const clip = await buildClipFiles({ ...input, extractorSite: 'twitter' })
+  expect(clip.metadata.extractor_site).toBe('twitter')
 })
