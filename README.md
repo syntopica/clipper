@@ -19,6 +19,26 @@ to a handful of files, and committed straight to `main` via the GitHub Git
 Data API (blob -> tree -> commit -> ref update), rebuilding the tree and
 retrying on a non-fast-forward push.
 
+### Links removed by the extractor
+
+Readability deletes nodes it judges to be mostly links. On a page whose
+content links are labelled with the url itself - X renders them exactly that
+way - it deletes those anchors outright, text included, so the markdown keeps
+"Anthropic official skills repo -" and silently loses the url.
+
+When that happens the clip gains a trailing `## Links removed by the
+extractor` section listing the absolute urls. Only anchors whose visible text
+is itself a url are recovered: navigation, footers and "read more" chrome
+never label themselves that way, so an ordinary article never grows the
+section. Links the extractor kept are not repeated, duplicates collapse, and
+the list is capped at `LIMITS.MAX_RECOVERED_LINKS`.
+
+The extractor is otherwise untouched. Raising Readability's
+`linkDensityModifier` enough to save these links disables the heuristic
+outright and lets nav soup into every clip; falling through to the `article`
+element recovers them at six times the markup. Neither is a good trade for
+one page shape.
+
 ## Install
 
 ```bash

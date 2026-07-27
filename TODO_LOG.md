@@ -6,6 +6,28 @@
 
 ### 2026-07
 
+- [x] 2026-07-27 - **Bugs:** a clip could silently lose every link in its payload.
+  - Found in the first real device-flow clip: an X post titled "[Full GitHub Links]"
+    arrived with zero github urls in `index.md`. Each list item read
+    `Anthropic official skills repo -` with nothing after the dash.
+  - Diagnosis, measured on the committed `source.html` rather than guessed: 53 anchors
+    with a github href in the DOM, 0 surviving `extractContent`. Not sanitize, not
+    turndown - Readability's link-density cleaning deletes those anchor nodes, text
+    included. All 53 of the anchors whose visible text was itself a url were dropped;
+    `source.html` kept them because the whole-page snapshot is not extracted.
+  - Rejected fixes, both measured: `linkDensityModifier: 1` restores the links but only
+    by pushing the thresholds to 1.2/1.5, i.e. disabling the heuristic for every clip;
+    the `article` element keeps 106 github mentions but at 115KB against Readability's
+    18KB, so the body quality pays for it.
+  - Fix: leave extraction alone, recover only the url-labelled anchors it dropped, and
+    append them under `## Links removed by the extractor`. An anchor whose text is its
+    own url is content by construction, so nav and footer chrome cannot qualify.
+  - Evidence: on the real snapshot the clip goes from 0 to 23 github links with the
+    extractor still `readability` and the body unchanged (1447 -> 1502 words). The
+    regression test uses a 2.1KB fixture reproducing the same shape, and asserts the
+    premise too - that Readability really does drop those anchors - so the test cannot
+    quietly pass if that behaviour changes. Full suite 134 passing, up from 121.
+
 - [x] 2026-07-27 - **Testing:** the toolbar-click clip closes the loop - a page clipped on
   the user's own Mac, authorized through the device flow, committed to `brain-clips`.
   - Commit `2c77e11`, one parent, exactly four files under
