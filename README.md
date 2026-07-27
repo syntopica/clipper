@@ -80,6 +80,13 @@ never label themselves that way, so an ordinary article never grows the
 section. Links the extractor kept are not repeated, duplicates collapse, and
 the list is capped at `LIMITS.MAX_RECOVERED_LINKS`.
 
+A link the page wrote as a redirect shim - YouTube wraps every url in a video
+description in a 250-character `youtube.com/redirect?...&q=` and truncates the
+visible text with an ellipsis - is recovered as its destination, not as the
+wrapper. The wrapper is unreadable, it carries a token that expires, and
+unwrapping it is also what lets the duplicate check see that the destination is
+already in the clip.
+
 Defuddle keeps those anchors, so the section no longer fires on the X page it
 was written for. It stays as the net for the same failure elsewhere: Defuddle
 has its own scoring, and it does drop sections other extractors keep (MDN's
