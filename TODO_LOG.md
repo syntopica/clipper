@@ -6,6 +6,20 @@
 
 ### 2026-07
 
+- [x] 2026-07-27 - **Testing:** the toolbar-click clip closes the loop - a page clipped on
+  the user's own Mac, authorized through the device flow, committed to `brain-clips`.
+  - Commit `2c77e11`, one parent, exactly four files under
+    `clips/pending/2026/07/2026-07-27-x-com-...-01kyggcn/`.
+  - `clipped_from` is `mac-arm64-7735`: the generated default from
+    `default-machine-name.ts`, on the user's real machine, with a different suffix from
+    the `mac-arm64-eb4d` generated during the throwaway-profile run. Per-device
+    uniqueness holds, which is the whole point of moving the field out of
+    `chrome.storage.sync`.
+  - `extractor: readability` (0.6.0), `snapshot_mode: sanitized`, 1447 words,
+    `asset_count: 0` - the phase 1 capture path is unaffected by the auth change.
+  - The token was necessarily the device-flow one: no PAT path remains in the code and
+    the fine-grained PAT was never created.
+
 - [x] 2026-07-27 - **Testing:** device-flow sign-in verified end to end in a real Chrome
   with the production build.
   - Setup: throwaway profile, `dist/` loaded unpacked. `--load-extension` is inert in
