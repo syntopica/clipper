@@ -1,7 +1,9 @@
 import type { CapturedPagePayload } from '../background/handle-captured-page'
 import { byteLength } from '../shared/byte-length'
 import { LIMITS } from '../shared/limits'
+import { appendDroppedLinks } from './append-dropped-links'
 import { collectPageMetadata } from './collect-page-metadata'
+import { droppedContentLinks } from './dropped-content-links'
 import { extractContent } from './extract-content'
 import { getSelectionHtml } from './get-selection-html'
 import { resolveUrls } from './resolve-urls'
@@ -22,10 +24,12 @@ export function buildCapturedPayload(doc: Document, win: Window, url: string): C
   const wholePage = sanitizeHtml(doc.documentElement.outerHTML)
   const fitsWholePage = byteLength(wholePage) <= LIMITS.MAX_SOURCE_HTML_BYTES
 
+  const recovered = droppedContentLinks(doc, cleanExtracted, doc.baseURI)
+
   return {
     type: 'clip-captured',
     url,
-    markdown: toMarkdown(cleanExtracted),
+    markdown: appendDroppedLinks(toMarkdown(cleanExtracted), recovered),
     sourceHtml: fitsWholePage ? wholePage : cleanExtracted,
     snapshotMode: fitsWholePage ? 'sanitized' : 'extracted',
     extractor: extracted.extractor,
