@@ -5,12 +5,18 @@ export type Extractor = 'selection' | 'defuddle' | 'article' | 'main' | 'body' |
 export interface ExtractedContent {
   html: string
   extractor: Extractor
-  // The site-specific extractor Defuddle matched - 'twitter', 'github',
-  // 'reddit', 'youtube', 'hackernews' and twenty-odd others - or null when it
-  // fell through to its generic heuristics. Recorded because the two produce
-  // very different markdown from the same page, and a clip that reads oddly is
-  // otherwise impossible to attribute after the fact.
-  site: string | null
+  // Whether one of Defuddle's site-specific extractors - X, Reddit, YouTube,
+  // GitHub, Hacker News and twenty-odd others - handled the page, as opposed to
+  // its generic heuristics. Recorded because the two produce very different
+  // markdown from the same page, and a clip that reads oddly is otherwise
+  // impossible to attribute after the fact.
+  //
+  // A boolean rather than the extractor's name: Defuddle derives the name it
+  // reports from `constructor.name`, and the browser bundles it publishes are
+  // minified, so by the time the code runs that name is 'v' or 'a'. Only its
+  // presence survives - undefined on the generic path, some mangled string
+  // otherwise.
+  siteExtractor: boolean
 }
 
 // Defuddle.parse() always returns an object, even for a near-empty shell page,
@@ -20,7 +26,7 @@ export interface ExtractedContent {
 const MIN_EXTRACTED_TEXT_LENGTH = 100
 
 export function extractContent(doc: Document, selectionHtml: string | null): ExtractedContent {
-  if (selectionHtml) return { html: selectionHtml, extractor: 'selection', site: null }
+  if (selectionHtml) return { html: selectionHtml, extractor: 'selection', siteExtractor: false }
 
   // parse() is the synchronous entry point, and every extractor that would
   // reach a third-party API - FxTwitter for X, the YouTube transcript
@@ -41,17 +47,23 @@ export function extractContent(doc: Document, selectionHtml: string | null): Ext
     const probe = doc.createElement('template')
     probe.innerHTML = parsed.content
     if ((probe.content.textContent ?? '').trim().length >= MIN_EXTRACTED_TEXT_LENGTH) {
-      return { html: parsed.content, extractor: 'defuddle', site: parsed.extractorType ?? null }
+      return {
+        html: parsed.content,
+        extractor: 'defuddle',
+        siteExtractor: parsed.extractorType !== undefined,
+      }
     }
   }
 
   const articleEl = doc.querySelector('article')
   if (articleEl?.innerHTML.trim()) {
-    return { html: articleEl.innerHTML, extractor: 'article', site: null }
+    return { html: articleEl.innerHTML, extractor: 'article', siteExtractor: false }
   }
 
   const mainEl = doc.querySelector('main, [role="main"]')
-  if (mainEl?.innerHTML.trim()) return { html: mainEl.innerHTML, extractor: 'main', site: null }
+  if (mainEl?.innerHTML.trim()) {
+    return { html: mainEl.innerHTML, extractor: 'main', siteExtractor: false }
+  }
 
   // A body holding only a bare text node has no markup for Turndown to work
   // with (its innerHTML is just the text, same as textContent), so it is not
@@ -59,7 +71,7 @@ export function extractContent(doc: Document, selectionHtml: string | null): Ext
   // reporting a false 'body' win.
   const body = doc.body
   if (body?.innerHTML.trim() && body.children.length > 0) {
-    return { html: body.innerHTML, extractor: 'body', site: null }
+    return { html: body.innerHTML, extractor: 'body', siteExtractor: false }
   }
 
   // Build the element and set textContent rather than interpolating into a
@@ -67,5 +79,5 @@ export function extractContent(doc: Document, selectionHtml: string | null): Ext
   // as markup.
   const paragraph = doc.createElement('p')
   paragraph.textContent = doc.body?.textContent?.trim() ?? ''
-  return { html: paragraph.outerHTML, extractor: 'innertext', site: null }
+  return { html: paragraph.outerHTML, extractor: 'innertext', siteExtractor: false }
 }

@@ -25,10 +25,10 @@ export const ClipMetadataSchema = z.object({
     'body',
     'innertext',
   ]),
-  // The site-specific extractor behind a 'defuddle' extraction ('twitter',
-  // 'github', 'reddit', ...), null for its generic heuristics and for every
-  // other branch.
-  extractor_site: z.string().nullable(),
+  // Whether a site-specific Defuddle extractor handled the page rather than its
+  // generic heuristics. False for every other branch. Not the extractor's name:
+  // see the note in `extract-content.ts`.
+  site_extractor: z.boolean(),
   extractor_version: z.string().nullable(),
   snapshot_mode: z.enum(['extracted', 'sanitized', 'full-page', 'omitted']),
   sensitivity: z.enum(['public', 'private', 'restricted']),

@@ -27,8 +27,13 @@ Readability had one set of heuristics for every page, Defuddle first looks for
 a site-specific extractor - X, Reddit, YouTube, GitHub, Hacker News, Substack,
 Wikipedia, LinkedIn, Mastodon, Bluesky, Medium, Discourse and the shared-chat
 pages of ChatGPT, Claude, Gemini and Grok - and only falls back to heuristics
-for everything else. Which one matched is recorded per clip as
-`extractor_site`, null when the generic path ran.
+for everything else. Whether one of them ran is recorded per clip as
+`site_extractor`.
+
+That field is a boolean rather than the extractor's name on purpose. Defuddle
+derives the name it reports from `constructor.name`, and the browser bundles it
+publishes are minified, so the name arrives as `v` or `a`. Only its presence
+survives the mangling.
 
 Extraction runs against the live DOM, before sanitizing. That order matters:
 the site extractors key on markers the sanitizer strips (`data-testid`

@@ -14,7 +14,7 @@ export interface CapturedPagePayload {
   sourceHtml: string
   snapshotMode: 'extracted' | 'sanitized'
   extractor: Extractor
-  extractorSite: string | null
+  siteExtractor: boolean
   page: PageMetadata
 }
 
@@ -36,7 +36,7 @@ export async function handleCapturedPage(payload: CapturedPagePayload): Promise<
     sourceHtml: payload.sourceHtml,
     snapshotMode: payload.snapshotMode,
     extractor: payload.extractor,
-    extractorSite: payload.extractorSite,
+    siteExtractor: payload.siteExtractor,
     page: payload.page,
     clippedAt: new Date().toISOString().replace(/\.\d+Z$/, 'Z'),
     clippedFrom: settings.machineName,

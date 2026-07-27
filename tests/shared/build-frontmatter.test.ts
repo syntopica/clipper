@@ -17,7 +17,7 @@ const metadata = {
   clipped_from: 'mac-cristian',
   extension_version: '0.1.0',
   extractor: 'defuddle',
-  extractor_site: 'twitter',
+  site_extractor: true,
   extractor_version: '0.19.2',
   snapshot_mode: 'sanitized',
   sensitivity: 'public',
