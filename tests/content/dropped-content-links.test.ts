@@ -97,3 +97,48 @@ test('recovered links are appended under a heading that names the cause', () => 
     '# Title\n\nBody\n\n## Links removed by the extractor\n\n- <https://github.com/anthropics/skills>\n',
   )
 })
+
+test('a youtube redirect shim is recovered as its destination', () => {
+  const target = 'https://gojiberry.ai/how-to-do-outreach-claude-linkedin-mcp'
+  const doc = new DOMParser().parseFromString(
+    `<html lang="en"><body><a href="/redirect?event=video_description&redir_token=QUM4Zm9r&q=${encodeURIComponent(target)}&v=0gXC6sW5UGU">https://gojiberry.ai/how-to-do-outrea...</a></body></html>`,
+    'text/html',
+  )
+
+  const dropped = droppedContentLinks(doc, '<p>nothing</p>', 'https://www.youtube.com/watch?v=0gXC6sW5UGU')
+
+  expect(dropped).toEqual([{ href: target, text: 'https://gojiberry.ai/how-to-do-outrea...' }])
+})
+
+test('a shim whose destination already survived is not recovered', () => {
+  const target = 'https://gojiberry.ai'
+  const doc = new DOMParser().parseFromString(
+    `<html lang="en"><body><a href="/redirect?q=${encodeURIComponent(target)}&v=x">https://gojiberry.ai</a></body></html>`,
+    'text/html',
+  )
+
+  const dropped = droppedContentLinks(
+    doc,
+    '<p>Try gojiberry 7 days here : https://gojiberry.ai</p>',
+    'https://www.youtube.com/watch?v=0gXC6sW5UGU',
+  )
+
+  expect(dropped).toEqual([])
+})
+
+// The shim carries the destination with its trailing slash, the description
+// writes the same link without one. That is one link, not two.
+test('a root url is not recovered over a trailing slash alone', () => {
+  const doc = new DOMParser().parseFromString(
+    `<html lang="en"><body><a href="/redirect?q=${encodeURIComponent('https://gojiberry.ai/')}&v=x">https://gojiberry.ai</a></body></html>`,
+    'text/html',
+  )
+
+  const dropped = droppedContentLinks(
+    doc,
+    '<p>Try gojiberry 7 days here : https://gojiberry.ai</p>',
+    'https://www.youtube.com/watch?v=0gXC6sW5UGU',
+  )
+
+  expect(dropped).toEqual([])
+})

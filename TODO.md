@@ -129,8 +129,9 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
   YouTube needed the async path and now works: 133 KB of markdown from a
   two-hour talk, `## Transcript` with the video's chapters as `###` headings and
   timestamped paragraphs, in 0.7s, with all four requests going to
-  www.youtube.com. Still worth one real-browser clip to confirm, since this was
-  measured over curl-fetched html in jsdom.
+  www.youtube.com. Confirmed in a real browser afterwards: a clipped video came
+  back `site_extractor: true` with sixty timestamped transcript paragraphs and no
+  YouTube chrome.
 - [ ] Phase 2 - Playwright against real Chromium for the extension lifecycle
   (permissions, commands, `OffscreenCanvas`, service worker termination and
   resume). jsdom cannot cover any of it.

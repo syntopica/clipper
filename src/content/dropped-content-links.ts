@@ -1,5 +1,6 @@
 import { LIMITS } from '../shared/limits'
 import { isUrlLikeText } from './is-url-like-text'
+import { unwrapRedirect } from './unwrap-redirect'
 
 // Readability removes nodes it judges to be mostly links. On a page whose
 // content links are rendered with the url as their own label - X is the case
@@ -37,18 +38,25 @@ export function droppedContentLinks(
     const raw = anchor.getAttribute('href') ?? ''
     let href: string
     try {
-      href = new URL(raw, baseUri).toString()
+      href = unwrapRedirect(new URL(raw, baseUri).toString())
     } catch {
       continue
     }
     if (!href.startsWith('https://') && !href.startsWith('http://')) continue
     if (seen.has(href)) continue
 
-    // The extracted html carries absolutized hrefs on the Readability branch and
+    // The extracted html carries absolutized hrefs on the Defuddle branch and
     // resolved ones everywhere else, but a raw match is still worth checking:
     // an extractor that kept the anchor verbatim would otherwise look like a
     // drop and duplicate the link.
-    if (extractedHtml.includes(href) || (raw && extractedHtml.includes(raw))) continue
+    //
+    // A root url is compared both ways because the two sides disagree about it:
+    // a href is written `https://example.com/` and the same link in running text
+    // is written `https://example.com`. Treating those as different links puts
+    // one the reader already has into the recovered list.
+    const bare = href.replace(/\/$/, '')
+    if (extractedHtml.includes(href) || extractedHtml.includes(bare)) continue
+    if (raw && extractedHtml.includes(raw)) continue
 
     seen.add(href)
     dropped.push({ href, text })
