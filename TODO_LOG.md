@@ -6,6 +6,36 @@
 
 ### 2026-07
 
+- [x] 2026-07-27 - **Testing:** device-flow sign-in verified end to end in a real Chrome
+  with the production build.
+  - Setup: throwaway profile, `dist/` loaded unpacked. `--load-extension` is inert in
+    current Chrome unless paired with
+    `--disable-features=DisableLoadExtensionCommandLineSwitch`; the CDP
+    `Extensions.loadUnpacked` command works regardless and returned
+    `odfmlmgmcdlmmclnlagohplgpeijjeoa`, confirming the pinned `manifest.key` still fixes
+    the extension id.
+  - Options page before sign-in: "Not signed in", machine name prefilled
+    `mac-arm64-eb4d`, owner prefilled `BusiRocket` - both new behaviours visible.
+  - Sign-in: clicking the button showed user code `CA21-ACD7`, opened
+    `github.com/login/device` in a new tab and began polling. Authorizing in a second
+    browser (the grant is decoupled from the polling browser) drove the page to "Signed
+    in." and "Signed in as @CristianDeluxe" with the code panel hidden.
+  - Stored credential: `ghu_` access token, refresh token present, expiry 480 minutes
+    out - so "Expire user authorization tokens" really is on and rotation has something
+    to rotate with. `chrome.storage.sync` was empty at that point and contained no
+    `ghu_`/`ghr_` string.
+  - Storage split after Save: `sync` holds exactly `{owner, repo, branch}`, `local` holds
+    `githubCredential` and `machineName`. This is the machineName bug fix confirmed
+    against real Chrome storage rather than the test mock.
+  - Token scope, called from the service worker with the stored token:
+    `/repos/BusiRocket/brain-clips` 200, `/repos/BusiRocket/brain-clips/git/ref/heads/main`
+    200 (the first call `commitClip` makes), `/user/installations` 200, and
+    `/repos/BusiRocket/vault` **404** - a repo in the same org that the signed-in account
+    administers. The installation scope holds.
+  - Not verified: a capture through the toolbar button. `chrome.scripting.executeScript`
+    rides on `activeTab`, which Chrome grants only on a real user gesture, so CDP cannot
+    trigger it. Left as the open item in `TODO.md`.
+
 - [x] 2026-07-27 - **Integrations:** the `brain clipper` GitHub App exists and the
   extension carries its client id.
   - Result: app id `4401763`, client id `Iv23liXcjAPOv6uh7NIv`, owned by `@BusiRocket`.

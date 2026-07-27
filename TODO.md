@@ -19,12 +19,14 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Testing
 
-- [ ] Sign in from a real Chrome, end to end: load `dist/` unpacked, click
-  "Sign in with GitHub", authorize, confirm the options page reports the
-  account, then clip a page and confirm the commit lands in `brain-clips`. The
-  device flow is verified only at the protocol level so far (a live
-  `/login/device/code` call against the real app returned a usable code); no
-  grant has been completed through the extension UI.
+- [ ] Clip a page through the toolbar button once, signed in with the device
+  flow, and confirm the commit lands in `brain-clips`. Everything up to the
+  commit is verified (see `TODO_LOG.md` 2026-07-27), but the capture itself
+  cannot be driven from CDP: injection rides on `activeTab`, which Chrome only
+  grants on a real toolbar click, so this needs a human click. The commit path
+  itself is unchanged since the phase 1 acceptance run - only the token's origin
+  changed, and the stored token already answers 200 on the first call
+  `commitClip` makes.
 
 ## Backend
 
