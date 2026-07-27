@@ -17,13 +17,14 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Blocked Tasks
 
-- [!] Create the `brain clipper` GitHub App under the `BusiRocket` org
-  (`Contents: read+write` only, Device Flow enabled, user-token expiration left
-  on, installed on `BusiRocket/brain-clips` alone), then paste its Client ID
-  into `GITHUB_APP_CLIENT_ID` in `src/shared/github-app-client-id.ts` and
-  rebuild. Blocked on: human GitHub session. Sign-in refuses to start while the
-  constant is empty, so no clip can be committed until this is done. Setup steps
-  are in README "One-time GitHub App setup".
+## Testing
+
+- [ ] Sign in from a real Chrome, end to end: load `dist/` unpacked, click
+  "Sign in with GitHub", authorize, confirm the options page reports the
+  account, then clip a page and confirm the commit lands in `brain-clips`. The
+  device flow is verified only at the protocol level so far (a live
+  `/login/device/code` call against the real app returned a usable code); no
+  grant has been completed through the extension UI.
 
 ## Backend
 

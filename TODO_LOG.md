@@ -6,6 +6,26 @@
 
 ### 2026-07
 
+- [x] 2026-07-27 - **Integrations:** the `brain clipper` GitHub App exists and the
+  extension carries its client id.
+  - Result: app id `4401763`, client id `Iv23liXcjAPOv6uh7NIv`, owned by `@BusiRocket`.
+    Permissions are `Contents: read & write` plus the mandatory `Metadata: read` and
+    nothing else; webhook off; Device Flow enabled; user-token expiration left on so a
+    refresh token is issued. Installed on `BusiRocket/brain-clips` alone - repository id
+    `1312787727`, verified against `gh api repos/BusiRocket/brain-clips` before
+    installing, since the picker offers ids rather than names.
+  - Evidence: `POST https://github.com/login/device/code` with only `client_id` returned
+    `user_code`, `verification_uri`, `expires_in: 899` and `interval: 5` - which both
+    proves Device Flow is live on the app and matches `DeviceCodeSchema` exactly.
+  - Not evidence of a working sign-in: no grant has been completed through the extension
+    UI yet. That end-to-end run is the open item in `TODO.md`.
+  - Gotcha for anyone editing the app form later: the permission controls and the
+    Rails-style checkboxes both render a hidden input sharing the field name, so
+    `input[name=...]` selects the hidden mirror and reads a permanently false value.
+    Target `input[type=checkbox][name=...]`. A form re-render also invalidates a11y
+    snapshot uids, so a stale uid silently clicks the wrong control - re-read state after
+    every mutation rather than trusting the last snapshot.
+
 - [-] 2026-07-27 - **Security/Integrations:** the pasted fine-grained PAT is superseded by
   a GitHub App device-flow sign-in, and the machine name stops syncing.
   - Why: pasting a PAT was the whole first-run experience, and it was the one step that

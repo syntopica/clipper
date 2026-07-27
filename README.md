@@ -64,29 +64,39 @@ What the button does:
    which Chrome may terminate between polls.
 4. The resulting user access token is stored on this device.
 
-### One-time GitHub App setup
+### The GitHub App
 
-The app has to exist before the button can work. Create it once, under the
-`BusiRocket` org:
+Already created; nothing to do unless it has to be rebuilt.
 
-1. GitHub -> Organization settings -> Developer settings -> GitHub Apps ->
-   New GitHub App.
-2. Permissions: **Repository -> Contents: Read and write**. Nothing else. No
-   webhook, no account permissions.
-3. Under Optional features / Identifying and authorizing users, tick **Enable
-   Device Flow**. Device flow is off by default and sign-in fails with
-   `device_flow_disabled` without it.
-4. Leave "Expire user authorization tokens" **on**. The token then lasts 8
-   hours and carries a refresh token, and GitHub waives `client_secret` when
-   refreshing a token that was issued through the device flow - so rotation
-   works with no secret in the extension.
-5. Install the app on **only** `BusiRocket/brain-clips`.
-6. Copy the app's Client ID into `GITHUB_APP_CLIENT_ID` in
-   `src/shared/github-app-client-id.ts`, then `pnpm build`.
+| | |
+| --- | --- |
+| Name | `brain clipper` (slug `brain-clipper`) |
+| Owner | `@BusiRocket` |
+| App ID | `4401763` |
+| Client ID | `Iv23liXcjAPOv6uh7NIv` (in `src/shared/github-app-client-id.ts`) |
+| Permissions | Repository `Contents: read & write`, `Metadata: read` (mandatory) |
+| Webhook | Off |
+| Device flow | Enabled |
+| User token expiration | Enabled - 8h token plus refresh token |
+| Installed on | `BusiRocket/brain-clips` only |
+| Settings | `https://github.com/organizations/BusiRocket/settings/apps/brain-clipper` |
 
 The resulting token is scoped by the app's installation, so it can only ever
 reach `brain-clips` - narrower than a classic PAT, and narrower than what a
 fine-grained PAT guarantees over time.
+
+Two settings are load-bearing and easy to lose when editing the app later.
+**Enable Device Flow** is off by default on a new app; without it every
+sign-in fails with `device_flow_disabled`. **Expire user authorization
+tokens** must stay on, because that is what issues the refresh token, and
+GitHub waives `client_secret` when refreshing a token the device flow issued -
+turning it off would trade secretless rotation for a token that never renews.
+
+To recreate the app from scratch: Organization settings -> Developer settings
+-> GitHub Apps -> New GitHub App, set the two settings above, grant only
+`Contents: read & write`, untick the webhook, install on `brain-clips` alone,
+then put the new Client ID in `src/shared/github-app-client-id.ts` and run
+`pnpm build`.
 
 ### Where the token lives
 
