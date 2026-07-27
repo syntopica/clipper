@@ -6,6 +6,41 @@
 
 ### 2026-07
 
+- [x] 2026-07-27 - **Integrations:** Defuddle replaced `@mozilla/readability` as the
+  content extractor, and Phase 5's planned `ExtractionAdapter` interface is dropped
+  with it.
+  - Readability applied one set of heuristics to every page. Defuddle first looks for
+    a site-specific extractor - twenty-seven of them, including X, Reddit, YouTube,
+    GitHub, Hacker News, Substack, Wikipedia and the shared-chat pages of ChatGPT,
+    Claude, Gemini and Grok - and falls back to heuristics only for everything else.
+    That is the adapter layer Phase 5 was going to hand-build, already written and
+    maintained upstream; only shadow DOM is left uncovered.
+  - Measured before committing to it, against the three clips on disk and the repo
+    fixtures: the url-labelled-links fixture goes from 0 links to 4, the real X clip
+    from 22 to 49 with none lost, and a live github.com issue selects the `github`
+    extractor and yields an author and publish date the metadata collector misses.
+  - Then measured on live html through the shipped `buildCapturedPayload` bundle:
+    Hacker News, Reddit (nested comment threads with scores and permalinks), GitHub
+    and Wikipedia all report `site_extractor: true`; a plain blog correctly reports
+    false. The first real browser clip - an X long-form article - produced 28KB of
+    markdown, ten headings, seventeen fenced python blocks and no X chrome.
+  - Two things went the other way and are recorded in `TODO.md` rather than smoothed
+    over: Defuddle drops MDN's "See also" and "Browser compatibility" sections, five
+    real content links; and YouTube fetched with curl is a JS shell, so whether that
+    extractor works is still unanswered.
+  - `extractor_site` was meant to record which extractor matched, and the first real
+    clip came back with `"v"`. Defuddle derives that name from `constructor.name` and
+    the browser bundles it publishes are minified, so the name never survives - the
+    node path reports `github` correctly for exactly that reason. Only presence
+    survives, so the field is now the boolean `site_extractor`, and the already
+    committed clip was corrected in `brain-clips`.
+  - The url-labelled-link recovery stays. Defuddle no longer needs it on X, but it has
+    its own scoring: the MDN case proves the failure is still reachable, and the X
+    article clip had one link recovered by it.
+  - Evidence: `pnpm typecheck`, 135 tests passing, `pnpm build` green on the merge
+    commit. Content script grew from 192KB to 1.2MB unminified (229KB gzipped); it is
+    injected on click, not declared in the manifest.
+
 - [x] 2026-07-27 - **Bugs:** a clip could silently lose every link in its payload.
   - Found in the first real device-flow clip: an X post titled "[Full GitHub Links]"
     arrived with zero github urls in `index.md`. Each list item read

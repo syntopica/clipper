@@ -147,11 +147,6 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
   hint.
 - [ ] Revisit `MIN_EXTRACTED_TEXT_LENGTH = 100` after real use. It is fixture-fitted,
   and it is the single knob deciding `defuddle` versus the DOM-shape chain.
-- [-] Phase 5 - domain adapters for GitHub READMEs, X threads, documentation
-  sites and shadow-DOM pages, behind an `ExtractionAdapter` interface. Superseded
-  by Defuddle, which ships twenty-seven site extractors and the registry to pick
-  between them. Shadow DOM is the one part it does not cover; reopen only for
-  that if a real page needs it.
 - [ ] Migrate images to Cloudflare R2 if the clips repo approaches ~1 GB. Note
   the real cost: rewriting asset paths does not shrink history, so reclaiming
   space needs `git filter-repo`, a force-push and a re-clone everywhere.
