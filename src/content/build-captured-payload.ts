@@ -14,11 +14,11 @@ export function buildCapturedPayload(doc: Document, win: Window, url: string): C
   const selectionHtml = getSelectionHtml(win)
   const extracted = extractContent(doc, selectionHtml)
 
-  // Readability already absolutizes hrefs/srcs internally; every other
+  // Defuddle already absolutizes hrefs/srcs internally; every other
   // extraction branch reads innerHTML straight off the live DOM and keeps
   // relative urls as authored, so only those need resolving here.
   const resolvedHtml =
-    extracted.extractor === 'readability' ? extracted.html : resolveUrls(extracted.html, doc.baseURI)
+    extracted.extractor === 'defuddle' ? extracted.html : resolveUrls(extracted.html, doc.baseURI)
   const cleanExtracted = sanitizeHtml(resolvedHtml)
 
   const wholePage = sanitizeHtml(doc.documentElement.outerHTML)
@@ -33,6 +33,7 @@ export function buildCapturedPayload(doc: Document, win: Window, url: string): C
     sourceHtml: fitsWholePage ? wholePage : cleanExtracted,
     snapshotMode: fitsWholePage ? 'sanitized' : 'extracted',
     extractor: extracted.extractor,
+    siteExtractor: extracted.siteExtractor,
     page: collectPageMetadata(doc, url),
   }
 }

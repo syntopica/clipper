@@ -7,7 +7,8 @@ const payload = {
   markdown: '# Title\n\nBody',
   sourceHtml: '<p>Body</p>',
   snapshotMode: 'sanitized' as const,
-  extractor: 'readability' as const,
+  extractor: 'defuddle' as const,
+  siteExtractor: false,
   page: {
     title: 'Title',
     author: null,

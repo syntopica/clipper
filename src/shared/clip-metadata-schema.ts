@@ -14,7 +14,21 @@ export const ClipMetadataSchema = z.object({
   clipped_at: z.string(),
   clipped_from: z.string(),
   extension_version: z.string(),
-  extractor: z.enum(['selection', 'readability', 'article', 'main', 'body', 'innertext']),
+  // 'readability' is kept only so clips written before the Defuddle swap still
+  // validate; nothing produces it any more.
+  extractor: z.enum([
+    'selection',
+    'defuddle',
+    'readability',
+    'article',
+    'main',
+    'body',
+    'innertext',
+  ]),
+  // Whether a site-specific Defuddle extractor handled the page rather than its
+  // generic heuristics. False for every other branch. Not the extractor's name:
+  // see the note in `extract-content.ts`.
+  site_extractor: z.boolean(),
   extractor_version: z.string().nullable(),
   snapshot_mode: z.enum(['extracted', 'sanitized', 'full-page', 'omitted']),
   sensitivity: z.enum(['public', 'private', 'restricted']),

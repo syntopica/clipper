@@ -23,6 +23,27 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Integrations
 
+- [ ] Report upstream that `extractorType` is unusable in Defuddle's published
+  browser bundles: it comes from `constructor.name`, and `dist/index.js` and
+  `dist/index.full.js` are minified, so it arrives as `v` or `a`. The unbundled
+  CJS under `dist/` keeps the names, which is why the node path reports `github`
+  correctly and the extension cannot. `site_extractor` is a boolean because of
+  this; restore the name if upstream sets `keep_classnames`.
+- [ ] Defuddle drops MDN's "See also" and "Browser compatibility" sections, which
+  Readability kept - five real content links lost on the one MDN clip on disk.
+  Decide whether that is acceptable or worth a `contentSelector` override for
+  `developer.mozilla.org`.
+- [ ] Retire the url-labelled-link recovery (`dropped-content-links.ts`,
+  `append-dropped-links.ts`, `is-url-like-text.ts`, `LIMITS.MAX_RECOVERED_LINKS`)
+  if it never fires again. It was written for a Readability behaviour Defuddle does
+  not share, and it is kept only as a net for the same failure elsewhere - which
+  the MDN item above shows is not hypothetical. Needs real-use evidence, not a
+  decision now.
+- [ ] The content script bundle went from 192 KB to 1.2 MB unminified (775 KB
+  minified, 229 KB gzipped) with Defuddle. It is injected on click rather than
+  declared in the manifest, so nothing pays for it while browsing, but the build
+  does not minify at all today - turning that on is the cheap fix if it matters.
+
 - [~] One clip is `status: processed` while still sitting under `clips/pending/`:
   the Claude-skills clip (`01KYGGCNH0HN292WZ1VQGVR2XW`) was ingested into the
   brain by hand on 2026-07-27 and its `state.json` updated with
@@ -98,6 +119,16 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Testing
 
+- [~] Confirm Defuddle's site extractors fire per site. Done for X (a real clip
+  of a long-form post: 28 KB of markdown, ten headings, seventeen fenced code
+  blocks, no X chrome) and, by running the shipped `buildCapturedPayload` bundle
+  over freshly fetched live html, for Hacker News, Reddit (nested comment threads
+  with scores and permalinks), GitHub and Wikipedia. A plain blog correctly
+  reports `site_extractor: false`.
+
+  YouTube is the gap: fetched with curl it is a JS shell with no rendered DOM, so
+  the chain falls through to `body` and 932 characters. Whether the extractor
+  works there can only be answered by clipping a video in a real browser.
 - [ ] Phase 2 - Playwright against real Chromium for the extension lifecycle
   (permissions, commands, `OffscreenCanvas`, service worker termination and
   resume). jsdom cannot cover any of it.
@@ -114,10 +145,13 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 - [ ] Transliterate non-ASCII titles. `slugify('日本語のタイトル')` is empty, so every
   CJK, Cyrillic or Greek page gets a directory of date, host and id with no readable
   hint.
-- [ ] Revisit `MIN_READABILITY_TEXT_LENGTH = 100` after real use. It is fixture-fitted,
-  and it is the single knob deciding `readability` versus the DOM-shape chain.
-- [ ] Phase 5 - domain adapters for GitHub READMEs, X threads, documentation
-  sites and shadow-DOM pages, behind an `ExtractionAdapter` interface.
+- [ ] Revisit `MIN_EXTRACTED_TEXT_LENGTH = 100` after real use. It is fixture-fitted,
+  and it is the single knob deciding `defuddle` versus the DOM-shape chain.
+- [-] Phase 5 - domain adapters for GitHub READMEs, X threads, documentation
+  sites and shadow-DOM pages, behind an `ExtractionAdapter` interface. Superseded
+  by Defuddle, which ships twenty-seven site extractors and the registry to pick
+  between them. Shadow DOM is the one part it does not cover; reopen only for
+  that if a real page needs it.
 - [ ] Migrate images to Cloudflare R2 if the clips repo approaches ~1 GB. Note
   the real cost: rewriting asset paths does not shrink history, so reclaiming
   space needs `git filter-repo`, a force-push and a re-clone everywhere.
