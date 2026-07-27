@@ -23,6 +23,12 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Integrations
 
+- [ ] Report upstream that `extractorType` is unusable in Defuddle's published
+  browser bundles: it comes from `constructor.name`, and `dist/index.js` and
+  `dist/index.full.js` are minified, so it arrives as `v` or `a`. The unbundled
+  CJS under `dist/` keeps the names, which is why the node path reports `github`
+  correctly and the extension cannot. `site_extractor` is a boolean because of
+  this; restore the name if upstream sets `keep_classnames`.
 - [ ] Defuddle drops MDN's "See also" and "Browser compatibility" sections, which
   Readability kept - five real content links lost on the one MDN clip on disk.
   Decide whether that is acceptable or worth a `contentSelector` override for

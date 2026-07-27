@@ -11,7 +11,7 @@ const input = {
   sourceHtml: '<p>Body text</p>',
   snapshotMode: 'sanitized' as const,
   extractor: 'defuddle' as const,
-  extractorSite: null,
+  siteExtractor: false,
   page: {
     title: 'Agents are just tools',
     author: 'Simon Willison',
@@ -103,7 +103,10 @@ test('extractor_version is set only for defuddle, read from the installed packag
   expect(articleClip.metadata.extractor_version).toBeNull()
 })
 
-test('the site-specific extractor behind a defuddle extraction is recorded', async () => {
-  const clip = await buildClipFiles({ ...input, extractorSite: 'twitter' })
-  expect(clip.metadata.extractor_site).toBe('twitter')
+test('a site-specific extraction is recorded as such', async () => {
+  const generic = await buildClipFiles(input)
+  expect(generic.metadata.site_extractor).toBe(false)
+
+  const siteSpecific = await buildClipFiles({ ...input, siteExtractor: true })
+  expect(siteSpecific.metadata.site_extractor).toBe(true)
 })

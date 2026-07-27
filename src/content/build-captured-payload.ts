@@ -33,7 +33,7 @@ export function buildCapturedPayload(doc: Document, win: Window, url: string): C
     sourceHtml: fitsWholePage ? wholePage : cleanExtracted,
     snapshotMode: fitsWholePage ? 'sanitized' : 'extracted',
     extractor: extracted.extractor,
-    extractorSite: extracted.site,
+    siteExtractor: extracted.siteExtractor,
     page: collectPageMetadata(doc, url),
   }
 }

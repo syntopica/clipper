@@ -8,7 +8,7 @@ const payload = {
   sourceHtml: '<p>Body</p>',
   snapshotMode: 'sanitized' as const,
   extractor: 'defuddle' as const,
-  extractorSite: null,
+  siteExtractor: false,
   page: {
     title: 'Title',
     author: null,

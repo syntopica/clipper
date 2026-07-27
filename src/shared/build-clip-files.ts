@@ -18,7 +18,7 @@ export interface BuildClipFilesInput {
   sourceHtml: string
   snapshotMode: 'extracted' | 'sanitized' | 'full-page'
   extractor: Extractor
-  extractorSite: string | null
+  siteExtractor: boolean
   page: PageMetadata
   clippedAt: string
   clippedFrom: string
@@ -59,7 +59,7 @@ export async function buildClipFiles(input: BuildClipFilesInput): Promise<ClipFi
     clipped_from: input.clippedFrom,
     extension_version: input.extensionVersion,
     extractor: input.extractor,
-    extractor_site: input.extractorSite,
+    site_extractor: input.siteExtractor,
     extractor_version: input.extractor === 'defuddle' ? DEFUDDLE_VERSION : null,
     snapshot_mode: snapshotMode,
     sensitivity: 'public',
