@@ -23,6 +23,13 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Integrations
 
+- [~] One clip is `status: processed` while still sitting under `clips/pending/`:
+  the Claude-skills clip (`01KYGGCNH0HN292WZ1VQGVR2XW`) was ingested into the
+  brain by hand on 2026-07-27 and its `state.json` updated with
+  `brainCommit: 4c97fb2`, but nothing moved the directory to `processed/`
+  because the mover is phase 4. Whatever implements the move must treat a
+  `processed` clip found under `pending/` as "move me", not as an error.
+
 - [ ] Phase 4 - Mac-side ingest CLI at `~/p/brain/tools/clips` (TypeScript, not
   bash): ledger at `brain/.ingest/clips/<clip_id>.json`, deterministic routing
   before codex, sandboxed synthesis in a throwaway worktree, patch validation,
