@@ -5,7 +5,7 @@
   "description": "Clip the current page to markdown into the private brain-clips repo.",
   "key": "<extension-public-key>",
   "permissions": ["activeTab", "scripting", "storage"],
-  "host_permissions": ["https://api.github.com/*"],
+  "host_permissions": ["https://api.github.com/*", "https://github.com/*"],
   "background": {
     "service_worker": "background/service-worker.js",
     "type": "module"

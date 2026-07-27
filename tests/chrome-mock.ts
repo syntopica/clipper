@@ -41,6 +41,7 @@ export function installChromeMock(): ChromeMock {
     },
     runtime: {
       getManifest: () => ({ version: '0.1.0', action: { default_title: 'Clip to brain' } }),
+      getPlatformInfo: async () => ({ os: 'mac', arch: 'arm64', nacl_arch: 'arm64' }),
       openOptionsPage: async () => {
         openOptionsPageCalls.push(undefined)
       },

@@ -17,10 +17,13 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Blocked Tasks
 
-- [!] Create the fine-grained GitHub PAT (repository access limited to
-  `<owner>/<clips-repo>`, `Contents: read+write`, 90-day expiry) and record it
-  plus its expiry in `~/p/vault`. Blocked on: human GitHub session. Needed before
-  any clip can be committed.
+- [!] Create the `brain clipper` GitHub App under the `BusiRocket` org
+  (`Contents: read+write` only, Device Flow enabled, user-token expiration left
+  on, installed on `<owner>/<clips-repo>` alone), then paste its Client ID
+  into `GITHUB_APP_CLIENT_ID` in `src/shared/github-app-client-id.ts` and
+  rebuild. Blocked on: human GitHub session. Sign-in refuses to start while the
+  constant is empty, so no clip can be committed until this is done. Setup steps
+  are in README "One-time GitHub App setup".
 
 ## Backend
 

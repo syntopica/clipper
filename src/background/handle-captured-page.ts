@@ -1,8 +1,8 @@
 import type { Extractor } from '../content/extract-content'
 import type { PageMetadata } from '../content/collect-page-metadata'
 import { buildClipFiles } from '../shared/build-clip-files'
+import { getAccessToken } from '../shared/get-access-token'
 import { getSettings } from '../shared/get-settings'
-import { getToken } from '../shared/get-token'
 import { isDenylistedHostname } from '../shared/is-denylisted-hostname'
 import { newClipId } from '../shared/new-clip-id'
 import { commitClip } from './commit-clip'
@@ -25,8 +25,8 @@ export async function handleCapturedPage(payload: CapturedPagePayload): Promise<
 
   const settings = await getSettings()
   if (!settings) throw new Error('settings are incomplete - open the options page')
-  const token = await getToken()
-  if (!token) throw new Error('no GitHub token on this device - open the options page')
+  const token = await getAccessToken()
+  if (!token) throw new Error('not signed in to GitHub on this device - open the options page')
 
   const clip = await buildClipFiles({
     clipId: newClipId(),

@@ -42,34 +42,65 @@ After loading, open the extension's options page (right-click the toolbar
 icon -> Options, or `chrome://extensions` -> Details -> Extension options)
 and fill in the settings below before clipping anything.
 
-## Token setup
+## Sign in with GitHub
 
-The extension commits through the GitHub API using a fine-grained personal
-access token scoped to the data repo only. Create it yourself - the
-extension has no OAuth flow and never requests a token on your behalf:
+The options page has a **Sign in with GitHub** button. There is no token to
+paste and no personal access token to create.
 
-1. GitHub -> Settings -> Developer settings -> Personal access tokens ->
-   Fine-grained tokens -> Generate new token.
-2. Repository access: **only** `<owner>/<clips-repo>`. Do not grant access
-   to any other repo.
-3. Permissions: **Contents: Read and write**. Nothing else.
-4. Set an expiry (90 days is a reasonable default) and generate the token.
-5. Record the token and its expiry in `~/p/vault` - not in this repo, not in
-   any commit, not in a screenshot.
-6. Paste the token into the options page `GitHub token` field and click
-   Save.
+Authorization uses the GitHub App **device flow**, which is the only GitHub
+authorization flow a browser extension can run without a server: the
+authorization-code flow requires a `client_secret` to exchange the code, and
+GitHub does not support PKCE for it, so a client-only extension would have to
+either ship the secret or proxy through a backend. The device flow requires no
+secret at all, which is why the app's client id is compiled into the bundle in
+plain sight (`src/shared/github-app-client-id.ts`) - it is public by design.
 
-The token is written to `chrome.storage.local` (never `chrome.storage.sync`,
-so it does not roam to other Chrome profiles) and the extension restricts
-that storage area to `TRUSTED_CONTEXTS` on install/startup, which keeps it
-out of reach of content scripts. It is read only at commit time to build the
-`Authorization` header sent to `api.github.com`; no code path logs it.
+What the button does:
 
-To rotate or remove a token: open the options page, click "Remove token from
-this device" (clears the local copy) and/or "Open GitHub to revoke token"
-(invalidates it server-side). Revoking on GitHub is the only way to
-invalidate a leaked token - removing it from the device only stops this
-machine from using it.
+1. Asks GitHub for a device code and shows an 8-character user code.
+2. Opens `https://github.com/login/device` in a new tab.
+3. You enter the code and approve; **leave the options page open** while it
+   polls - the poll runs in that page rather than in the service worker,
+   which Chrome may terminate between polls.
+4. The resulting user access token is stored on this device.
+
+### One-time GitHub App setup
+
+The app has to exist before the button can work. Create it once, under the
+`BusiRocket` org:
+
+1. GitHub -> Organization settings -> Developer settings -> GitHub Apps ->
+   New GitHub App.
+2. Permissions: **Repository -> Contents: Read and write**. Nothing else. No
+   webhook, no account permissions.
+3. Under Optional features / Identifying and authorizing users, tick **Enable
+   Device Flow**. Device flow is off by default and sign-in fails with
+   `device_flow_disabled` without it.
+4. Leave "Expire user authorization tokens" **on**. The token then lasts 8
+   hours and carries a refresh token, and GitHub waives `client_secret` when
+   refreshing a token that was issued through the device flow - so rotation
+   works with no secret in the extension.
+5. Install the app on **only** `<owner>/<clips-repo>`.
+6. Copy the app's Client ID into `GITHUB_APP_CLIENT_ID` in
+   `src/shared/github-app-client-id.ts`, then `pnpm build`.
+
+The resulting token is scoped by the app's installation, so it can only ever
+reach `brain-clips` - narrower than a classic PAT, and narrower than what a
+fine-grained PAT guarantees over time.
+
+### Where the token lives
+
+The access token, refresh token and expiry are written to
+`chrome.storage.local` (never `chrome.storage.sync`, so nothing roams to other
+Chrome profiles) and the extension restricts that storage area to
+`TRUSTED_CONTEXTS` on install/startup, which keeps it out of reach of content
+scripts. It is read only at commit time to build the `Authorization` header
+sent to `api.github.com`; no code path logs it.
+
+To rotate or remove: open the options page, click "Sign out on this device"
+(clears the local copy) and/or "Open GitHub to revoke access" (invalidates the
+authorization server-side). Revoking on GitHub is the only way to invalidate a
+leaked token - signing out only stops this machine from using it.
 
 ## Settings fields
 
@@ -80,11 +111,20 @@ All fields on the options page are required before a clip can be committed:
 | Owner | GitHub org/user that owns the data repo | `BusiRocket` |
 | Repo | Data repo name | `brain-clips` |
 | Branch | Branch to commit clips to | `main` |
-| Machine name | Free-text label stored in each clip's `clipped_from` field | e.g. `cristian-mbp` |
-| GitHub token | The fine-grained PAT from the previous section | (never displayed once saved; shown as `********`) |
+| Machine name | Free-text label stored in each clip's `clipped_from` field | e.g. `mac-arm64-a3f2` |
 
-Owner/repo/branch/machine name are stored in `chrome.storage.sync` (they are
-not secret). Only the token lives in `chrome.storage.local`.
+Owner/repo/branch are stored in `chrome.storage.sync` (they are not secret and
+are the same on every machine). The machine name and the GitHub credential both
+live in `chrome.storage.local`: syncing the machine name would give every
+device the same `clipped_from` value and defeat the only purpose the field has.
+
+A Chrome extension cannot read the host's name - `chrome.runtime.getPlatformInfo()`
+exposes os and architecture only, and `chrome.enterprise.deviceAttributes.getDeviceHostname()`
+is ChromeOS-with-policy - so the machine name is prefilled with a descriptive
+`os-arch-<random>` default (`mac-arm64-a3f2`) that keeps two Macs apart, and
+you can edit it to anything before saving. The only way to read a real hostname
+would be a native messaging host, which means installing a native binary and
+manifest per machine; that is out of proportion for a metadata label.
 
 ## Clip layout on disk
 
@@ -164,7 +204,8 @@ plan's exclusion list:
   `clips/pending/` afterward is out of this repo.
 - No Chrome Web Store packaging - "Load unpacked" only.
 - No broad host permissions - the extension can only reach
-  `https://api.github.com/*`; it does not read arbitrary page content beyond
+  `https://api.github.com/*` and `https://github.com/*` (the latter solely for
+  the device-flow endpoints); it does not read arbitrary page content beyond
   the active tab it was explicitly invoked on.
 
 An in-memory guard prevents a rapid double click on the same tab from

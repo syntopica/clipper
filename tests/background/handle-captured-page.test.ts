@@ -40,13 +40,14 @@ function mockGithub(): { paths: string[] } {
 
 test('a captured page becomes one commit of four files', async () => {
   const stores = installChromeMock()
-  Object.assign(stores.sync.data, {
-    owner: 'o',
-    repo: 'r',
-    branch: 'main',
-    machineName: 'mac-cristian',
-  })
-  stores.local.data.githubToken = 'tok'
+  Object.assign(stores.sync.data, { owner: 'o', repo: 'r', branch: 'main' })
+  stores.local.data.machineName = 'mac-cristian'
+  stores.local.data.githubCredential = {
+    accessToken: 'tok',
+    refreshToken: null,
+    expiresAt: null,
+    login: 'cristiandeluxe',
+  }
   const github = mockGithub()
 
   await handleCapturedPage(payload)
@@ -55,12 +56,13 @@ test('a captured page becomes one commit of four files', async () => {
   expect(github.paths.every((path) => path.startsWith('clips/pending/'))).toBe(true)
 })
 
-test('refuses to clip when the token is missing, before writing anything', async () => {
+test('refuses to clip when there is no GitHub session, before writing anything', async () => {
   const stores = installChromeMock()
-  Object.assign(stores.sync.data, { owner: 'o', repo: 'r', branch: 'main', machineName: 'm' })
+  Object.assign(stores.sync.data, { owner: 'o', repo: 'r', branch: 'main' })
+  stores.local.data.machineName = 'm'
   const github = mockGithub()
 
-  await expect(handleCapturedPage(payload)).rejects.toThrow(/token/i)
+  await expect(handleCapturedPage(payload)).rejects.toThrow(/not signed in/i)
   expect(github.paths).toHaveLength(0)
 })
 
