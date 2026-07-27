@@ -119,13 +119,16 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Testing
 
-- [ ] Confirm in a real browser that Defuddle's site extractors fire on X, Reddit,
-  YouTube, GitHub and Hacker News. Offline this is unprovable for X: the only X
-  snapshot on disk is a sanitized `source.html`, and the sanitizer strips the
-  `data-testid` attributes the extractor keys on, so it falls back to the generic
-  path. The github extractor was confirmed against freshly fetched live html
-  (`extractorType: 'github'`); the rest are unverified. Evidence to capture: the
-  `extractor_site` field of a clip taken from each.
+- [~] Confirm Defuddle's site extractors fire per site. Done for X (a real clip
+  of a long-form post: 28 KB of markdown, ten headings, seventeen fenced code
+  blocks, no X chrome) and, by running the shipped `buildCapturedPayload` bundle
+  over freshly fetched live html, for Hacker News, Reddit (nested comment threads
+  with scores and permalinks), GitHub and Wikipedia. A plain blog correctly
+  reports `site_extractor: false`.
+
+  YouTube is the gap: fetched with curl it is a JS shell with no rendered DOM, so
+  the chain falls through to `body` and 932 characters. Whether the extractor
+  works there can only be answered by clipping a video in a real browser.
 - [ ] Phase 2 - Playwright against real Chromium for the extension lifecycle
   (permissions, commands, `OffscreenCanvas`, service worker termination and
   resume). jsdom cannot cover any of it.
