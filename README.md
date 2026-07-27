@@ -41,10 +41,29 @@ attributes for X, `meta[name="octolytics-url"]` for GitHub), so running them
 against `source.html` after the fact would silently fall back to the generic
 path.
 
-Only `parse()` is called, never `parseAsync()`. The async path is the only one
-that reaches a third-party API - FxTwitter for X posts, the YouTube transcript
-endpoint, Reddit's comment json - so nothing about a clipped page leaves the
-browser.
+### What extraction is allowed to fetch
+
+Some extractors need the network, and whether that is acceptable depends on who
+they call, not on which extractor it is. So `parseAsync()` runs with a `fetch`
+that refuses any request to a host other than the page's own
+(`same-origin-fetch.ts`).
+
+YouTube's transcript passes: its innertube `player` and `next` endpoints and the
+caption xml all live on `www.youtube.com`, the origin the browser is already on
+and has already told everything this request would. X's async extractor does not:
+it calls `publish.twitter.com` and `api.fxtwitter.com`, which would tell a third
+party which post is being clipped into a private brain, from this machine.
+Reddit needs no network at all - it reads the comment tree out of the page.
+
+The async path is also the only one that can block: where the fetch route fails,
+the YouTube extractor falls back to opening the transcript panel and polling the
+DOM. It races `LIMITS.EXTRACTION_TIMEOUT_MS`, and the synchronous parse takes
+over if it loses, because a clip without a transcript beats a clip that looks
+like a hang.
+
+A YouTube clip comes out as `## Transcript`, the video's own chapters as `###`
+headings, and timestamped paragraphs under each - 133 KB of markdown for a
+two-hour talk, in under a second.
 
 ### Links removed by the extractor
 

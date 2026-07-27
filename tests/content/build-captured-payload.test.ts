@@ -8,9 +8,9 @@ function docFrom(fixture: string, url: string): Document {
   return doc
 }
 
-test('captures a normal article through Defuddle', () => {
+test('captures a normal article through Defuddle', async () => {
   const doc = docFrom('blog.html', 'https://example.com/agents')
-  const payload = buildCapturedPayload(doc, window, 'https://example.com/agents')
+  const payload = await buildCapturedPayload(doc, window, 'https://example.com/agents')
 
   expect(payload.type).toBe('clip-captured')
   expect(payload.extractor).toBe('defuddle')
@@ -18,14 +18,14 @@ test('captures a normal article through Defuddle', () => {
   expect(payload.page.title).toBe('Agents are just tools')
 })
 
-test('absolutizes a relative link on a non-Defuddle branch', () => {
+test('absolutizes a relative link on a non-Defuddle branch', async () => {
   const doc = new DOMParser().parseFromString(
     '<html lang="en"><body><article><p>short <a href="/x">link</a></p></article></body></html>',
     'text/html',
   )
   Object.defineProperty(doc, 'baseURI', { value: 'https://example.com/blog/post', configurable: true })
 
-  const payload = buildCapturedPayload(doc, window, 'https://example.com/blog/post')
+  const payload = await buildCapturedPayload(doc, window, 'https://example.com/blog/post')
 
   expect(payload.extractor).toBe('article')
   expect(payload.markdown).toContain('https://example.com/x')

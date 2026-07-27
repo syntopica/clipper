@@ -19,17 +19,17 @@ function docFrom(fixture: string, url: string): Document {
   return doc
 }
 
-test('the extractor keeps url-labelled anchors instead of deleting them', () => {
-  const extracted = extractContent(docFrom('url-labelled-links.html', PAGE_URL), null)
+test('the extractor keeps url-labelled anchors instead of deleting them', async () => {
+  const extracted = await extractContent(docFrom('url-labelled-links.html', PAGE_URL), null)
 
   expect(extracted.extractor).toBe('defuddle')
   expect(extracted.html).toContain('Anthropic official skills repo')
   expect(extracted.html).toContain('github.com/anthropics/skills')
 })
 
-test('a clip of that page carries every link inline, absolutized', () => {
+test('a clip of that page carries every link inline, absolutized', async () => {
   const doc = docFrom('url-labelled-links.html', PAGE_URL)
-  const payload = buildCapturedPayload(doc, window, PAGE_URL)
+  const payload = await buildCapturedPayload(doc, window, PAGE_URL)
 
   expect(payload.extractor).toBe('defuddle')
   expect(payload.markdown).toContain('https://github.com/anthropics/skills')
@@ -40,9 +40,9 @@ test('a clip of that page carries every link inline, absolutized', () => {
   expect(payload.markdown).not.toContain('Links removed by the extractor')
 })
 
-test('an ordinary article gains no section', () => {
+test('an ordinary article gains no section', async () => {
   const doc = docFrom('blog.html', 'https://example.com/agents')
-  const payload = buildCapturedPayload(doc, window, 'https://example.com/agents')
+  const payload = await buildCapturedPayload(doc, window, 'https://example.com/agents')
 
   expect(payload.markdown).not.toContain('Links removed by the extractor')
 })

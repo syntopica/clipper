@@ -1,4 +1,6 @@
 import Defuddle from 'defuddle/full'
+import { LIMITS } from '../shared/limits'
+import { sameOriginFetch } from './same-origin-fetch'
 
 export type Extractor = 'selection' | 'defuddle' | 'article' | 'main' | 'body' | 'innertext'
 
@@ -25,19 +27,34 @@ export interface ExtractedContent {
 // which is more honest about extractors that found nothing real.
 const MIN_EXTRACTED_TEXT_LENGTH = 100
 
-export function extractContent(doc: Document, selectionHtml: string | null): ExtractedContent {
+export async function extractContent(
+  doc: Document,
+  selectionHtml: string | null,
+): Promise<ExtractedContent> {
   if (selectionHtml) return { html: selectionHtml, extractor: 'selection', siteExtractor: false }
 
-  // parse() is the synchronous entry point, and every extractor that would
-  // reach a third-party API - FxTwitter for X, the YouTube transcript
-  // endpoint, Reddit's comment json - is only reachable through parseAsync().
-  // Nothing about a clipped page leaves the browser on this path, which is
-  // what makes a site-aware extractor acceptable for a private brain.
+  // parseAsync() is what reaches the network, and `sameOriginFetch` decides
+  // who it may reach: YouTube's transcript, which lives on the page's own
+  // host, goes through; X's oembed and FxTwitter calls do not. It is also the
+  // only path that can block - the YouTube extractor falls back to opening the
+  // transcript panel and polling the DOM - so it races a timeout and the
+  // synchronous parse takes over if it loses.
+  const options = { url: doc.baseURI, fetch: sameOriginFetch(new URL(doc.baseURI).hostname) }
   let parsed
   try {
-    parsed = new Defuddle(doc, { url: doc.baseURI }).parse()
+    parsed = await Promise.race([
+      new Defuddle(doc, options).parseAsync(),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), LIMITS.EXTRACTION_TIMEOUT_MS)),
+    ])
   } catch {
     parsed = null
+  }
+  if (!parsed) {
+    try {
+      parsed = new Defuddle(doc, options).parse()
+    } catch {
+      parsed = null
+    }
   }
   if (parsed?.content) {
     // A <template> rather than a <div>: its markup is parsed into an inert

@@ -126,9 +126,11 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
   with scores and permalinks), GitHub and Wikipedia. A plain blog correctly
   reports `site_extractor: false`.
 
-  YouTube is the gap: fetched with curl it is a JS shell with no rendered DOM, so
-  the chain falls through to `body` and 932 characters. Whether the extractor
-  works there can only be answered by clipping a video in a real browser.
+  YouTube needed the async path and now works: 133 KB of markdown from a
+  two-hour talk, `## Transcript` with the video's chapters as `###` headings and
+  timestamped paragraphs, in 0.7s, with all four requests going to
+  www.youtube.com. Still worth one real-browser clip to confirm, since this was
+  measured over curl-fetched html in jsdom.
 - [ ] Phase 2 - Playwright against real Chromium for the extension lifecycle
   (permissions, commands, `OffscreenCanvas`, service worker termination and
   resume). jsdom cannot cover any of it.

@@ -10,9 +10,13 @@ import { resolveUrls } from './resolve-urls'
 import { sanitizeHtml } from './sanitize-html'
 import { toMarkdown } from './to-markdown'
 
-export function buildCapturedPayload(doc: Document, win: Window, url: string): CapturedPagePayload {
+export async function buildCapturedPayload(
+  doc: Document,
+  win: Window,
+  url: string,
+): Promise<CapturedPagePayload> {
   const selectionHtml = getSelectionHtml(win)
-  const extracted = extractContent(doc, selectionHtml)
+  const extracted = await extractContent(doc, selectionHtml)
 
   // Defuddle already absolutizes hrefs/srcs internally; every other
   // extraction branch reads innerHTML straight off the live DOM and keeps
