@@ -10,8 +10,8 @@ non-Mac). There is no popup - the click fires the capture directly.
 
 - If you have a text selection on the page, only that selection is clipped
   (`extractor: selection`).
-- Otherwise the page goes through a Readability-based extraction chain
-  (`extractor: readability`, falling back through `article` / `main` /
+- Otherwise the page goes through a Defuddle-based extraction chain
+  (`extractor: defuddle`, falling back through `article` / `main` /
   `body` / `innertext` as each stage fails to find usable content).
 
 The result is sanitized HTML converted to GitHub-flavored markdown, written
@@ -19,25 +19,47 @@ to a handful of files, and committed straight to `main` via the GitHub Git
 Data API (blob -> tree -> commit -> ref update), rebuilding the tree and
 retrying on a non-fast-forward push.
 
+### Extraction
+
+[Defuddle](https://github.com/kepano/defuddle) replaced `@mozilla/readability`
+because it recognises the sites this brain is actually fed from. Where
+Readability had one set of heuristics for every page, Defuddle first looks for
+a site-specific extractor - X, Reddit, YouTube, GitHub, Hacker News, Substack,
+Wikipedia, LinkedIn, Mastodon, Bluesky, Medium, Discourse and the shared-chat
+pages of ChatGPT, Claude, Gemini and Grok - and only falls back to heuristics
+for everything else. Which one matched is recorded per clip as
+`extractor_site`, null when the generic path ran.
+
+Extraction runs against the live DOM, before sanitizing. That order matters:
+the site extractors key on markers the sanitizer strips (`data-testid`
+attributes for X, `meta[name="octolytics-url"]` for GitHub), so running them
+against `source.html` after the fact would silently fall back to the generic
+path.
+
+Only `parse()` is called, never `parseAsync()`. The async path is the only one
+that reaches a third-party API - FxTwitter for X posts, the YouTube transcript
+endpoint, Reddit's comment json - so nothing about a clipped page leaves the
+browser.
+
 ### Links removed by the extractor
 
-Readability deletes nodes it judges to be mostly links. On a page whose
-content links are labelled with the url itself - X renders them exactly that
-way - it deletes those anchors outright, text included, so the markdown keeps
-"Anthropic official skills repo -" and silently loses the url.
+Any content extractor scores nodes and drops the ones it judges to be
+boilerplate, and it sometimes takes real links with them. Readability did this
+aggressively on anchors labelled with the url itself - X renders them exactly
+that way - deleting them text and all, so the markdown kept "Anthropic
+official skills repo -" and silently lost the url.
 
-When that happens the clip gains a trailing `## Links removed by the
+When links are dropped, the clip gains a trailing `## Links removed by the
 extractor` section listing the absolute urls. Only anchors whose visible text
 is itself a url are recovered: navigation, footers and "read more" chrome
 never label themselves that way, so an ordinary article never grows the
 section. Links the extractor kept are not repeated, duplicates collapse, and
 the list is capped at `LIMITS.MAX_RECOVERED_LINKS`.
 
-The extractor is otherwise untouched. Raising Readability's
-`linkDensityModifier` enough to save these links disables the heuristic
-outright and lets nav soup into every clip; falling through to the `article`
-element recovers them at six times the markup. Neither is a good trade for
-one page shape.
+Defuddle keeps those anchors, so the section no longer fires on the X page it
+was written for. It stays as the net for the same failure elsewhere: Defuddle
+has its own scoring, and it does drop sections other extractors keep (MDN's
+"See also" is one).
 
 ## Install
 

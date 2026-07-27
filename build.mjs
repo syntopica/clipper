@@ -1,5 +1,11 @@
 import { build } from 'esbuild'
-import { cp, mkdir, rm } from 'node:fs/promises'
+import { cp, mkdir, readFile, rm } from 'node:fs/promises'
+
+const define = {
+  DEFUDDLE_VERSION: JSON.stringify(
+    JSON.parse(await readFile('node_modules/defuddle/package.json', 'utf8')).version,
+  ),
+}
 
 await rm('dist', { recursive: true, force: true })
 await mkdir('dist', { recursive: true })
@@ -10,6 +16,7 @@ await build({
   bundle: true,
   format: 'esm',
   target: 'chrome120',
+  define,
 })
 
 await build({
@@ -19,6 +26,7 @@ await build({
   bundle: true,
   format: 'iife',
   target: 'chrome120',
+  define,
 })
 
 await mkdir('dist/options', { recursive: true })
@@ -31,6 +39,7 @@ await build({
   bundle: true,
   format: 'iife',
   target: 'chrome120',
+  define,
 })
 
 await cp('src/manifest.json', 'dist/manifest.json')

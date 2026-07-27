@@ -14,7 +14,21 @@ export const ClipMetadataSchema = z.object({
   clipped_at: z.string(),
   clipped_from: z.string(),
   extension_version: z.string(),
-  extractor: z.enum(['selection', 'readability', 'article', 'main', 'body', 'innertext']),
+  // 'readability' is kept only so clips written before the Defuddle swap still
+  // validate; nothing produces it any more.
+  extractor: z.enum([
+    'selection',
+    'defuddle',
+    'readability',
+    'article',
+    'main',
+    'body',
+    'innertext',
+  ]),
+  // The site-specific extractor behind a 'defuddle' extraction ('twitter',
+  // 'github', 'reddit', ...), null for its generic heuristics and for every
+  // other branch.
+  extractor_site: z.string().nullable(),
   extractor_version: z.string().nullable(),
   snapshot_mode: z.enum(['extracted', 'sanitized', 'full-page', 'omitted']),
   sensitivity: z.enum(['public', 'private', 'restricted']),
