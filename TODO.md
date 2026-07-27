@@ -30,10 +30,26 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
   because the mover is phase 4. Whatever implements the move must treat a
   `processed` clip found under `pending/` as "move me", not as an error.
 
-- [ ] Phase 4 - Mac-side ingest CLI at `~/p/brain/tools/clips` (TypeScript, not
-  bash): ledger at `brain/.ingest/clips/<clip_id>.json`, deterministic routing
-  before codex, sandboxed synthesis in a throwaway worktree, patch validation,
-  `needs-claude` routing. Lives in the brain repo, not here.
+- [~] Phase 4 - Mac-side ingest CLI at `~/p/brain/tools/clips` (TypeScript, not
+  bash): ledger at `brain/.ingest/clips/<clip_id>.json`, deterministic routing,
+  a throwaway worktree, patch validation, `needs-claude` routing. Lives in the
+  brain repo, not here. Milestone 1 is done and it removed the codex half:
+  **codex synthesis is disabled for phase 4**. `codex exec -s workspace-write`
+  leaves filesystem reads unrestricted - a probe read a canary outside the
+  workspace and listed all of `~/.ssh` - and no read-restricting boundary could
+  be found that codex still runs inside. Verdict, the ten mechanisms evaluated
+  and the evidence are in `~/p/brain/tools/clips/boundary-decision.json`, and
+  the reusable `sandbox-exec` boundary that DID pass all nine assertions for
+  plain commands is in that package. Milestone 2 plans the pipeline without a
+  synthesizer; codex candidates route to the manual Claude workflow.
+
+- [ ] Revisit codex synthesis only via a stronger boundary - a dedicated macOS
+  user account, a container, or an ephemeral VM, with `workspace-write` still
+  inside it and never `--dangerously-bypass-approvals-and-sandbox`. That attempt
+  was never tried, not tried and failed. Wrapping codex in an outer sandbox and
+  disabling its inner one is NOT a substitute: the orchestrator needs network to
+  reach the model, so the model's own commands inherit it, discarding the one
+  property `workspace-write` did provide.
 
 ## Security
 
