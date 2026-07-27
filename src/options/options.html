@@ -6,19 +6,32 @@
   label { display: block; margin: 0.75rem 0 0.25rem; }
   input { width: 100%; padding: 0.4rem; }
   .row { display: flex; gap: 0.5rem; margin-top: 1rem; }
+  #authState { margin: 0; }
+  #deviceCode { margin-top: 1rem; padding: 0.75rem; border: 1px solid #ccc; }
+  #userCode { font: 700 1.6rem ui-monospace, monospace; letter-spacing: 0.2em; margin: 0.25rem 0; }
   #status { margin-top: 1rem; min-height: 1.2em; }
 </style>
 <h1>brain clipper</h1>
+
+<p id="authState"></p>
+<div class="row">
+  <button id="signIn">Sign in with GitHub</button>
+  <button id="signOut">Sign out on this device</button>
+  <button id="openGithub">Open GitHub to revoke access</button>
+</div>
+<div id="deviceCode" hidden>
+  <p>Enter this code on GitHub, then leave this page open:</p>
+  <p id="userCode"></p>
+  <p><a id="verificationLink" target="_blank" rel="noreferrer noopener">Open the GitHub page</a></p>
+</div>
+
 <label for="owner">Owner</label><input id="owner" />
 <label for="repo">Repo</label><input id="repo" />
 <label for="branch">Branch</label><input id="branch" />
-<label for="machineName">Machine name</label><input id="machineName" />
-<label for="token">GitHub token (stored on this device only)</label>
-<input id="token" type="password" autocomplete="off" />
+<label for="machineName">Machine name (recorded as clipped_from, stays on this device)</label>
+<input id="machineName" />
 <div class="row">
   <button id="save">Save</button>
-  <button id="removeToken">Remove token from this device</button>
-  <button id="openGithub">Open GitHub to revoke token</button>
 </div>
 <p id="status"></p>
 <script src="options.js"></script>

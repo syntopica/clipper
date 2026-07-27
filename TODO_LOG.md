@@ -6,6 +6,32 @@
 
 ### 2026-07
 
+- [-] 2026-07-27 - **Security/Integrations:** the pasted fine-grained PAT is superseded by
+  a GitHub App device-flow sign-in, and the machine name stops syncing.
+  - Why: pasting a PAT was the whole first-run experience, and it was the one step that
+    could not be done from inside the extension. The authorization-code flow needs a
+    `client_secret` GitHub will not let a public client skip (no PKCE for OAuth Apps), so
+    it would have meant standing up a backend whose only job is holding one secret. The
+    device flow needs no secret, and GitHub waives `client_secret` on refresh for tokens
+    it issued, so rotation works secretlessly too.
+  - Result: options page now offers `Sign in with GitHub` / `Sign out on this device` /
+    `Open GitHub to revoke access`. Access token, refresh token and expiry live in
+    `chrome.storage.local` as one `githubCredential` record; `getAccessToken` renews 2
+    minutes before expiry and persists the renewal. `token-key`, `get-token`, `set-token`,
+    `clear-token` and `remove-token` are gone.
+  - Bug fixed alongside: `machineName` was in `chrome.storage.sync`, so every device with
+    the same Chrome profile reported the same `clipped_from` - the opposite of what the
+    field is for. It moved to `chrome.storage.local`, and `setSettings` deletes the stale
+    synced copy. A real hostname is unreachable from an extension (`getPlatformInfo` gives
+    os/arch only; `enterprise.deviceAttributes` is ChromeOS-with-policy), so the options
+    page prefills an editable `os-arch-<random>` default instead.
+  - Evidence: `pnpm typecheck` clean, `pnpm test` 121 passed across 29 files (including 7
+    new device-flow cases covering `authorization_pending`, `slow_down`, `access_denied`,
+    `expired_token` and the no-expiry grant, plus 5 refresh cases asserting no
+    `client_secret` is ever sent), `pnpm build` clean.
+  - Still blocked: the GitHub App does not exist yet, so `GITHUB_APP_CLIENT_ID` is empty
+    and sign-in refuses to start. See the blocked entry in `TODO.md`.
+
 - [x] 2026-07-26 - **Testing:** Phase 1 acceptance run against the real repo and real
   Chrome.
   - Result: 10 of the 12 acceptance items pass. Three real clips were committed to

@@ -20,9 +20,12 @@ say which before changing either.
   page-supplied URL goes through the asset fetch policy first (https only, port
   443, no URL credentials, no loopback / private / link-local, manual redirects
   revalidated per hop). Do not relax it for convenience.
-- **The GitHub token is scoped to `brain-clips` alone.** It lives in
-  `chrome.storage.local` behind `setAccessLevel('TRUSTED_CONTEXTS')` and never in
-  `chrome.storage.sync`. It must never reach a content script or a log line.
+- **The GitHub credential is scoped to `brain-clips` alone.** It is a GitHub App
+  user token obtained through the device flow, lives in `chrome.storage.local`
+  behind `setAccessLevel('TRUSTED_CONTEXTS')` and never in `chrome.storage.sync`.
+  It must never reach a content script or a log line. No `client_secret` belongs
+  in this repo: the device flow does not need one, and neither does refreshing a
+  token it issued.
 - **The atomic file rule applies strictly here:** a module-private helper gets
   its own file rather than living inside its consumer. A Zod schema plus the type
   inferred from it counts as one unit.

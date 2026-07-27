@@ -5,7 +5,7 @@
   "description": "Clip the current page to markdown into the private brain-clips repo.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsrjUtAbPzEaab93Nn55FurMao6o7ADH759w0PBO8RnCcYz6sQVhfINF+48UV7FDbZrc17vkOPguaIWBjrCWhMs0L8tlZMsYU/KS3cIl70uocY/B8MRrn06yqcOU84Ba5IEJ2M5IrOOTYfX9GepGZsUVFsf96XjrguFs+luIUpHI++FzC3fXlExYbbmTz02qf71I5Af647fpK0YrDOotHhQqQ8jYVbbnZeCIqBjCPFwuTJrfqEaX1xQKJzlhOf6skeltd3WZGIyAwE9kujVNTkSRjXmRnXiT1EkBlVBNxBYVhGz1LtpjtmTAzbDcJkV3+w/2Ih+I8S7SuhSNIUaCtHQIDAQAB",
   "permissions": ["activeTab", "scripting", "storage"],
-  "host_permissions": ["https://api.github.com/*"],
+  "host_permissions": ["https://api.github.com/*", "https://github.com/*"],
   "background": {
     "service_worker": "background/service-worker.js",
     "type": "module"
