@@ -1,32 +1,69 @@
-import { Readability } from '@mozilla/readability'
+import Defuddle from 'defuddle/full'
 
-export type Extractor = 'selection' | 'readability' | 'article' | 'main' | 'body' | 'innertext'
+export type Extractor = 'selection' | 'defuddle' | 'article' | 'main' | 'body' | 'innertext'
 
 export interface ExtractedContent {
   html: string
   extractor: Extractor
+  // Whether one of Defuddle's site-specific extractors - X, Reddit, YouTube,
+  // GitHub, Hacker News and twenty-odd others - handled the page, as opposed to
+  // its generic heuristics. Recorded because the two produce very different
+  // markdown from the same page, and a clip that reads oddly is otherwise
+  // impossible to attribute after the fact.
+  //
+  // A boolean rather than the extractor's name: Defuddle derives the name it
+  // reports from `constructor.name`, and the browser bundles it publishes are
+  // minified, so by the time the code runs that name is 'v' or 'a'. Only its
+  // presence survives - undefined on the generic path, some mangled string
+  // otherwise.
+  siteExtractor: boolean
 }
 
-// Readability.parse() always returns an object, even for a near-empty shell
-// page, wrapping whatever text it could find. A minimum text length rejects
-// those trivial wrappers so the chain falls through to the DOM-shape steps
-// below, which is more honest about extractors that found nothing real.
-const MIN_READABILITY_TEXT_LENGTH = 100
+// Defuddle.parse() always returns an object, even for a near-empty shell page,
+// wrapping whatever text it could find. A minimum text length rejects those
+// trivial wrappers so the chain falls through to the DOM-shape steps below,
+// which is more honest about extractors that found nothing real.
+const MIN_EXTRACTED_TEXT_LENGTH = 100
 
 export function extractContent(doc: Document, selectionHtml: string | null): ExtractedContent {
-  if (selectionHtml) return { html: selectionHtml, extractor: 'selection' }
+  if (selectionHtml) return { html: selectionHtml, extractor: 'selection', siteExtractor: false }
 
-  const clone = doc.cloneNode(true) as Document
-  const article = new Readability(clone).parse()
-  if (article?.content && (article.textContent ?? '').trim().length >= MIN_READABILITY_TEXT_LENGTH) {
-    return { html: article.content, extractor: 'readability' }
+  // parse() is the synchronous entry point, and every extractor that would
+  // reach a third-party API - FxTwitter for X, the YouTube transcript
+  // endpoint, Reddit's comment json - is only reachable through parseAsync().
+  // Nothing about a clipped page leaves the browser on this path, which is
+  // what makes a site-aware extractor acceptable for a private brain.
+  let parsed
+  try {
+    parsed = new Defuddle(doc, { url: doc.baseURI }).parse()
+  } catch {
+    parsed = null
+  }
+  if (parsed?.content) {
+    // A <template> rather than a <div>: its markup is parsed into an inert
+    // document fragment, so nothing here can run or load, and this probe only
+    // ever needs the text length. The html itself still goes through DOMPurify
+    // downstream before anything else touches it.
+    const probe = doc.createElement('template')
+    probe.innerHTML = parsed.content
+    if ((probe.content.textContent ?? '').trim().length >= MIN_EXTRACTED_TEXT_LENGTH) {
+      return {
+        html: parsed.content,
+        extractor: 'defuddle',
+        siteExtractor: parsed.extractorType !== undefined,
+      }
+    }
   }
 
   const articleEl = doc.querySelector('article')
-  if (articleEl?.innerHTML.trim()) return { html: articleEl.innerHTML, extractor: 'article' }
+  if (articleEl?.innerHTML.trim()) {
+    return { html: articleEl.innerHTML, extractor: 'article', siteExtractor: false }
+  }
 
   const mainEl = doc.querySelector('main, [role="main"]')
-  if (mainEl?.innerHTML.trim()) return { html: mainEl.innerHTML, extractor: 'main' }
+  if (mainEl?.innerHTML.trim()) {
+    return { html: mainEl.innerHTML, extractor: 'main', siteExtractor: false }
+  }
 
   // A body holding only a bare text node has no markup for Turndown to work
   // with (its innerHTML is just the text, same as textContent), so it is not
@@ -34,7 +71,7 @@ export function extractContent(doc: Document, selectionHtml: string | null): Ext
   // reporting a false 'body' win.
   const body = doc.body
   if (body?.innerHTML.trim() && body.children.length > 0) {
-    return { html: body.innerHTML, extractor: 'body' }
+    return { html: body.innerHTML, extractor: 'body', siteExtractor: false }
   }
 
   // Build the element and set textContent rather than interpolating into a
@@ -42,5 +79,5 @@ export function extractContent(doc: Document, selectionHtml: string | null): Ext
   // as markup.
   const paragraph = doc.createElement('p')
   paragraph.textContent = doc.body?.textContent?.trim() ?? ''
-  return { html: paragraph.outerHTML, extractor: 'innertext' }
+  return { html: paragraph.outerHTML, extractor: 'innertext', siteExtractor: false }
 }

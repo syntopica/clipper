@@ -12,15 +12,15 @@ test('a selection wins over everything else', () => {
   expect(result.html).toContain('picked text')
 })
 
-test('a normal article goes through Readability and drops nav and footer', () => {
+test('a normal article goes through Defuddle and drops nav and footer', () => {
   const result = extractContent(docFrom('blog.html'), null)
-  expect(result.extractor).toBe('readability')
+  expect(result.extractor).toBe('defuddle')
   expect(result.html).toContain('First paragraph')
   expect(result.html).not.toContain('About')
   expect(result.html).not.toContain('Copyright 2026')
 })
 
-test('a page Readability rejects falls further down the chain', () => {
+test('a page Defuddle rejects falls further down the chain', () => {
   const result = extractContent(docFrom('spa-shell.html'), null)
   expect(result.extractor).toBe('body')
   expect(result.html).toContain('Loading dashboard data')
@@ -38,7 +38,7 @@ test('extraction does not mutate the source document', () => {
   expect(doc.querySelector('script')).not.toBeNull()
 })
 
-test('falls back to article when Readability rejects the page', () => {
+test('falls back to article when Defuddle rejects the page', () => {
   const doc = new DOMParser().parseFromString(
     '<html lang="en"><body><article><p>short</p></article></body></html>',
     'text/html',
