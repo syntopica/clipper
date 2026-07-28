@@ -5,7 +5,7 @@ import { renderAuth } from './render-auth'
 
 export async function load(): Promise<void> {
   const settings = await getSettings()
-  field('owner').value = settings?.owner ?? 'BusiRocket'
+  field('owner').value = settings?.owner ?? 'CristianDeluxe'
   field('repo').value = settings?.repo ?? 'brain-clips'
   field('branch').value = settings?.branch ?? 'main'
   field('machineName').value = settings?.machineName ?? (await defaultMachineName())
