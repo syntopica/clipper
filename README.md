@@ -144,7 +144,7 @@ Already created; nothing to do unless it has to be rebuilt.
 | | |
 | --- | --- |
 | Name | `brain clipper` (slug `brain-clipper`) |
-| Owner | `@BusiRocket` |
+| Owner | `@CristianDeluxe` |
 | App ID | `<app-id>` |
 | Client ID | `<client-id>` (in `src/shared/github-app-client-id.ts`) |
 | Permissions | Repository `Contents: read & write`, `Metadata: read` (mandatory) |
@@ -152,7 +152,7 @@ Already created; nothing to do unless it has to be rebuilt.
 | Device flow | Enabled |
 | User token expiration | Enabled - 8h token plus refresh token |
 | Installed on | `<owner>/<clips-repo>` only |
-| Settings | `https://github.com/organizations/BusiRocket/settings/apps/brain-clipper` |
+| Settings | `https://github.com/settings/apps/brain-clipper` |
 
 The resulting token is scoped by the app's installation, so it can only ever
 reach `brain-clips` - narrower than a classic PAT, and narrower than what a
@@ -191,7 +191,7 @@ All fields on the options page are required before a clip can be committed:
 
 | Field | Meaning | Typical value |
 | --- | --- | --- |
-| Owner | GitHub org/user that owns the data repo | `BusiRocket` |
+| Owner | GitHub org/user that owns the data repo | `CristianDeluxe` |
 | Repo | Data repo name | `brain-clips` |
 | Branch | Branch to commit clips to | `main` |
 | Machine name | Free-text label stored in each clip's `clipped_from` field | e.g. `mac-arm64-a3f2` |
