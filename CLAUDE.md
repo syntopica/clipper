@@ -1,7 +1,7 @@
 # CLAUDE.md — brain-clipper
 
 Manifest V3 Chrome extension. One click turns the current page into clean
-markdown and commits it, atomically, to the private `BusiRocket/brain-clips`
+markdown and commits it, atomically, to the private `CristianDeluxe/brain-clips`
 repo. `~/p/brain` ingests those clips later; this repo never talks to the brain
 directly.
 
