@@ -116,6 +116,11 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
   through GitHub Releases, replacing per-machine unpacked loads.
 - [ ] Pin `@types/node` to the major matching the Node >= 20 floor. The installed
   major is far ahead and can admit typings for APIs missing on Node 20.
+- [ ] Move `clip-metadata-schema.ts`'s three `z.string().url()` calls to `z.url()`:
+  zod 4.4.3 deprecates the chained form, and the copy of this schema in brain's
+  `tools/clips` was already forced onto `z.url()` there by
+  `@typescript-eslint/no-deprecated` being a lint error in that repo. Until this
+  lands, the two copies diverge on a line that isn't real drift.
 
 ## Testing
 
