@@ -26,6 +26,19 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
   not yet seen a real capture. Reload the extension and the x.com tab first —
   the collector only stashes responses from pages loaded after install.
 
+- [ ] Logged-out x.com is a different app the clipper cannot read: guest status
+  pages are server-rendered by a Relay/TanStack app with none of the logged-in
+  DOM (`cellInnerDiv`, `tweetText`, `User-Name` testids absent; articles carry
+  `data-tweet-id` + Tailwind classes), they fire no GraphQL requests (so
+  x-page-hook relays nothing), and Defuddle's twitter extractor finds no main
+  tweet. The full data - complete note_tweet text, whole X Article draft-js
+  blocks - sits hydrated in the page's Relay store, reachable from any
+  article's React fiber (env with `getStore()`; records `TweetResults:<id>`,
+  text under `result.details.full_text`, user under
+  `core.user_results.result.core`). The 2026-07-29 clip rescue proved this
+  path end to end (brain-clips ef86110); decide whether the extension grows a
+  guest-page fallback that mines the store the same way.
+
 ## Backend
 
 ## Integrations
