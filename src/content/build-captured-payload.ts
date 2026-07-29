@@ -2,10 +2,12 @@ import type { CapturedPagePayload } from '../background/handle-captured-page'
 import { byteLength } from '../shared/byte-length'
 import { LIMITS } from '../shared/limits'
 import { appendDroppedLinks } from './append-dropped-links'
+import { applyXPageMetadata } from './apply-x-page-metadata'
 import { collectPageMetadata } from './collect-page-metadata'
 import { droppedContentLinks } from './dropped-content-links'
 import { extractContent } from './extract-content'
 import { getSelectionHtml } from './get-selection-html'
+import { prepareXPage } from './prepare-x-page'
 import { resolveUrls } from './resolve-urls'
 import { sanitizeHtml } from './sanitize-html'
 import { toMarkdown } from './to-markdown'
@@ -15,6 +17,11 @@ export async function buildCapturedPayload(
   win: Window,
   url: string,
 ): Promise<CapturedPagePayload> {
+  // Before extraction: on X pages, restore full text and missing thread
+  // tweets from the GraphQL stash the collector content script has been
+  // filling since document_start.
+  const focalTweet = prepareXPage(doc, url)
+
   const selectionHtml = getSelectionHtml(win)
   const extracted = await extractContent(doc, selectionHtml)
 
@@ -38,6 +45,6 @@ export async function buildCapturedPayload(
     snapshotMode: fitsWholePage ? 'sanitized' : 'extracted',
     extractor: extracted.extractor,
     siteExtractor: extracted.siteExtractor,
-    page: collectPageMetadata(doc, url),
+    page: applyXPageMetadata(collectPageMetadata(doc, url), focalTweet),
   }
 }

@@ -19,6 +19,13 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Testing
 
+- [~] Verify the X thread repair on a real multi-thread clip. The Cameron
+  England clip (01KYN4S3) captured 4 tweets truncated behind "Show more" and
+  one thread tweet missing from the virtualized DOM; the GraphQL-stash repair
+  (x-page-hook / x-collector / prepare-x-page) fixes that in unit tests but has
+  not yet seen a real capture. Reload the extension and the x.com tab first —
+  the collector only stashes responses from pages loaded after install.
+
 ## Backend
 
 ## Integrations

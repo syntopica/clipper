@@ -33,7 +33,11 @@ await mkdir('dist/options', { recursive: true })
 await cp('src/options/options.html', 'dist/options/options.html')
 
 await build({
-  entryPoints: ['src/content/capture-page.ts'],
+  entryPoints: [
+    'src/content/capture-page.ts',
+    'src/content/x-page-hook.ts',
+    'src/content/x-collector.ts',
+  ],
   outdir: 'dist',
   outbase: 'src',
   bundle: true,

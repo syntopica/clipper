@@ -6,6 +6,19 @@
   "key": "<extension-public-key>",
   "permissions": ["activeTab", "scripting", "storage"],
   "host_permissions": ["https://api.github.com/*", "https://github.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://x.com/*", "https://twitter.com/*", "https://mobile.twitter.com/*"],
+      "js": ["content/x-page-hook.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["https://x.com/*", "https://twitter.com/*", "https://mobile.twitter.com/*"],
+      "js": ["content/x-collector.js"],
+      "run_at": "document_start"
+    }
+  ],
   "background": {
     "service_worker": "background/service-worker.js",
     "type": "module"
