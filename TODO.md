@@ -43,6 +43,18 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Integrations
 
+- [ ] Tell the user a page is already clipped, before they clip it again.
+  `github.com/every-app/open-seo` was clipped three times on 2026-07-28 while
+  testing the App reinstall. The index half is already built and lives in the
+  brain repo: `tools/capture/url_index.py` maintains `url-index.sqlite3` at the
+  root of the clips repository and answers `lookup(url)`, normalizing away query
+  strings and fragments (365 clip directories collapse to 363 URLs, the two
+  collisions being the documented X re-clips). What is left is entirely
+  extension-side — consult the index before writing, and surface a badge or a
+  warning in the popup. Pairs with the decision below. Source:
+  `~/p/brain/TODO.md`, moved here 2026-07-31 because the extension owns the
+  remaining half.
+
 - [ ] Report upstream that `extractorType` is unusable in Defuddle's published
   browser bundles: it comes from `constructor.name`, and `dist/index.js` and
   `dist/index.full.js` are minified, so it arrives as `v` or `a`. The unbundled
@@ -162,6 +174,11 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
   resume). jsdom cannot cover any of it.
 
 ## Pending Decisions
+
+- [ ] Decide what a repeat clip does: blocked, warned about, or allowed as a
+  deliberate re-capture. The re-clip is not always a mistake — a page that
+  changed between captures is worth having twice — so a hard block trades one
+  annoyance for a lost capability. Gates the dedup warning under Integrations.
 
 - [ ] Decide whether `snapshot_mode` stays `sanitized` by default. The design was
   approved with a raw full-page archive, then narrowed to a sanitized snapshot
