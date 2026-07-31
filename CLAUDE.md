@@ -43,7 +43,7 @@ pnpm typecheck   # tsc --noEmit
 pnpm build       # esbuild -> dist/, load unpacked from there
 ```
 
-`key.pem` is the extension signing key: gitignored, canonical copy in `~/p/vault`.
+`key.pem` is the extension signing key: gitignored, canonical copy at `<instance>/secrets/keys/app.pem`.
 
 ## Continuous TODO, Work Log, and History Coverage
 

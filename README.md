@@ -107,7 +107,7 @@ Then in Chrome:
 2. Click "Load unpacked" and select the `dist/` directory.
 
 The extension id is pinned via the `key` field in `src/manifest.json` (signed
-with `key.pem`, gitignored - canonical copy in `~/p/vault`), so it stays
+with `key.pem`, gitignored - canonical copy at `<instance>/secrets/keys/app.pem`), so it stays
 stable across machines and across unpacked loads from different paths:
 `<extension-id>`.
 
@@ -141,18 +141,18 @@ What the button does:
 
 Already created; nothing to do unless it has to be rebuilt.
 
-| | |
-| --- | --- |
-| Name | `brain clipper` (slug `brain-clipper`) |
-| Owner | `@CristianDeluxe` |
-| App ID | `<app-id>` |
-| Client ID | `<client-id>` (in `src/shared/github-app-client-id.ts`) |
-| Permissions | Repository `Contents: read & write`, `Metadata: read` (mandatory) |
-| Webhook | Off |
-| Device flow | Enabled |
-| User token expiration | Enabled - 8h token plus refresh token |
-| Installed on | `<owner>/<clips-repo>` only |
-| Settings | `https://github.com/settings/apps/brain-clipper` |
+|                       |                                                                   |
+| --------------------- | ----------------------------------------------------------------- |
+| Name                  | `brain clipper` (slug `brain-clipper`)                            |
+| Owner                 | `@CristianDeluxe`                                                 |
+| App ID                | `<app-id>`                                                         |
+| Client ID             | `<client-id>` (in `src/shared/github-app-client-id.ts`)  |
+| Permissions           | Repository `Contents: read & write`, `Metadata: read` (mandatory) |
+| Webhook               | Off                                                               |
+| Device flow           | Enabled                                                           |
+| User token expiration | Enabled - 8h token plus refresh token                             |
+| Installed on          | `<owner>/<clips-repo>` only                                 |
+| Settings              | `https://github.com/settings/apps/brain-clipper`                  |
 
 The resulting token is scoped by the app's installation, so it can only ever
 reach `brain-clips` - narrower than a classic PAT, and narrower than what a
@@ -189,11 +189,11 @@ leaked token - signing out only stops this machine from using it.
 
 All fields on the options page are required before a clip can be committed:
 
-| Field | Meaning | Typical value |
-| --- | --- | --- |
-| Owner | GitHub org/user that owns the data repo | `CristianDeluxe` |
-| Repo | Data repo name | `brain-clips` |
-| Branch | Branch to commit clips to | `main` |
+| Field        | Meaning                                                    | Typical value         |
+| ------------ | ---------------------------------------------------------- | --------------------- |
+| Owner        | GitHub org/user that owns the data repo                    | `CristianDeluxe`      |
+| Repo         | Data repo name                                             | `brain-clips`         |
+| Branch       | Branch to commit clips to                                  | `main`                |
 | Machine name | Free-text label stored in each clip's `clipped_from` field | e.g. `mac-arm64-a3f2` |
 
 Owner/repo/branch are stored in `chrome.storage.sync` (they are not secret and
