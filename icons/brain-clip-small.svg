@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- The 16 and 32 px variant. Same subject, fewer marks: at those sizes the
+       detailed master's folds and its wavy fissure land on the same two or three
+       pixels and fill the shape back in. What survives a downscale is a
+       silhouette, one straight split, and one bold clip - so that is all this
+       draws. Same tint substitution as the master. -->
+  <path
+    fill="TINT"
+    d="M64 10c-13 0-23 5-28 13-15 1-26 11-26 24 0 6 2 12 6 16-4 5-6 11-6 17 0 17 15 30 34 30h40c19 0 34-13 34-30 0-6-2-12-6-17 4-4 6-10 6-16 0-13-11-23-26-24-5-8-15-13-28-13z"
+  />
+  <path
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="12"
+    stroke-linecap="round"
+    d="M64 16v76"
+  />
+  <g
+    transform="translate(99 96) rotate(-30) scale(0.5)"
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      stroke="#ffffff"
+      stroke-width="30"
+      d="M20 34V-24a16 16 0 0 0-32 0v62a26 26 0 0 0 52 0V-12"
+    />
+    <path
+      stroke="TINT"
+      stroke-width="24"
+      d="M20 34V-24a16 16 0 0 0-32 0v62a26 26 0 0 0 52 0V-12"
+    />
+  </g>
+</svg>

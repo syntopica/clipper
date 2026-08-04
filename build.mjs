@@ -47,3 +47,11 @@ await build({
 })
 
 await cp('src/manifest.json', 'dist/manifest.json')
+
+// The rasterised icons, one set per state. They are committed rather than
+// generated here: `scripts/build-icons.mjs` needs rsvg-convert, and a clone
+// should build without it.
+await cp('icons', 'dist/icons', {
+  recursive: true,
+  filter: (path) => !path.endsWith('.svg'),
+})
