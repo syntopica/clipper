@@ -7,6 +7,7 @@ export interface ChromeMock {
   sync: Store
   local: Store
   actionTitles: string[]
+  iconPaths: Record<number, string>[]
   openOptionsPageCalls: unknown[]
 }
 
@@ -14,6 +15,7 @@ export function installChromeMock(): ChromeMock {
   const sync: Store = { data: {}, accessLevel: null }
   const local: Store = { data: {}, accessLevel: null }
   const actionTitles: string[] = []
+  const iconPaths: Record<number, string>[] = []
   const openOptionsPageCalls: unknown[] = []
 
   const area = (store: Store) => ({
@@ -38,6 +40,9 @@ export function installChromeMock(): ChromeMock {
       setTitle: async ({ title }: { title: string }) => {
         actionTitles.push(title)
       },
+      setIcon: async ({ path }: { path: Record<number, string> }) => {
+        iconPaths.push(path)
+      },
     },
     runtime: {
       getManifest: () => ({ version: '0.1.0', action: { default_title: 'Clip to brain' } }),
@@ -48,5 +53,5 @@ export function installChromeMock(): ChromeMock {
     },
   }
 
-  return { sync, local, actionTitles, openOptionsPageCalls }
+  return { sync, local, actionTitles, iconPaths, openOptionsPageCalls }
 }
