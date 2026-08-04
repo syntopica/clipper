@@ -43,17 +43,16 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Integrations
 
-- [ ] Tell the user a page is already clipped, before they clip it again.
-  `github.com/every-app/open-seo` was clipped three times on 2026-07-28 while
-  testing the App reinstall. The index half is already built and lives in the
-  brain repo: `tools/capture/url_index.py` maintains `url-index.sqlite3` at the
-  root of the clips repository and answers `lookup(url)`, normalizing away query
-  strings and fragments (365 clip directories collapse to 363 URLs, the two
-  collisions being the documented X re-clips). What is left is entirely
-  extension-side — consult the index before writing, and surface a badge or a
-  warning in the popup. Pairs with the decision below. Source:
-  `~/p/brain/TODO.md`, moved here 2026-07-31 because the extension owns the
-  remaining half.
+- [x] Tell the user a page is already clipped, before they clip it again.
+  **Done 2026-08-04.** The toolbar icon carries the state of the page in the
+  tab - grey unclipped, amber captured or needs-claude, green ingested - read
+  from `GET /api/have` at the capture service and memoised per URL in
+  `chrome.storage.session`. On a known page the click opens a panel instead of
+  clipping, and the panel links to the clip and offers `Capture again`.
+  The index half came from the service rather than from `url-index.sqlite3`:
+  1485 rows were pushed to it, and the Mac now pushes each clip's state as it
+  lands. Design:
+  `~/p/brain/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`.
 
 - [ ] Report upstream that `extractorType` is unusable in Defuddle's published
   browser bundles: it comes from `constructor.name`, and `dist/index.js` and
@@ -175,10 +174,13 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
 
 ## Pending Decisions
 
-- [ ] Decide what a repeat clip does: blocked, warned about, or allowed as a
-  deliberate re-capture. The re-clip is not always a mistake — a page that
-  changed between captures is worth having twice — so a hard block trades one
-  annoyance for a lost capability. Gates the dedup warning under Integrations.
+- [x] Decide what a repeat clip does: blocked, warned about, or allowed as a
+  deliberate re-capture. **Answered 2026-08-04: allowed, always explicit, never
+  by accident.** A page that changed between captures is worth having twice, so
+  a hard block would trade one annoyance for a lost capability. The panel that
+  now opens on an already-clipped page is what makes it explicit, and a
+  re-capture mints a new clip id, so it lands in its own directory and the
+  first clip is untouched.
 
 - [ ] Decide whether `snapshot_mode` stays `sanitized` by default. The design was
   approved with a raw full-page archive, then narrowed to a sanitized snapshot

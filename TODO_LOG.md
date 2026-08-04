@@ -4,6 +4,38 @@
 
 ## 2026
 
+### 2026-08
+
+- [x] 2026-08-04 - **Integrations:** The toolbar says whether a page is already
+  in the clip store, and a repeat clip is a deliberate act rather than an
+  accident.
+  - The extension had no icon at all (Chrome drew the puzzle piece) and no way
+    to know a page was clipped. It now paints one tint per state - grey
+    unclipped, amber captured or needs-claude, green ingested, red failed - from
+    `GET /api/have` at `clip.cristiandeluxe.dev`, memoised per URL in
+    `chrome.storage.session`. Every failure to ask reads as grey, because not
+    knowing must not suppress a capture that never happened.
+  - `chrome.action.setPopup` is set per tab and only when a clip exists, which
+    keeps the one-click capture on every new page. The panel links to the clip
+    on GitHub and offers `Capture again`, which mints a new clip id so the
+    second capture lands in its own directory.
+  - After a clip lands the extension reports it to the service, closing the half
+    of the reconciliation that was missing: the desktop lane committed to GitHub
+    and the service never heard about it.
+  - Two masters for the icon. Below 32px the detailed drawing's folds and wavy
+    fissure land on the same three pixels and fill the silhouette back in, so
+    the small sizes come from a simplified drawing of the same subject.
+  - New permission: `tabs`. Reading the URL of a tab the extension was not
+    clicked on requires it, and without it per-tab state is impossible.
+  - Evidence: `pnpm typecheck`, `pnpm test` (179 tests) and `pnpm build` green.
+    The service side was verified against production in phase 1. Closes "tell
+    the user a page is already clipped" and the pending decision on repeat
+    clips.
+  - Design and plans:
+    `~/p/brain/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`,
+    `.../plans/2026-08-04-clip-state-phase-1-service-and-mirror.md`,
+    `.../plans/2026-08-04-clip-state-phase-2-extension.md`.
+
 ### 2026-07
 
 - [x] 2026-07-27 - **Integrations:** Defuddle replaced `@mozilla/readability` as the
