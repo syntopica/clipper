@@ -18,7 +18,12 @@ export interface CapturedPagePayload {
   page: PageMetadata
 }
 
-export async function handleCapturedPage(payload: CapturedPagePayload): Promise<void> {
+// Returns where the clip landed, which the caller needs for two things the
+// commit itself does not do: telling the capture service the clip exists, and
+// linking to it from the panel.
+export async function handleCapturedPage(
+  payload: CapturedPagePayload,
+): Promise<{ dirPath: string }> {
   const hostname = new URL(payload.url).hostname
   if (isDenylistedHostname(hostname)) {
     throw new Error(`refusing to clip a denylisted host: ${hostname}`)
@@ -47,4 +52,6 @@ export async function handleCapturedPage(payload: CapturedPagePayload): Promise<
     { token, owner: settings.owner, repo: settings.repo },
     { branch: settings.branch, clip },
   )
+
+  return { dirPath: clip.dirPath }
 }
