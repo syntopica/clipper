@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Drawn 16px first, which is the size that decides everything: at 16 a
+       Chrome toolbar icon is a silhouette and nothing else. So one solid body
+       rather than two hemispheres (they broke into two unrelated blobs), and
+       two marks rather than four folds (below 32px extra folds are noise that
+       fills the shape in). The state is the fill colour, substituted by
+       scripts/build-icons.mjs. -->
+  <path
+    fill="TINT"
+    d="M64 10c-13 0-23 5-28 13-15 1-26 11-26 24 0 6 2 12 6 16-4 5-6 11-6 17 0 17 15 30 34 30h40c19 0 34-13 34-30 0-6-2-12-6-17 4-4 6-10 6-16 0-13-11-23-26-24-5-8-15-13-28-13z"
+  />
+  <!-- The central fissure, cut in the page colour. One mark, full height, thick
+       enough to survive a 16px downscale as a visible split - which is what
+       makes the shape read as a brain rather than a cloud. -->
+  <path
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="9"
+    stroke-linecap="round"
+    d="M64 14c-6 8-6 14 0 22s6 14 0 22 -6 14 0 22 6 14 0 22"
+  />
+  <!-- One fold per side, no more. -->
+  <g stroke="#ffffff" stroke-width="8" stroke-linecap="round" fill="none">
+    <path d="M40 46c-9 3-12 11-7 18" />
+    <path d="M88 46c9 3 12 11 7 18" />
+  </g>
+  <!-- The paperclip: the mark that says clipper rather than brain. It sits in
+       the corner and overlaps the body, so a wide pass in the page colour goes
+       down first - without that halo it disappears into a body of its own
+       colour at every size. -->
+  <g
+    transform="translate(94 92) rotate(-30) scale(0.5)"
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path
+      stroke="#ffffff"
+      stroke-width="40"
+      d="M22 40V-26a15 15 0 0 0-30 0v72a25 25 0 0 0 50 0V-14"
+    />
+    <path
+      stroke="TINT"
+      stroke-width="22"
+      d="M22 40V-26a15 15 0 0 0-30 0v72a25 25 0 0 0 50 0V-14"
+    />
+  </g>
+</svg>
