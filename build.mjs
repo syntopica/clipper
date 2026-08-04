@@ -20,7 +20,7 @@ await build({
 })
 
 await build({
-  entryPoints: ['src/options/options.ts'],
+  entryPoints: ['src/options/options.ts', 'src/popup/popup.ts'],
   outdir: 'dist',
   outbase: 'src',
   bundle: true,
@@ -31,6 +31,8 @@ await build({
 
 await mkdir('dist/options', { recursive: true })
 await cp('src/options/options.html', 'dist/options/options.html')
+await mkdir('dist/popup', { recursive: true })
+await cp('src/popup/popup.html', 'dist/popup/popup.html')
 
 await build({
   entryPoints: [

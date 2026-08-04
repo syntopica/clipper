@@ -6,7 +6,9 @@ commits it, atomically, to the private `<owner>/<clips-repo>` GitHub repo.
 brain directly.
 
 Trigger: click the toolbar icon, or press `Cmd+Shift+S` (`Ctrl+Shift+S` on
-non-Mac). There is no popup - the click fires the capture directly.
+non-Mac). On a page nothing has clipped, the click fires the capture directly -
+no popup in the way. On a page the store already holds, the same click opens a
+small panel instead, which is where a second capture is asked for deliberately.
 
 - If you have a text selection on the page, only that selection is clipped
   (`extractor: selection`).
@@ -185,6 +187,37 @@ To rotate or remove: open the options page, click "Sign out on this device"
 authorization server-side). Revoking on GitHub is the only way to invalidate a
 leaked token - signing out only stops this machine from using it.
 
+## What the toolbar icon says
+
+The icon carries the state of the page in the tab, in one colour:
+
+| Colour | Means                                                            |
+| ------ | ---------------------------------------------------------------- |
+| Grey   | Not captured. A click clips it.                                  |
+| Amber  | Captured. The clip is waiting, or routed to the manual lane.     |
+| Green  | Ingested into the brain.                                         |
+| Red    | The last clip failed - the badge and the tooltip say why.        |
+
+The answer comes from `GET /api/have` at `<capture-service-origin>`, memoised per
+URL in `chrome.storage.session`. **Every failure to ask reads as grey**: no
+token, no network, a service that is down. Not knowing has to look like "not
+captured", because guessing the other way suppresses a capture that never
+happened, while a duplicate is deduped downstream.
+
+Amber covers both `captured` and `needs-claude` on purpose - from the browser
+they mean the same thing, "we have it, the wiki does not", and the panel spells
+out which one it is.
+
+The panel also links to the clip on GitHub and offers *Capture again*. A
+re-capture mints a new clip id, so it lands in its own directory and the
+existing clip is untouched: a page that changed between captures is worth having
+twice, and a hard block would trade one annoyance for a lost capability.
+
+**This needs the `tabs` permission, which is a real widening.** Reading the URL
+of a tab the extension was not clicked on requires it, and without it per-tab
+state is not possible at all. What the extension does with that access is one
+`GET` per URL to the capture service, never for a denylisted host.
+
 ## Settings fields
 
 All fields on the options page are required before a clip can be committed:
@@ -195,6 +228,13 @@ All fields on the options page are required before a clip can be committed:
 | Repo         | Data repo name                                             | `brain-clips`         |
 | Branch       | Branch to commit clips to                                  | `main`                |
 | Machine name | Free-text label stored in each clip's `clipped_from` field | e.g. `mac-arm64-a3f2` |
+
+One field is optional: **Capture token**, the bearer token for
+`<capture-service-origin>`. It is minted per device
+(`node scripts/mint-token.mjs "chrome-extension"` in `capture-service`), lives in
+`chrome.storage.local` beside the GitHub credential, and is never synced -
+revoking one device must leave the others alone. Empty is valid: the icon stays
+grey and everything else works exactly as it did.
 
 Owner/repo/branch are stored in `chrome.storage.sync` (they are not secret and
 are the same on every machine). The machine name and the GitHub credential both
@@ -287,9 +327,10 @@ plan's exclusion list:
   `clips/pending/` afterward is out of this repo.
 - No Chrome Web Store packaging - "Load unpacked" only.
 - No broad host permissions - the extension can only reach
-  `https://api.github.com/*` and `https://github.com/*` (the latter solely for
-  the device-flow endpoints); it does not read arbitrary page content beyond
-  the active tab it was explicitly invoked on.
+  `https://api.github.com/*`, `https://github.com/*` (the latter solely for
+  the device-flow endpoints) and `https://<capture-service-origin>/*` (the
+  capture service, for the icon's state); it does not read arbitrary page
+  content beyond the active tab it was explicitly invoked on.
 
 An in-memory guard prevents a rapid double click on the same tab from
 producing two clips - it clears itself five seconds after the injection

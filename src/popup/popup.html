@@ -1,0 +1,47 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>brain clipper</title>
+<style>
+  body {
+    font: 13px system-ui, sans-serif;
+    margin: 0;
+    padding: 0.9rem;
+    width: 19rem;
+  }
+  h1 { font-size: 13px; margin: 0 0 0.5rem; }
+  #title {
+    color: #555;
+    margin: 0 0 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  #state { font-weight: 600; margin: 0 0 0.2rem; }
+  #detail { color: #555; margin: 0 0 0.9rem; }
+  .row { display: flex; gap: 0.5rem; }
+  button, a.button {
+    background: #f4f4f5;
+    border: 1px solid #d4d4d8;
+    border-radius: 5px;
+    color: inherit;
+    cursor: pointer;
+    display: inline-block;
+    font: inherit;
+    padding: 0.4rem 0.6rem;
+    text-decoration: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #1f1f22; color: #e7e7ea; }
+    #title, #detail { color: #a1a1aa; }
+    button, a.button { background: #2b2b30; border-color: #3f3f46; }
+  }
+</style>
+<h1>brain clipper</h1>
+<p id="title"></p>
+<p id="state"></p>
+<p id="detail"></p>
+<div class="row">
+  <a id="openClip" class="button" target="_blank" rel="noreferrer noopener">Open the clip on GitHub</a>
+  <button id="recapture">Capture again</button>
+</div>
+<script src="popup.js"></script>
