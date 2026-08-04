@@ -25,3 +25,10 @@ test('does not open the options page for an unrelated failure', async () => {
   await flush()
   expect(mock.openOptionsPageCalls).toHaveLength(0)
 })
+
+test('paints the failure on the icon as well as the badge', async () => {
+  const mock = installChromeMock()
+  reportFailure('clip failed', new Error('boom'))
+  await flush()
+  expect(mock.iconPaths[0]?.[32]).toBe('icons/error-32.png')
+})

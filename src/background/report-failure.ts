@@ -1,3 +1,4 @@
+import { flashErrorIcon } from './flash-error-icon'
 import { setBadge } from './set-badge'
 
 // Every error that requires a fix in the options page - incomplete settings, no
@@ -17,6 +18,8 @@ export function reportFailure(context: string, error: unknown): void {
   void setBadge('error').catch((badgeError) => {
     console.error('brain clipper: could not set the error badge', badgeError)
   })
+
+  flashErrorIcon()
 
   void chrome.action.setTitle({ title: reason }).catch((titleError) => {
     console.error('brain clipper: could not set the action title', titleError)
