@@ -10,21 +10,21 @@
     "icons": "node scripts/build-icons.mjs"
   },
   "dependencies": {
-    "defuddle": "^0.19.2",
-    "dompurify": "^3.4.12",
-    "js-yaml": "^5.2.2",
+    "defuddle": "^0.19.3",
+    "dompurify": "^3.4.15",
+    "js-yaml": "^5.4.1",
     "turndown": "^7.2.4",
     "turndown-plugin-gfm": "^1.0.2",
     "ulid": "^3.0.2",
-    "zod": "^4.4.3"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
-    "@types/chrome": "^0.2.2",
-    "@types/node": "^26.1.1",
+    "@types/chrome": "^0.2.9",
+    "@types/node": "^26.5.0",
     "@types/turndown": "^5.0.6",
-    "esbuild": "^0.28.1",
-    "jsdom": "^29.1.1",
+    "esbuild": "^0.28.2",
+    "jsdom": "^30.0.1",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^5.0.0"
   }
 }
