@@ -262,7 +262,7 @@
 - [x] 2026-07-26 - **Infrastructure:** Extension loaded unpacked into the daily Chrome
   profile.
   - Result: Registered with `location: 4` (unpacked) and
-    `path: /Users/someone/p/brain-clipper/dist`, id
+    `path: /Users/someone/p/clipper/dist`, id
     `<extension-id>`.
   - Evidence: entry present in the profile's `Secure Preferences`; the same build had
     already been verified in a throwaway profile via CDP, where its service worker
