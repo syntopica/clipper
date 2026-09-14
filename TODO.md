@@ -14,8 +14,8 @@ project on 2026-07-26; it is still open, so its transcript is indexed as
 `partial` rather than `complete`. No Codex session mentions this project and no
 Antigravity store exists on this machine.
 
-Design: `~/p/brain/docs/superpowers/specs/2026-07-26-brain-clipper-design.md`
-Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1.md`
+Design: `~/p/wiki/docs/superpowers/specs/2026-07-26-brain-clipper-design.md`
+Phase 1 plan: `~/p/wiki/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1.md`
 
 ## Blocked Tasks
 
@@ -54,7 +54,7 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
   The index half came from the service rather than from `url-index.sqlite3`:
   1485 rows were pushed to it, and the Mac now pushes each clip's state as it
   lands. Design:
-  `~/p/brain/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`.
+  `~/p/wiki/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`.
 
 - [ ] Report upstream that `extractorType` is unusable in Defuddle's published
   browser bundles: it comes from `constructor.name`, and `dist/index.js` and
@@ -84,7 +84,7 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
   because the mover is phase 4. Whatever implements the move must treat a
   `processed` clip found under `pending/` as "move me", not as an error.
 
-- [~] Phase 4 - Mac-side ingest CLI at `~/p/brain/tools/clips` (TypeScript, not
+- [~] Phase 4 - Mac-side ingest CLI at `~/p/wiki/tools/clips` (TypeScript, not
   bash): ledger at `brain/.ingest/clips/<clip_id>.json`, deterministic routing,
   a throwaway worktree, patch validation, `needs-claude` routing. Lives in the
   brain repo, not here. Milestone 1 is done and it removed the codex half:
@@ -92,7 +92,7 @@ Phase 1 plan: `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1
   leaves filesystem reads unrestricted - a probe read a canary outside the
   workspace and listed all of `~/.ssh` - and no read-restricting boundary could
   be found that codex still runs inside. Verdict, the ten mechanisms evaluated
-  and the evidence are in `~/p/brain/tools/clips/boundary-decision.json`, and
+  and the evidence are in `~/p/wiki/tools/clips/boundary-decision.json`, and
   the reusable `sandbox-exec` boundary that DID pass all nine assertions for
   plain commands is in that package. Milestone 2 plans the pipeline without a
   synthesizer; codex candidates route to the manual Claude workflow.

@@ -2,7 +2,7 @@
 
 Manifest V3 Chrome extension that clips the current web page to markdown and
 commits it, atomically, to the private `CristianDeluxe/brain-clips` GitHub repo.
-`~/p/brain` ingests those clips later; this extension never talks to the
+`~/p/wiki` ingests those clips later; this extension never talks to the
 brain directly.
 
 Trigger: click the toolbar icon, or press `Cmd+Shift+S` (`Ctrl+Shift+S` on
@@ -109,7 +109,7 @@ Then in Chrome:
 2. Click "Load unpacked" and select the `dist/` directory.
 
 The extension id is pinned via the `key` field in `src/manifest.json` (signed
-with `key.pem`, gitignored - canonical copy at `~/p/brain/sources/vault/secrets/keys/brain-clipper.pem`), so it stays
+with `key.pem`, gitignored - canonical copy at `~/p/wiki/brain/sources/vault/secrets/keys/brain-clipper.pem`), so it stays
 stable across machines and across unpacked loads from different paths:
 `odfmlmgmcdlmmclnlagohplgpeijjeoa`.
 
