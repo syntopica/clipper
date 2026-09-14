@@ -1,5 +1,7 @@
 # TODO
 
+- [!] Reload the unpacked extension from `/Users/cristiandeluxe/p/clipper/dist` in Chrome's Default profile, keeping extension `odfmlmgmcdlmmclnlagohplgpeijjeoa` and its stored configuration. The 2026-09-14 directory migration found Chrome still registered to the old `brain-clipper/dist` path; a compatibility symlink preserves it. The browser connector was unavailable. Once the new path is confirmed in Chrome, remove only the compatibility symlink.
+
 > Consolidated from the accessible Claude, Codex, and Antigravity project
 > history. Last reviewed: 2026-07-26. History coverage: Partial.
 >
