@@ -97,8 +97,8 @@ has its own scoring, and it does drop sections other extractors keep (MDN's
 ## Install
 
 ```bash
-git clone <this repo> brain-clipper
-cd brain-clipper
+git clone <this repo> clipper
+cd clipper
 pnpm install
 pnpm build       # bundles the extension into dist/
 ```
