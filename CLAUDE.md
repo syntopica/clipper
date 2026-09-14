@@ -2,13 +2,13 @@
 
 Manifest V3 Chrome extension. One click turns the current page into clean
 markdown and commits it, atomically, to the private `<owner>/<clips-repo>`
-repo. `~/p/brain` ingests those clips later; this repo never talks to the brain
+repo. `~/p/wiki` ingests those clips later; this repo never talks to the brain
 directly.
 
 Design and plan live in the brain repo:
 
-- `~/p/brain/docs/superpowers/specs/2026-07-26-brain-clipper-design.md`
-- `~/p/brain/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1.md`
+- `~/p/wiki/docs/superpowers/specs/2026-07-26-brain-clipper-design.md`
+- `~/p/wiki/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1.md`
 
 The design is authoritative. If code and design disagree, one of them is a bug —
 say which before changing either.

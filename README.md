@@ -2,7 +2,7 @@
 
 Manifest V3 Chrome extension that clips the current web page to markdown and
 commits it, atomically, to the private `<owner>/<clips-repo>` GitHub repo.
-`~/p/brain` ingests those clips later; this extension never talks to the
+`~/p/wiki` ingests those clips later; this extension never talks to the
 brain directly.
 
 Trigger: click the toolbar icon, or press `Cmd+Shift+S` (`Ctrl+Shift+S` on
