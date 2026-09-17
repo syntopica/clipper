@@ -1,7 +1,7 @@
 import type { Credential } from './credential-schema'
 import { credentialFromTokenResponse } from './credential-from-token-response'
 import { deviceFlowErrorMessage } from './device-flow-error-message'
-import { GITHUB_APP_CLIENT_ID } from './github-app-client-id'
+import { githubAppClientId } from './github-app-client-id'
 import { GITHUB_OAUTH_URLS } from './github-oauth-urls'
 import { postOauthForm } from './post-oauth-form'
 import { TokenResponseSchema } from './token-response-schema'
@@ -14,7 +14,7 @@ export async function refreshCredential(credential: Credential): Promise<Credent
   }
 
   const body = await postOauthForm(GITHUB_OAUTH_URLS.accessToken, {
-    client_id: GITHUB_APP_CLIENT_ID,
+    client_id: await githubAppClientId(),
     refresh_token: credential.refreshToken,
     grant_type: 'refresh_token',
   })
@@ -27,5 +27,8 @@ export async function refreshCredential(credential: Credential): Promise<Credent
     throw new Error(`${reason} Sign in again - open the options page`)
   }
 
-  return { ...credentialFromTokenResponse(parsed.data, Date.now()), login: credential.login }
+  return {
+    ...credentialFromTokenResponse(parsed.data, Date.now()),
+    login: credential.login,
+  }
 }

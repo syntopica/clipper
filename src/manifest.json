@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "brain clipper",
   "version": "0.1.0",
-  "description": "Clip the current page to markdown into the private brain-clips repo.",
+  "description": "Clip the current page to markdown and commit it to the private repository you configure.",
   "icons": {
     "16": "icons/idle-16.png",
     "32": "icons/idle-32.png",
@@ -18,8 +18,10 @@
   ],
   "host_permissions": [
     "https://api.github.com/*",
-    "https://github.com/*",
-    "https://<capture-service-origin>/*"
+    "https://github.com/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
   ],
   "content_scripts": [
     {

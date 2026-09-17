@@ -1,5 +1,5 @@
 import { DeviceCodeSchema, type DeviceCode } from './device-code-schema'
-import { GITHUB_APP_CLIENT_ID } from './github-app-client-id'
+import { githubAppClientId } from './github-app-client-id'
 import { GITHUB_OAUTH_URLS } from './github-oauth-urls'
 import { postOauthForm } from './post-oauth-form'
 
@@ -7,7 +7,7 @@ import { postOauthForm } from './post-oauth-form'
 // its installation, not from the authorization request.
 export async function requestDeviceCode(): Promise<DeviceCode> {
   const body = await postOauthForm(GITHUB_OAUTH_URLS.deviceCode, {
-    client_id: GITHUB_APP_CLIENT_ID,
+    client_id: await githubAppClientId(),
   })
   const parsed = DeviceCodeSchema.safeParse(body)
   if (!parsed.success) {

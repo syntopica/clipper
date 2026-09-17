@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchClipStatus } from '../../src/shared/fetch-clip-status'
+import { installConfiguredChromeMock } from '../install-configured-chrome-mock'
 
 const answer = (body: unknown, status = 200) =>
   vi.fn((url: string) => {
@@ -11,9 +12,11 @@ const asked: string[] = []
 
 beforeEach(() => {
   asked.length = 0
-  vi.stubGlobal('chrome', {
-    storage: { local: { get: vi.fn(() => Promise.resolve({ captureToken: 'test-token' })) } },
-  })
+  installConfiguredChromeMock()
+  const local = globalThis.chrome.storage.local as unknown as {
+    set: (items: Record<string, unknown>) => Promise<void>
+  }
+  void local.set({ captureToken: 'test-token' })
 })
 
 afterEach(() => {
@@ -66,9 +69,7 @@ describe('fetchClipStatus', () => {
   })
 
   it('asks nothing at all without a token', async () => {
-    vi.stubGlobal('chrome', {
-      storage: { local: { get: vi.fn(() => Promise.resolve({})) } },
-    })
+    installConfiguredChromeMock()
     const fetchMock = vi.fn()
     vi.stubGlobal('fetch', fetchMock)
     expect((await fetchClipStatus('https://example.com/a')).state).toBe('absent')
@@ -79,4 +80,16 @@ describe('fetchClipStatus', () => {
     vi.stubGlobal('fetch', answer({ data: { captured: true } }))
     expect((await fetchClipStatus('https://example.com/a')).state).toBe('absent')
   })
+})
+
+it('asks nothing when this install has no capture service', async () => {
+  installConfiguredChromeMock({ captureServiceOrigin: null })
+  const local = globalThis.chrome.storage.local as unknown as {
+    set: (items: Record<string, unknown>) => Promise<void>
+  }
+  await local.set({ captureToken: 'test-token' })
+  const fetchMock = vi.fn()
+  vi.stubGlobal('fetch', fetchMock)
+  expect((await fetchClipStatus('https://example.com/a')).state).toBe('absent')
+  expect(fetchMock).not.toHaveBeenCalled()
 })

@@ -7,6 +7,8 @@ const settings = {
   repo: 'brain-clips',
   branch: 'main',
   machineName: 'mac-arm64-a3f2',
+  githubAppClientId: 'Iv1example',
+  captureServiceOrigin: 'https://capture.example.test',
 }
 
 test('round-trips settings, keeping the machine name out of sync storage', async () => {
@@ -14,7 +16,13 @@ test('round-trips settings, keeping the machine name out of sync storage', async
   await setSettings(settings)
 
   expect(await getSettings()).toEqual(settings)
-  expect(stores.sync.data).toEqual({ owner: 'BusiRocket', repo: 'brain-clips', branch: 'main' })
+  expect(stores.sync.data).toEqual({
+    owner: 'BusiRocket',
+    repo: 'brain-clips',
+    branch: 'main',
+    githubAppClientId: 'Iv1example',
+    captureServiceOrigin: 'https://capture.example.test',
+  })
   expect(stores.local.data).toEqual({ machineName: 'mac-arm64-a3f2' })
 })
 
@@ -35,4 +43,15 @@ test('returns null when only the machine name is missing', async () => {
   const stores = installChromeMock()
   Object.assign(stores.sync.data, { owner: 'o', repo: 'r', branch: 'main' })
   expect(await getSettings()).toBeNull()
+})
+
+test('an install that configured neither the app nor the capture service is still valid', async () => {
+  const stores = installChromeMock()
+  Object.assign(stores.sync.data, { owner: 'o', repo: 'r', branch: 'main' })
+  stores.local.data.machineName = 'm'
+
+  expect(await getSettings()).toMatchObject({
+    githubAppClientId: null,
+    captureServiceOrigin: null,
+  })
 })

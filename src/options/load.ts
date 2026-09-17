@@ -6,9 +6,13 @@ import { renderAuth } from './render-auth'
 
 export async function load(): Promise<void> {
   const settings = await getSettings()
-  field('owner').value = settings?.owner ?? 'CristianDeluxe'
-  field('repo').value = settings?.repo ?? 'brain-clips'
+  // No owner or repository default: one person's inbox is not a sensible
+  // starting value for anyone else's install.
+  field('owner').value = settings?.owner ?? ''
+  field('repo').value = settings?.repo ?? ''
   field('branch').value = settings?.branch ?? 'main'
+  field('githubAppClientId').value = settings?.githubAppClientId ?? ''
+  field('captureServiceOrigin').value = settings?.captureServiceOrigin ?? ''
   field('machineName').value = settings?.machineName ?? (await defaultMachineName())
   field('captureToken').value = (await getCaptureToken()) ?? ''
   await renderAuth()

@@ -1,4 +1,10 @@
-// Where the capture service answers. A constant rather than a setting: there is
-// exactly one inbox, and making every install name it would be ceremony. The
-// same reasoning `tools/clips` applies on the Mac side.
-export const CAPTURE_SERVICE_ORIGIN = 'https://<capture-service-origin>'
+import { getSettings } from './get-settings'
+
+// Where the capture service answers, when this install has one. A setting
+// rather than a constant: the service is a Worker each person deploys, and the
+// origin of one deployment is not a fact about the extension. Null means this
+// install has no capture service, which is a supported configuration: clipping
+// to GitHub does not need one.
+export async function captureServiceOrigin(): Promise<string | null> {
+  return (await getSettings())?.captureServiceOrigin ?? null
+}

@@ -1,4 +1,4 @@
-import { CAPTURE_SERVICE_ORIGIN } from './capture-service-origin'
+import { captureServiceOrigin } from './capture-service-origin'
 import type { ClipStatus } from './clip-status'
 import { getCaptureToken } from './get-capture-token'
 import { HaveResponseSchema } from './have-response-schema'
@@ -23,12 +23,12 @@ const ABSENT: ClipStatus = { state: 'absent', clipUrl: null, capturedAt: null }
  */
 export async function fetchClipStatus(url: string): Promise<ClipStatus> {
   const token = await getCaptureToken()
-  if (token === null) return ABSENT
+  const origin = await captureServiceOrigin()
+  if (token === null || origin === null) return ABSENT
   try {
-    const response = await fetch(
-      `${CAPTURE_SERVICE_ORIGIN}/api/have?url=${encodeURIComponent(url)}`,
-      { headers: { authorization: `Bearer ${token}` } },
-    )
+    const response = await fetch(`${origin}/api/have?url=${encodeURIComponent(url)}`, {
+      headers: { authorization: `Bearer ${token}` },
+    })
     if (!response.ok) return ABSENT
     const parsed = HaveResponseSchema.safeParse(await response.json())
     if (!parsed.success) return ABSENT

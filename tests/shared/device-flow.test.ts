@@ -1,3 +1,4 @@
+import { installConfiguredChromeMock } from '../install-configured-chrome-mock'
 import { pollForCredential } from '../../src/shared/poll-for-credential'
 import { requestDeviceCode } from '../../src/shared/request-device-code'
 
@@ -8,6 +9,10 @@ const deviceCode = {
   expires_in: 900,
   interval: 0,
 }
+
+beforeEach(() => {
+  installConfiguredChromeMock()
+})
 
 function answerWith(bodies: unknown[]): { calls: string[] } {
   const calls: string[] = []

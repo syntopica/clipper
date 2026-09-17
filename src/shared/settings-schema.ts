@@ -5,6 +5,8 @@ export const SettingsSchema = z.object({
   repo: z.string().min(1),
   branch: z.string().min(1),
   machineName: z.string().min(1),
+  githubAppClientId: z.string().min(1).nullable().default(null),
+  captureServiceOrigin: z.url().nullable().default(null),
 })
 
 export type Settings = z.infer<typeof SettingsSchema>
