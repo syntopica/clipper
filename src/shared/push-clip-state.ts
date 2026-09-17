@@ -1,4 +1,4 @@
-import { CAPTURE_SERVICE_ORIGIN } from './capture-service-origin'
+import { captureServiceOrigin } from './capture-service-origin'
 import type { ClipState } from './clip-state'
 
 // Tell the service how far a clip got. The same call marks the capture drained,
@@ -10,13 +10,15 @@ export async function pushClipState(
   state: Exclude<ClipState, 'absent'>,
   clipDir: string,
 ): Promise<void> {
-  const response = await fetch(
-    `${CAPTURE_SERVICE_ORIGIN}/api/captures/${encodeURIComponent(captureId)}`,
-    {
-      method: 'PATCH',
-      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ state, clip_dir: clipDir }),
+  const origin = await captureServiceOrigin()
+  if (origin === null) throw new Error('no capture service is configured - open the options page')
+  const response = await fetch(`${origin}/api/captures/${encodeURIComponent(captureId)}`, {
+    method: 'PATCH',
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
     },
-  )
+    body: JSON.stringify({ state, clip_dir: clipDir }),
+  })
   if (!response.ok) throw new Error(`pushing the clip state returned ${response.status}`)
 }

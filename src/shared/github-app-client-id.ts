@@ -1,5 +1,14 @@
-// The client id of the `brain clipper` GitHub App (app id 4401763, owned by
-// @CristianDeluxe, installed on CristianDeluxe/brain-clips alone). Public by design: the
-// device flow is a public-client flow and needs no client secret, so shipping
-// this in the extension bundle leaks nothing.
-export const GITHUB_APP_CLIENT_ID = 'Iv23liXcjAPOv6uh7NIv'
+import { getSettings } from './get-settings'
+
+// The client id of the GitHub App this install authorizes against. A setting
+// rather than a constant: the previous build compiled one owner's app id in,
+// so every other person had to fork the extension before they could sign in.
+// Public by design either way - the device flow is a public-client flow and
+// needs no client secret.
+export async function githubAppClientId(): Promise<string> {
+  const settings = await getSettings()
+  if (!settings?.githubAppClientId) {
+    throw new Error('no GitHub App client id is configured - open the options page')
+  }
+  return settings.githubAppClientId
+}

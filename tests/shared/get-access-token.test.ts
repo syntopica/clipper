@@ -1,4 +1,5 @@
 import { installChromeMock } from '../chrome-mock'
+import { installConfiguredChromeMock } from '../install-configured-chrome-mock'
 import { getAccessToken } from '../../src/shared/get-access-token'
 
 function answerWith(body: unknown): { bodies: string[] } {
@@ -30,7 +31,7 @@ test('a credential without an expiry is used as is', async () => {
 })
 
 test('an expiring credential is refreshed without a client secret and persisted', async () => {
-  const stores = installChromeMock()
+  const stores = installConfiguredChromeMock()
   stores.local.data.githubCredential = {
     accessToken: 'ghu_old',
     refreshToken: 'ghr_old',

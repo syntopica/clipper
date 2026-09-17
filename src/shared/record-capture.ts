@@ -1,13 +1,18 @@
-import { CAPTURE_SERVICE_ORIGIN } from './capture-service-origin'
+import { captureServiceOrigin } from './capture-service-origin'
 
 // Record a URL with the capture service and get back the id of the row that
 // holds it. Idempotent on the normalized URL: a URL already there returns its
 // existing id rather than a second row, which is what makes this safe to call
 // after every clip, including a deliberate re-capture of the same page.
 export async function recordCapture(token: string, url: string): Promise<string> {
-  const response = await fetch(`${CAPTURE_SERVICE_ORIGIN}/api/capture`, {
+  const origin = await captureServiceOrigin()
+  if (origin === null) throw new Error('no capture service is configured - open the options page')
+  const response = await fetch(`${origin}/api/capture`, {
     method: 'POST',
-    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
+    },
     body: JSON.stringify({
       url,
       capture_source: 'chrome-extension',

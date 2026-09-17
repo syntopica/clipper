@@ -1,7 +1,7 @@
 # brain clipper
 
 Manifest V3 Chrome extension that clips the current web page to markdown and
-commits it, atomically, to the private `CristianDeluxe/brain-clips` GitHub repo.
+commits it, atomically, to the private GitHub repository you configure.
 `~/p/wiki` ingests those clips later; this extension never talks to the
 brain directly.
 
@@ -127,8 +127,11 @@ authorization flow a browser extension can run without a server: the
 authorization-code flow requires a `client_secret` to exchange the code, and
 GitHub does not support PKCE for it, so a client-only extension would have to
 either ship the secret or proxy through a backend. The device flow requires no
-secret at all, which is why the app's client id is compiled into the bundle in
-plain sight (`src/shared/github-app-client-id.ts`) - it is public by design.
+secret at all, which is why the client id is an ordinary setting on the options
+page rather than a secret - it is public by design. It has no default: register
+your own GitHub App (below), install it on your clip repository alone, and paste
+its client id. Earlier builds compiled one owner's app id in, which meant
+everyone else had to fork the extension before they could sign in.
 
 What the button does:
 
@@ -198,7 +201,7 @@ The icon carries the state of the page in the tab, in one colour:
 | Green  | Ingested into the brain.                                         |
 | Red    | The last clip failed - the badge and the tooltip say why.        |
 
-The answer comes from `GET /api/have` at `clip.cristiandeluxe.dev`, memoised per
+The answer comes from `GET /api/have` at the configured capture origin, memoised per
 URL in `chrome.storage.session`. **Every failure to ask reads as grey**: no
 token, no network, a service that is down. Not knowing has to look like "not
 captured", because guessing the other way suppresses a capture that never
@@ -224,13 +227,18 @@ All fields on the options page are required before a clip can be committed:
 
 | Field        | Meaning                                                    | Typical value         |
 | ------------ | ---------------------------------------------------------- | --------------------- |
-| Owner        | GitHub org/user that owns the data repo                    | `CristianDeluxe`      |
-| Repo         | Data repo name                                             | `brain-clips`         |
-| Branch       | Branch to commit clips to                                  | `main`                |
-| Machine name | Free-text label stored in each clip's `clipped_from` field | e.g. `mac-arm64-a3f2` |
+| Owner                 | GitHub org/user that owns the data repo                    | your account          |
+| Repo                  | Data repo name                                             | e.g. `brain-clips`    |
+| Branch                | Branch to commit clips to                                  | `main`                |
+| GitHub App client id  | The app you registered for this install                    | `Iv23li...`           |
+| Machine name          | Free-text label stored in each clip's `clipped_from` field | e.g. `mac-arm64-a3f2` |
 
-One field is optional: **Capture token**, the bearer token for
-`clip.cristiandeluxe.dev`. It is minted per device
+Two fields are optional, and both belong to the capture service, which is a
+Worker you deploy yourself (`syntopica/capture`); an install without one clips
+to GitHub exactly as before. **Capture service origin** is where that
+deployment answers; saving it asks Chrome for the host permission, which the
+manifest declares as optional precisely because the origin is a setting.
+**Capture token** is the bearer token for that origin. It is minted per device
 (`node scripts/mint-token.mjs "chrome-extension"` in `brain-capture`), lives in
 `chrome.storage.local` beside the GitHub credential, and is never synced -
 revoking one device must leave the others alone. Empty is valid: the icon stays
@@ -326,11 +334,12 @@ plan's exclusion list:
   stops at "clip committed to `brain-clips`"; anything that reads
   `clips/pending/` afterward is out of this repo.
 - No Chrome Web Store packaging - "Load unpacked" only.
-- No broad host permissions - the extension can only reach
-  `https://api.github.com/*`, `https://github.com/*` (the latter solely for
-  the device-flow endpoints) and `https://clip.cristiandeluxe.dev/*` (the
-  capture service, for the icon's state); it does not read arbitrary page
-  content beyond the active tab it was explicitly invoked on.
+- No broad host permissions granted up front - the extension reaches
+  `https://api.github.com/*` and `https://github.com/*` (the latter solely for
+  the device-flow endpoints). The capture service's origin is a setting, so it
+  is an optional permission the options page requests for that one origin when
+  you save it, and nothing else. It does not read arbitrary page content beyond
+  the active tab it was explicitly invoked on.
 
 An in-memory guard prevents a rapid double click on the same tab from
 producing two clips - it clears itself five seconds after the injection

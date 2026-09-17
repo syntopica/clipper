@@ -49,9 +49,7 @@ describe('resolveClipStatus', () => {
       session: {
         get: vi.fn((keys: string[]) =>
           Promise.resolve(
-            Object.fromEntries(
-              Object.entries(stored).filter(([key]) => keys.includes(key)),
-            ),
+            Object.fromEntries(Object.entries(stored).filter(([key]) => keys.includes(key))),
           ),
         ),
         set: vi.fn((entry: Record<string, unknown>) => {
@@ -59,7 +57,24 @@ describe('resolveClipStatus', () => {
           return Promise.resolve()
         }),
       },
-      local: { get: vi.fn(() => Promise.resolve({ captureToken: 'test-token' })) },
+      local: {
+        get: vi.fn(() =>
+          Promise.resolve({ captureToken: 'test-token', machineName: 'test-machine' }),
+        ),
+      },
+      // The capture origin is a setting, so the status lookup reads it from
+      // sync storage before it asks the service anything.
+      sync: {
+        get: vi.fn(() =>
+          Promise.resolve({
+            owner: 'Owner',
+            repo: 'clips',
+            branch: 'main',
+            githubAppClientId: 'test-client-id',
+            captureServiceOrigin: 'https://capture.example.test',
+          }),
+        ),
+      },
     },
   })
 
