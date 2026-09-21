@@ -47,7 +47,7 @@ test('a captured page becomes one commit of four files', async () => {
     accessToken: 'tok',
     refreshToken: null,
     expiresAt: null,
-    login: 'cristiandeluxe',
+    login: 'an-owner',
   }
   const github = mockGithub()
 

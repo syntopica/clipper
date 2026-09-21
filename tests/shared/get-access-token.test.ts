@@ -36,7 +36,7 @@ test('an expiring credential is refreshed without a client secret and persisted'
     accessToken: 'ghu_old',
     refreshToken: 'ghr_old',
     expiresAt: Date.now() + 30_000,
-    login: 'cristiandeluxe',
+    login: 'an-owner',
   }
   const fetched = answerWith({
     access_token: 'ghu_new',
@@ -50,7 +50,7 @@ test('an expiring credential is refreshed without a client secret and persisted'
   expect(stores.local.data.githubCredential).toMatchObject({
     accessToken: 'ghu_new',
     refreshToken: 'ghr_new',
-    login: 'cristiandeluxe',
+    login: 'an-owner',
   })
 })
 

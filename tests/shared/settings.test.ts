@@ -3,8 +3,8 @@ import { getSettings } from '../../src/shared/get-settings'
 import { setSettings } from '../../src/shared/set-settings'
 
 const settings = {
-  owner: 'BusiRocket',
-  repo: 'brain-clips',
+  owner: 'an-owner',
+  repo: 'clips',
   branch: 'main',
   machineName: 'mac-arm64-a3f2',
   githubAppClientId: 'Iv1example',
@@ -17,8 +17,8 @@ test('round-trips settings, keeping the machine name out of sync storage', async
 
   expect(await getSettings()).toEqual(settings)
   expect(stores.sync.data).toEqual({
-    owner: 'BusiRocket',
-    repo: 'brain-clips',
+    owner: 'an-owner',
+    repo: 'clips',
     branch: 'main',
     githubAppClientId: 'Iv1example',
     captureServiceOrigin: 'https://capture.example.test',

@@ -8,7 +8,7 @@ const credential = {
   accessToken: 'ghu_example',
   refreshToken: 'ghr_example',
   expiresAt: 1_800_000_000_000,
-  login: 'cristiandeluxe',
+  login: 'an-owner',
 }
 
 test('the credential lives in local storage and never in sync', async () => {
