@@ -32,7 +32,7 @@
     the user a page is already clipped" and the pending decision on repeat
     clips.
   - Design and plans:
-    `~/p/brain/docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`,
+    `the wiki's `docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`,
     `.../plans/2026-08-04-clip-state-phase-1-service-and-mirror.md`,
     `.../plans/2026-08-04-clip-state-phase-2-extension.md`.
 
@@ -65,7 +65,7 @@
     the browser bundles it publishes are minified, so the name never survives - the
     node path reports `github` correctly for exactly that reason. Only presence
     survives, so the field is now the boolean `site_extractor`, and the already
-    committed clip was corrected in `brain-clips`.
+    committed clip was corrected in the clip repository.
   - The url-labelled-link recovery stays. Defuddle no longer needs it on X, but it has
     its own scoring: the MDN case proves the failure is still reachable, and the X
     article clip had one link recovered by it.
@@ -96,12 +96,12 @@
     quietly pass if that behaviour changes. Full suite 134 passing, up from 121.
 
 - [x] 2026-07-27 - **Testing:** the toolbar-click clip closes the loop - a page clipped on
-  the user's own Mac, authorized through the device flow, committed to `brain-clips`.
+  the user's own Mac, authorized through the device flow, committed to the clip repository.
   - Commit `2c77e11`, one parent, exactly four files under
     `clips/pending/2026/07/2026-07-27-x-com-...-01kyggcn/`.
-  - `clipped_from` is `mac-arm64-7735`: the generated default from
+  - `clipped_from` is `mac-arm64-a3f2`: the generated default from
     `default-machine-name.ts`, on the user's real machine, with a different suffix from
-    the `mac-arm64-eb4d` generated during the throwaway-profile run. Per-device
+    the `mac-arm64-a3f2` generated during the throwaway-profile run. Per-device
     uniqueness holds, which is the whole point of moving the field out of
     `chrome.storage.sync`.
   - `extractor: readability` (0.6.0), `snapshot_mode: sanitized`, 1447 words,
@@ -118,11 +118,11 @@
     `<extension-id>`, confirming the pinned `manifest.key` still fixes
     the extension id.
   - Options page before sign-in: "Not signed in", machine name prefilled
-    `mac-arm64-eb4d`, owner prefilled `BusiRocket` - both new behaviours visible.
+    `mac-arm64-a3f2`, owner prefilled from settings - both new behaviours visible.
   - Sign-in: clicking the button showed user code `CA21-ACD7`, opened
     `github.com/login/device` in a new tab and began polling. Authorizing in a second
     browser (the grant is decoupled from the polling browser) drove the page to "Signed
-    in." and "Signed in as @CristianDeluxe" with the code panel hidden.
+    in." and "Signed in as the owner account" with the code panel hidden.
   - Stored credential: `ghu_` access token, refresh token present, expiry 480 minutes
     out - so "Expire user authorization tokens" really is on and rotation has something
     to rotate with. `chrome.storage.sync` was empty at that point and contained no
@@ -141,7 +141,7 @@
 
 - [x] 2026-07-27 - **Integrations:** the `brain clipper` GitHub App exists and the
   extension carries its client id.
-  - Result: app id `<app-id>`, client id `<client-id>`, owned by `@BusiRocket`.
+  - Result: app id `<app-id>`, client id `<client-id>`, owned by `the owner account`.
     Permissions are `Contents: read & write` plus the mandatory `Metadata: read` and
     nothing else; webhook off; Device Flow enabled; user-token expiration left on so a
     refresh token is issued. Installed on `<owner>/<clips-repo>` alone - repository id
@@ -262,7 +262,7 @@
 - [x] 2026-07-26 - **Infrastructure:** Extension loaded unpacked into the daily Chrome
   profile.
   - Result: Registered with `location: 4` (unpacked) and
-    `path: /Users/someone/p/clipper/dist`, id
+    `path: <checkout>/dist`, id
     `<extension-id>`.
   - Evidence: entry present in the profile's `Secure Preferences`; the same build had
     already been verified in a throwaway profile via CDP, where its service worker
@@ -275,7 +275,7 @@
   - Result: Revision 3 of the design, covering the untrusted-input trust model,
     the clip format, the capture pipeline and the ingest hybrid (codex first,
     Claude for complex or quota-exhausted clips).
-  - Evidence: `~/p/brain/docs/superpowers/specs/2026-07-26-brain-clipper-design.md`,
+  - Evidence: `the wiki's `docs/superpowers/specs/2026-07-26-brain-clipper-design.md`,
     brain commits `b6fb882`, `4c42870`, `c667800`, `db212b8`.
 
 - [x] 2026-07-26 — **Infrastructure:** Bootstrapped the MV3 extension repo.
@@ -283,7 +283,7 @@
     2048-bit `manifest.key` so the extension id is stable across machines
     (`<extension-id>`), private repos `<owner>/<clipper-repo>`
     and `<owner>/<clips-repo>` created, signing key kept out of git and stored
-    in `~/p/vault`.
+    in the password manager.
   - Evidence: `pnpm build` exit 0 emitting `dist/manifest.json` and
     `dist/background/service-worker.js`; `pnpm typecheck` clean; reviewer
     independently re-derived the extension id from the DER key.

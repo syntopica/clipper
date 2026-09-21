@@ -2,7 +2,7 @@
 
 Manifest V3 Chrome extension that clips the current web page to markdown and
 commits it, atomically, to the private GitHub repository you configure.
-`~/p/wiki` ingests those clips later; this extension never talks to the
+the wiki ingests those clips later; this extension never talks to the
 brain directly.
 
 Trigger: click the toolbar icon, or press `Cmd+Shift+S` (`Ctrl+Shift+S` on
@@ -109,7 +109,7 @@ Then in Chrome:
 2. Click "Load unpacked" and select the `dist/` directory.
 
 The extension id is pinned via the `key` field in `src/manifest.json` (signed
-with `key.pem`, gitignored - canonical copy at `<instance>/secrets/keys/app.pem`), so it stays
+with `key.pem`, which is gitignored and kept in a password manager), so it stays
 stable across machines and across unpacked loads from different paths:
 `<extension-id>`.
 
@@ -144,24 +144,21 @@ What the button does:
 
 ### The GitHub App
 
-Already created; nothing to do unless it has to be rebuilt.
+Register your own, once per install; the extension ships none.
 
-|                       |                                                                   |
+| Setting               | Value                                                             |
 | --------------------- | ----------------------------------------------------------------- |
-| Name                  | `brain clipper` (slug `brain-clipper`)                            |
-| Owner                 | `@CristianDeluxe`                                                 |
-| App ID                | `<app-id>`                                                         |
-| Client ID             | `<client-id>` (in `src/shared/github-app-client-id.ts`)  |
+| Name                  | Anything; the slug becomes its settings URL                       |
+| Owner                 | The account or organization that owns your clip repository        |
 | Permissions           | Repository `Contents: read & write`, `Metadata: read` (mandatory) |
 | Webhook               | Off                                                               |
 | Device flow           | Enabled                                                           |
 | User token expiration | Enabled - 8h token plus refresh token                             |
-| Installed on          | `<owner>/<clips-repo>` only                                 |
-| Settings              | `https://github.com/settings/apps/brain-clipper`                  |
+| Installed on          | Your clip repository only                                         |
 
 The resulting token is scoped by the app's installation, so it can only ever
-reach `brain-clips` - narrower than a classic PAT, and narrower than what a
-fine-grained PAT guarantees over time.
+reach that one repository - narrower than a classic PAT, and narrower than what
+a fine-grained PAT guarantees over time.
 
 Two settings are load-bearing and easy to lose when editing the app later.
 **Enable Device Flow** is off by default on a new app; without it every
@@ -170,11 +167,11 @@ tokens** must stay on, because that is what issues the refresh token, and
 GitHub waives `client_secret` when refreshing a token the device flow issued -
 turning it off would trade secretless rotation for a token that never renews.
 
-To recreate the app from scratch: Organization settings -> Developer settings
--> GitHub Apps -> New GitHub App, set the two settings above, grant only
-`Contents: read & write`, untick the webhook, install on `brain-clips` alone,
-then put the new Client ID in `src/shared/github-app-client-id.ts` and run
-`pnpm build`.
+To create the app: Organization settings -> Developer settings -> GitHub Apps
+-> New GitHub App, set the two settings above, grant only
+`Contents: read & write`, untick the webhook, install it on the clip repository
+alone, then paste its Client ID into the extension's options page. Nothing
+about the app is compiled into the build.
 
 ### Where the token lives
 
@@ -228,9 +225,9 @@ All fields on the options page are required before a clip can be committed:
 | Field        | Meaning                                                    | Typical value         |
 | ------------ | ---------------------------------------------------------- | --------------------- |
 | Owner                 | GitHub org/user that owns the data repo                    | your account          |
-| Repo                  | Data repo name                                             | e.g. `brain-clips`    |
+| Repo                  | Data repo name                                             | e.g. the clip repository    |
 | Branch                | Branch to commit clips to                                  | `main`                |
-| GitHub App client id  | The app you registered for this install                    | `<client-id>...`           |
+| GitHub App client id  | The app you registered for this install                    | `Iv23...`           |
 | Machine name          | Free-text label stored in each clip's `clipped_from` field | e.g. `mac-arm64-a3f2` |
 
 Two fields are optional, and both belong to the capture service, which is a
@@ -331,7 +328,7 @@ plan's exclusion list:
   nothing in the extension writes to them.
 - No context menu entry point - toolbar click and `Cmd+Shift+S` only.
 - No Mac-side ingest CLI, no ledger, no domain adapters - this extension
-  stops at "clip committed to `brain-clips`"; anything that reads
+  stops at "clip committed to the clip repository"; anything that reads
   `clips/pending/` afterward is out of this repo.
 - No Chrome Web Store packaging - "Load unpacked" only.
 - No broad host permissions granted up front - the extension reaches

@@ -2,13 +2,13 @@
 
 Manifest V3 Chrome extension. One click turns the current page into clean
 markdown and commits it, atomically, to the private `<owner>/<clips-repo>`
-repo. `~/p/wiki` ingests those clips later; this repo never talks to the brain
+repo. the wiki ingests those clips later; this repo never talks to the brain
 directly.
 
 Design and plan live in the brain repo:
 
-- `~/p/wiki/docs/superpowers/specs/2026-07-26-brain-clipper-design.md`
-- `~/p/wiki/docs/superpowers/plans/2026-07-26-brain-clipper-phase-1.md`
+- `the wiki's `docs/superpowers/specs/2026-07-26-brain-clipper-design.md`
+- `the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-1.md`
 
 The design is authoritative. If code and design disagree, one of them is a bug —
 say which before changing either.
@@ -20,7 +20,7 @@ say which before changing either.
   page-supplied URL goes through the asset fetch policy first (https only, port
   443, no URL credentials, no loopback / private / link-local, manual redirects
   revalidated per hop). Do not relax it for convenience.
-- **The GitHub credential is scoped to `brain-clips` alone.** It is a GitHub App
+- **The GitHub credential is scoped to the clip repository alone.** It is a GitHub App
   user token obtained through the device flow, lives in `chrome.storage.local`
   behind `setAccessLevel('TRUSTED_CONTEXTS')` and never in `chrome.storage.sync`.
   It must never reach a content script or a log line. No `client_secret` belongs
@@ -43,7 +43,7 @@ pnpm typecheck   # tsc --noEmit
 pnpm build       # esbuild -> dist/, load unpacked from there
 ```
 
-`key.pem` is the extension signing key: gitignored, canonical copy at `<instance>/secrets/keys/app.pem`.
+`key.pem` is the extension signing key: gitignored, canonical copy at the password manager.
 
 ## Continuous TODO, Work Log, and History Coverage
 

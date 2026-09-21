@@ -1,3 +1,6 @@
 node_modules/
 dist/
 key.pem
+
+# Local agent-history bookkeeping: conversation ids and workspace paths
+TODO_HISTORY_INDEX.jsonl
