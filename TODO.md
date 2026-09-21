@@ -14,8 +14,8 @@ project on 2026-07-26; it is still open, so its transcript is indexed as
 `partial` rather than `complete`. No Codex session mentions this project and no
 Antigravity store exists on this machine.
 
-Design: `the wiki's `docs/superpowers/specs/2026-07-26-brain-clipper-design.md`
-Phase 1 plan: `the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-1.md`
+Design: the wiki's `docs/superpowers/specs/2026-07-26-brain-clipper-design.md`
+Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-1.md`
 
 ## Blocked Tasks
 
@@ -37,7 +37,7 @@ Phase 1 plan: `the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase
   article's React fiber (env with `getStore()`; records `TweetResults:<id>`,
   text under `result.details.full_text`, user under
   `core.user_results.result.core`). The 2026-07-29 clip rescue proved this
-  path end to end (brain-clips ef86110); decide whether the extension grows a
+  path end to end (clip repository, commit ef86110); decide whether the extension grows a
   guest-page fallback that mines the store the same way.
 
 ## Backend
@@ -53,7 +53,7 @@ Phase 1 plan: `the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase
   The index half came from the service rather than from `url-index.sqlite3`:
   1485 rows were pushed to it, and the Mac now pushes each clip's state as it
   lands. Design:
-  `the wiki's `docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`.
+  the wiki's `docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`.
 
 - [ ] Report upstream that `extractorType` is unusable in Defuddle's published
   browser bundles: it comes from `constructor.name`, and `dist/index.js` and

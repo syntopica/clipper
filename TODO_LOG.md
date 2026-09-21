@@ -32,7 +32,7 @@
     the user a page is already clipped" and the pending decision on repeat
     clips.
   - Design and plans:
-    `the wiki's `docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`,
+    the wiki's `docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`,
     `.../plans/2026-08-04-clip-state-phase-1-service-and-mirror.md`,
     `.../plans/2026-08-04-clip-state-phase-2-extension.md`.
 
@@ -275,7 +275,7 @@
   - Result: Revision 3 of the design, covering the untrusted-input trust model,
     the clip format, the capture pipeline and the ingest hybrid (codex first,
     Claude for complex or quota-exhausted clips).
-  - Evidence: `the wiki's `docs/superpowers/specs/2026-07-26-brain-clipper-design.md`,
+  - Evidence: the wiki's `docs/superpowers/specs/2026-07-26-brain-clipper-design.md`,
     brain commits `b6fb882`, `4c42870`, `c667800`, `db212b8`.
 
 - [x] 2026-07-26 — **Infrastructure:** Bootstrapped the MV3 extension repo.
@@ -311,7 +311,7 @@
     bounded the title, so a long hostname produced a 221-character directory name
     against a 96-character cap, and an empty title slug left a double separator —
     every variable part is now bounded and the parts are joined non-empty.
-  - Evidence: brain commits `0414f02`, `3f02e46`, `580db7d`; brain-clipper
+  - Evidence: brain commits `0414f02`, `3f02e46`, `580db7d`; the clipper
     `441e4f1`, `4bb68a4`, `6a350bf`; tests added for the hostname and empty-title
     cases.
 

@@ -1,4 +1,4 @@
-# CLAUDE.md — brain-clipper
+# CLAUDE.md — the clipper
 
 Manifest V3 Chrome extension. One click turns the current page into clean
 markdown and commits it, atomically, to the private `<owner>/<clips-repo>`
@@ -7,8 +7,8 @@ directly.
 
 Design and plan live in the brain repo:
 
-- `the wiki's `docs/superpowers/specs/2026-07-26-brain-clipper-design.md`
-- `the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-1.md`
+- the wiki's `docs/superpowers/specs/2026-07-26-brain-clipper-design.md`
+- the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-1.md`
 
 The design is authoritative. If code and design disagree, one of them is a bug —
 say which before changing either.
