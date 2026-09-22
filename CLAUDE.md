@@ -48,8 +48,7 @@ pnpm build       # esbuild -> dist/, load unpacked from there
 ## Continuous TODO, Work Log, and History Coverage
 
 Maintain `TODO.md` as the active backlog and `TODO_LOG.md` as the searchable
-record of closed work. Use `TODO_HISTORY_INDEX.jsonl` to avoid parsing unchanged
-conversations more than once.
+record of closed work.
 
 - Read `TODO.md` at the start and end of related work. Search `TODO_LOG.md`
   before reopening an old task or repeating a previous solution.
