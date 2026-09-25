@@ -21,6 +21,12 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Testing
 
+- [ ] **182 tests and no workflow** (routed from `~/p/TODO.md`, 2026-09-25).
+  Nothing runs `vitest run` or `tsc --noEmit` on push; every other public
+  repository gates. Smallest step: copy `capture/.github/workflows/ci.yml` and
+  drop the jobs whose scripts this package lacks - it has `build`, `test`,
+  `typecheck` and `icons`, nothing else.
+
 - [~] Verify the X thread repair on a real multi-thread clip. One captured X thread (clip 01KYN4S3) captured 4 tweets truncated behind "Show more" and
   one thread tweet missing from the virtualized DOM; the GraphQL-stash repair
   (x-page-hook / x-collector / prepare-x-page) fixes that in unit tests but has
