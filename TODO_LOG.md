@@ -6,6 +6,11 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Release:** GitHub release v0.2.0 (tag on 5c846fc) with
+  `clipper-store.zip` attached:
+  https://github.com/syntopica/clipper/releases/tag/v0.2.0. Evidence: `pnpm
+  test` - 350 passed; zip manifest 0.2.0, no `key`.
+
 - [x] 2026-10-11 - **Release prep:** version 0.2.0 in `src/manifest.json` and
   `package.json` (image downloads and the failed-clips list are a feature
   release). `pnpm store:zip` wrote `clipper-store.zip` (926,883 bytes,
