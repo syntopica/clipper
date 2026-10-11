@@ -6,6 +6,14 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Future idea:** Non-ASCII titles are transliterated in
+  clip directory names. Codex decision (medium): a transliteration dependency
+  for new directory names, the Unicode title kept in metadata and frontmatter,
+  existing paths untouched. `slugify` runs `any-ascii` (ISC) before its NFKD
+  pass: `Москва` -> `moskva`, `日本語のタイトル` -> `ribenyunotaitoru`, accented
+  Latin unchanged. Cost: the service worker bundle grows from 869,799 to
+  1,425,216 bytes (any-ascii's tables). Evidence: `pnpm test`
+  (`tests/shared/slugify.test.ts`).
 - [x] 2026-10-11 - **Integrations:** The capture-page bundle is minified.
   Codex decision (medium): minify only `capture-page` (the 1.2 MB Defuddle
   bundle parsed on every click), without `keepNames` - Defuddle's published

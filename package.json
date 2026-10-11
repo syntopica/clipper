@@ -11,6 +11,7 @@
     "icons": "node scripts/build-icons.mjs"
   },
   "dependencies": {
+    "any-ascii": "^0.3.3",
     "defuddle": "^0.19.4",
     "dompurify": "^3.4.16",
     "js-yaml": "^5.4.3",

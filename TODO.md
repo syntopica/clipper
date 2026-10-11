@@ -99,9 +99,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Future Ideas
 
-- [ ] Transliterate non-ASCII titles. `slugify('日本語のタイトル')` is empty, so every
-  CJK, Cyrillic or Greek page gets a directory of date, host and id with no readable
-  hint.
 - [ ] Revisit `MIN_EXTRACTED_TEXT_LENGTH = 100` after real use. It is fixture-fitted,
   and it is the single knob deciding `defuddle` versus the DOM-shape chain.
 - [ ] Migrate images to Cloudflare R2 if the clips repo approaches ~1 GB. Note

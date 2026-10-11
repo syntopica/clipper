@@ -166,6 +166,9 @@ importers:
 
   .:
     dependencies:
+      any-ascii:
+        specifier: ^0.3.3
+        version: 0.3.3
       defuddle:
         specifier: ^0.19.4
         version: 0.19.4
@@ -710,6 +713,10 @@ packages:
   '@xmldom/xmldom@0.9.12':
     resolution: {integrity: sha512-5AXjrcMClTryPe9LgZrygpB1lj7s0S9E0+W+AHaVKAVyHanafK86iPSvG5xHVSp/jC+VH1UXu0TAEmY279xH7A==}
     engines: {node: '>=14.6'}
+
+  any-ascii@0.3.3:
+    resolution: {integrity: sha512-8hm+zPrc1VnlxD5eRgMo9F9k2wEMZhbZVLKwA/sPKIt6ywuz7bI9uV/yb27uvc8fv8q6Wl2piJT51q1saKX0Jw==}
+    engines: {node: '>=12.20'}
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
@@ -1473,6 +1480,8 @@ snapshots:
   '@vitest/spy@5.0.3': {}
 
   '@xmldom/xmldom@0.9.12': {}
+
+  any-ascii@0.3.3: {}
 
   argparse@2.0.1: {}
 
