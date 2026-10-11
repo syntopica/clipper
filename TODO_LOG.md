@@ -4,6 +4,21 @@
 
 ## 2026
 
+### 2026-10
+
+- [x] 2026-10-11 - **Build:** `pnpm build` wrote the manifest `key` placeholder
+  that the privacy pass left in `src/manifest.json`, which Chrome rejects as an
+  invalid key. The build now derives the public key from the gitignored
+  `key.pem` (`scripts/manifest-public-key.mjs`) and drops the field when the
+  file is absent. Evidence: the id computed from `dist/manifest.json`'s key is
+  the one Chrome's Default profile registers for `brain-clipper/dist`.
+- [x] 2026-10-11 - **Testing:** 182 tests and no workflow. Added
+  `.github/workflows/ci.yml`: one job running `pnpm typecheck`, `pnpm test`
+  and `pnpm build` on Node 26, every action pinned by SHA (checkout v7.0.1,
+  pnpm/action-setup v6.1.0, setup-node v7.1.0), `packageManager` declared so
+  the pnpm action resolves a version. Evidence: `actionlint` clean,
+  `pnpm install --frozen-lockfile` and the three commands green locally.
+
 ### 2026-08
 
 - [x] 2026-08-04 - **Integrations:** The toolbar says whether a page is already
