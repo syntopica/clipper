@@ -19,14 +19,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Testing
 
-- [ ] Quoted-tweet links in X clips come out mangled: in the thread clip
-  `CristianDeluxe/brain-clips@3e94315` (milesdeutscher/status/1772336684472090856)
-  each linked tweet reads like `https://x.com/GCRClassic/sta/GCRClassic/status/1621990690304442370…`
-  or `https://x.com/14841123933618/1484112393361891328/status/...` - X's
-  truncated display text and the expanded URL are concatenated. Found
-  2026-10-11. Smallest step: reproduce with that thread's GraphQL stash in a
-  unit test and emit the `expanded_url` alone.
-
 - [!] Logged-out x.com is a different app the clipper cannot read: guest status
   pages are server-rendered by a Relay/TanStack app with none of the logged-in
   DOM (`cellInnerDiv`, `tweetText`, `User-Name` testids absent; articles carry

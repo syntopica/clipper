@@ -106,3 +106,36 @@ test('replies by other authors are not injected into the thread', () => {
 
   expect(doc.body.textContent).not.toContain('a reply')
 })
+
+// Links inside tweet text exactly as clip brain-clips@3e94315 captured them:
+// hidden `https://`, a cut display text, the href path hidden after it, `…`.
+function linkedTweetDoc(): Document {
+  const hidden = (text: string) => `<span aria-hidden="true">${text}</span>`
+  const doc = new DOMParser().parseFromString(
+    `<html lang="en"><head><title>Miles on X</title></head><body>
+      <div data-testid="cellInnerDiv">
+        <article data-testid="tweet">
+          <div data-testid="User-Name"><a href="/milesdeutscher">Miles</a><a href="/milesdeutscher">@milesdeutscher</a>
+            <time datetime="2024-03-25T10:00:00.000Z">Mar 25</time></div>
+          <div data-testid="tweetText"><span>1. 90% of people are better off holding vs trading. </span><a dir="ltr" href="/GCRClassic/status/1621990690304442370" role="link">${hidden('https://')}x.com/GCRClassic/sta${hidden('/GCRClassic/status/1621990690304442370')}${hidden('…')}</a>
+7. Add to your winners. <a dir="ltr" href="/1484112393361891328/status/1615351201263927296" role="link">${hidden('https://')}x.com/14841123933618${hidden('/1484112393361891328/status/1615351201263927296')}${hidden('…')}</a>
+More: <a href="https://t.co/abc123" role="link">${hidden('https://')}example.com/a/very/lon${hidden('g/path?x=1')}${hidden('…')}</a> by <a href="/GCRClassic" role="link">@GCRClassic</a> <a href="/hashtag/btc" role="link">#btc</a></div>
+        </article>
+      </div></body></html>`,
+    'text/html',
+  )
+  Object.defineProperty(doc, 'baseURI', { value: 'https://x.com/milesdeutscher/status/1772336684472090856' })
+  return doc
+}
+
+test('links in tweet text come out as the URL they open, even with no stash', async () => {
+  const doc = linkedTweetDoc()
+  const url = 'https://x.com/milesdeutscher/status/1772336684472090856'
+  expect(prepareXPage(doc, url)).toBeNull()
+
+  const content = new Defuddle(doc, { url }).parse().content
+  expect(content).toContain('trading. https://x.com/GCRClassic/status/1621990690304442370')
+  expect(content).toContain('winners. https://x.com/1484112393361891328/status/1615351201263927296')
+  expect(content).toContain('More: https://example.com/a/very/long/path?x=1 by @GCRClassic #btc')
+  expect(content).not.toMatch(/sta\/GCRClassic|14841123933618\/|…/)
+})

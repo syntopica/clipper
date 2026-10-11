@@ -6,6 +6,19 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Testing:** mangled tweet links in X clips (thread clip
+  `brain-clips@3e94315`, e.g. `https://x.com/GCRClassic/sta/GCRClassic/status/1621990690304442370…`).
+  Cause: X renders a link in tweet text as hidden `https://`, a cut display
+  text, the href path hidden after it, and `…`; Defuddle's twitter extractor
+  (`formatTweetText`) replaces every anchor with its whole `textContent`, so the
+  pieces concatenated. Not the GraphQL stash: these tweets were not patched.
+  `prepareXPage` now runs `spellOutXTweetLinks` on every X page, stash or not:
+  each non-mention, non-hashtag link in tweet text gets the URL it opens as
+  href and as its only text (a t.co link its expanded URL, from the spans less
+  the `…`). Evidence: `tests/content/prepare-x-page.test.ts` - that clip's
+  anchors through Defuddle yield `https://x.com/GCRClassic/status/1621990690304442370`;
+  fails without the fix.
+
 - [x] 2026-10-11 - **Dependencies:** defuddle 0.19.4 -> 0.19.5, which fixes
   the `resource`-into-`src` lazy-image bug upstream (kepano/defuddle#374, PR
   #388); the live-image matching from `3828ff4` stays as defence in depth.
