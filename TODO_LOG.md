@@ -6,6 +6,15 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Integrations:** The capture-page bundle is minified.
+  Codex decision (medium): minify only `capture-page` (the 1.2 MB Defuddle
+  bundle parsed on every click), without `keepNames` - Defuddle's published
+  bundle is already mangled, which is why `site_extractor` is a boolean. The
+  X hooks stay readable. 1,238,379 -> 814,942 bytes (237,681 gzipped).
+  Evidence: the minified and an unminified build of the same entry, run in
+  jsdom over `tests/fixtures/blog.html` and `url-labelled-links.html`,
+  produce byte-identical `clip-captured` payloads (md5 compared). A real
+  browser capture waits on the extension reload parked at the top of TODO.md.
 - [x] 2026-10-11 - **Pending decision:** `snapshot_mode` stays `sanitized` by
   default. Codex decision (high): raw `outerHTML` carries tokens, hydration
   data and personal information. Correction to the old entry: `full-page` is

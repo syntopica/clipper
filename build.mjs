@@ -35,12 +35,22 @@ await cp('src/options/options.html', 'dist/options/options.html')
 await mkdir('dist/popup', { recursive: true })
 await cp('src/popup/popup.html', 'dist/popup/popup.html')
 
+// The capture script carries Defuddle, about 1.2 MB unminified, and is parsed
+// on every click. It is the one bundle minified: the rest are small enough
+// that readable output in DevTools is worth more than the bytes.
 await build({
-  entryPoints: [
-    'src/content/capture-page.ts',
-    'src/content/x-page-hook.ts',
-    'src/content/x-collector.ts',
-  ],
+  entryPoints: ['src/content/capture-page.ts'],
+  outdir: 'dist',
+  outbase: 'src',
+  bundle: true,
+  minify: true,
+  format: 'iife',
+  target: 'chrome120',
+  define,
+})
+
+await build({
+  entryPoints: ['src/content/x-page-hook.ts', 'src/content/x-collector.ts'],
   outdir: 'dist',
   outbase: 'src',
   bundle: true,

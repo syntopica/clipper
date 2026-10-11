@@ -60,10 +60,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   not share, and it is kept only as a net for the same failure elsewhere - which
   the MDN item above shows is not hypothetical. Needs real-use evidence, not a
   decision now.
-- [ ] The content script bundle went from 192 KB to 1.2 MB unminified (775 KB
-  minified, 229 KB gzipped) with Defuddle. It is injected on click rather than
-  declared in the manifest, so nothing pays for it while browsing, but the build
-  does not minify at all today - turning that on is the cheap fix if it matters.
 
 ## Security
 
