@@ -1,6 +1,6 @@
 # TODO
 
-- [!] Reload the unpacked extension from `<checkout>/dist` in Chrome's Default profile, keeping extension `<extension-id>` and its stored configuration. The 2026-09-14 directory migration found Chrome still registered to the old `brain-clipper/dist` path; a compatibility symlink preserves it. The browser connector was unavailable. Once the new path is confirmed in Chrome, remove only the compatibility symlink.
+- [!] Reload the unpacked extension in Chrome's Default profile (needs a human at the GUI). Checked read-only on 2026-10-11: Chrome's `Secure Preferences` registers extension `<extension-id>` as unpacked from `~/p/brain-clipper/dist` (the compatibility symlink to `~/p/clipper/dist`), and its stored configuration exists under `Local Extension Settings/<extension-id>`. Since 2026-10-11 `pnpm build` derives the manifest key from `key.pem` (before that, builds shipped a placeholder key Chrome rejects), and the build adds the `alarms` permission (no warning) and the queue, so the reload is also the first real-browser run of phase 2. Steps: (1) `cd ~/p/clipper && pnpm build`; (2) open `chrome://extensions`, Developer mode on; (3) on "brain clipper" click the reload arrow - the id stays the same because the key is unchanged, so the settings and GitHub sign-in survive; (4) confirm "Inspect views: service worker" shows no manifest error; (5) clip one page and check the badge goes `...` then `ok`; (6) to move off the symlink, "Remove" is NOT safe (it deletes the extension's storage) - instead leave it registered at the symlink path, which resolves to the same `dist/`. Keep `~/p/brain-clipper`.
 
 > Consolidated from the accessible Claude, Codex, and Antigravity project
 > history. Last reviewed: 2026-07-26. History coverage: Partial.
@@ -26,6 +26,12 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   (x-page-hook / x-collector / prepare-x-page) fixes that in unit tests but has
   not yet seen a real capture. Reload the extension and the x.com tab first —
   the collector only stashes responses from pages loaded after install.
+  Checked 2026-10-11 against the wiki archive: the 26 extension x.com clips
+  since the repair (2026-07-29) contain no "Show more" truncation, but all are
+  single posts or X Articles - none is a multi-tweet thread, so the repair is
+  still unseen on a real thread. Needs a logged-in x.com tab: reload the
+  extension (item above), reload a thread page, clip it, and check every
+  thread tweet is present and untruncated.
 
 - [!] Logged-out x.com is a different app the clipper cannot read: guest status
   pages are server-rendered by a Relay/TanStack app with none of the logged-in
@@ -86,8 +92,14 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Infrastructure
 
-- [ ] Phase 5 - publish unlisted to the Chrome Web Store and ship `dist.zip`
-  through GitHub Releases, replacing per-machine unpacked loads.
+- [!] Phase 5 - publish unlisted to the Chrome Web Store and ship `dist.zip`
+  through GitHub Releases, replacing per-machine unpacked loads. Parked
+  2026-10-11: publishing is an external release the owner performs. Steps:
+  `pnpm build && (cd dist && zip -r ../dist.zip .)`; `gh release create
+  v0.1.0 dist.zip --repo syntopica/clipper --title v0.1.0 --notes "..."`; for
+  the store, the developer dashboard upload of `dist.zip` (the store re-signs,
+  so the `key` field must be removed from the uploaded manifest and the store
+  id differs from the unpacked id - settings would need re-entry).
 
 ## Testing
 
