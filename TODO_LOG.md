@@ -6,6 +6,21 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Pending decision:** `snapshot_mode` stays `sanitized` by
+  default. Codex decision (high): raw `outerHTML` carries tokens, hydration
+  data and personal information. Correction to the old entry: `full-page` is
+  only a schema value; no UI or code path produces it, so it is not "available
+  per clip". The design spec in the clips repository
+  (`docs/superpowers/specs/2026-07-26-brain-clipper-design.md`) still says
+  otherwise. Not filed there: that checkout has another session's unpushed
+  commits and uncommitted edits, so a bookkeeping push from here would publish
+  them. Left in TODO.md below for whoever next owns that repository.
+- [!] 2026-10-11 - **Security (parked, decided):** OS keychain via native
+  messaging stays deferred. Codex decision (high): keep the token in
+  `chrome.storage.local` behind `TRUSTED_CONTEXTS`. Reopens when a maintained
+  per-machine native-host installer and update path exists, or evidence shows
+  the current protection is insufficient. Kept open in TODO.md with that
+  condition.
 
 - [x] 2026-10-11 - **Security:** The hostname denylist is user-extendable from
   the options page, and `sensitivity` is classified per clip. Codex decision

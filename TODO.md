@@ -74,9 +74,12 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 - [ ] Phase 3 - keep only assets that decode via `createImageBitmap`. Documented
   as a partial mitigation: DNS rebinding to a private service that returns a real
   image remains residual accepted risk.
-- [ ] Move the GitHub token out of `chrome.storage.local` into the OS keychain via
+- [!] Move the GitHub token out of `chrome.storage.local` into the OS keychain via
   native messaging. Deferred by design; the token is currently a persisted secret
-  with no keychain protection.
+  with no keychain protection. Decided 2026-10-11 (Codex, high): stay deferred.
+  Unblocks when a maintained per-machine native-host installer and update path
+  exists, or evidence shows `TRUSTED_CONTEXTS` local storage is insufficient
+  for this owner's threat model.
 
 ## Infrastructure
 
@@ -91,10 +94,12 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Pending Decisions
 
-- [ ] Decide whether `snapshot_mode` stays `sanitized` by default. The design was
-  approved with a raw full-page archive, then narrowed to a sanitized snapshot
-  because `outerHTML` carries CSRF tokens, hydration JSON and personal data;
-  `full-page` remains available per clip. One line changes it back.
+- [!] Cross-repo bookkeeping: the clips repository's
+  `docs/superpowers/specs/2026-07-26-brain-clipper-design.md` says
+  `snapshot_mode: full-page` "remains available per clip"; no UI or code path
+  produces it. Not filed in that repository on 2026-10-11 because its checkout
+  held another session's unpushed commits. Smallest step: when `~/p/clips` is
+  clean and in sync, add a TODO there to correct the sentence.
 
 ## Future Ideas
 
