@@ -7,9 +7,36 @@ import { prepareImageAsset } from '../../../src/background/assets/prepare-image-
 import { sniffImageKind } from '../../../src/background/assets/sniff-image-kind'
 import { LIMITS } from '../../../src/shared/limits'
 
-const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3, 4])
-const GIF = new Uint8Array([...new TextEncoder().encode('GIF89a'), 1, 2, 3])
-const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3])
+function png(width: number, height: number): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(33)
+  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13, 0x49, 0x48, 0x44, 0x52])
+  const view = new DataView(bytes.buffer)
+  view.setUint32(16, width)
+  view.setUint32(20, height)
+  return bytes
+}
+
+function gif(width: number, height: number): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(13)
+  bytes.set(new TextEncoder().encode('GIF89a'))
+  const view = new DataView(bytes.buffer)
+  view.setUint16(6, width, true)
+  view.setUint16(8, height, true)
+  return bytes
+}
+
+function jpeg(width: number, height: number): Uint8Array<ArrayBuffer> {
+  // SOI, an APP0 segment to walk past, then SOF0 with the size.
+  const bytes = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 4, 0, 0, 0xff, 0xc0, 0, 11, 8, 0, 0, 0, 0, 1, 1, 0x11, 0])
+  const view = new DataView(bytes.buffer)
+  view.setUint16(13, height)
+  view.setUint16(15, width)
+  return bytes
+}
+
+const PNG = png(64, 48)
+const GIF = gif(64, 48)
+const JPEG = jpeg(64, 48)
 
 function processors(overrides: Partial<ImageProcessors> = {}): ImageProcessors {
   return {
@@ -64,7 +91,7 @@ test('bytes that do not decode are refused', async () => {
       throw new Error('decode failed')
     },
   })
-  expect(await prepareImageAsset(new Blob(['{"secret":1}']), refusing)).toEqual({
+  expect(await prepareImageAsset(new Blob([PNG]), refusing)).toEqual({
     ok: false,
     reason: 'does not decode as an image',
   })
@@ -209,4 +236,56 @@ test('images are on only while the option is set and the host access is still gr
   expect(await imagesEnabled()).toBe(false)
   chromeMock.grantedOrigins.add('https://*/*')
   expect(await imagesEnabled()).toBe(true)
+})
+
+test.each([
+  ['PNG', png(20_000, 20_000)],
+  ['GIF', gif(65_535, 65_535)],
+  ['JPEG', jpeg(60_000, 60_000)],
+])('a %s whose header declares too many pixels is refused before any decode', async (_name, bytes) => {
+  const decode = vi.fn()
+  const reencode = vi.fn()
+  const prepared = await prepareImageAsset(new Blob([bytes]), processors({ decode, reencode }))
+  expect(prepared.ok).toBe(false)
+  expect(!prepared.ok && prepared.reason).toMatch(/exceeds 24000000 pixels/)
+  expect(decode).not.toHaveBeenCalled()
+  expect(reencode).not.toHaveBeenCalled()
+})
+
+test('a format whose size cannot be read from its header is never decoded', async () => {
+  const reencode = vi.fn()
+  const prepared = await prepareImageAsset(new Blob(['BM not really a bitmap']), processors({ reencode }))
+  expect(prepared.ok).toBe(false)
+  expect(reencode).not.toHaveBeenCalled()
+})
+
+test('WebP and AVIF headers are sized too', async () => {
+  const { readImageDimensions } = await import('../../../src/background/assets/read-image-dimensions')
+  const vp8x = new Uint8Array(30)
+  vp8x.set(new TextEncoder().encode('RIFF\0\0\0\0WEBPVP8X'))
+  vp8x.set([0xff, 0x3f, 0, 0x7f, 0x1f, 0], 24)
+  expect(readImageDimensions(vp8x, 'webp')).toEqual({ width: 16384, height: 8064 })
+  const avif = new Uint8Array(40)
+  avif.set(new TextEncoder().encode('ftypavif'), 4)
+  avif.set(new TextEncoder().encode('ispe'), 20)
+  new DataView(avif.buffer).setUint32(28, 9000)
+  new DataView(avif.buffer).setUint32(32, 9000)
+  expect(readImageDimensions(avif, 'avif')).toEqual({ width: 9000, height: 9000 })
+})
+
+test('a body over the byte cap is refused while it streams, whatever Content-Length says', async () => {
+  const { readCappedBody } = await import('../../../src/background/assets/read-capped-body')
+  let pulled = 0
+  const endless = new ReadableStream<Uint8Array>({
+    pull(controller) {
+      pulled += 1
+      controller.enqueue(new Uint8Array(1_000))
+    },
+  })
+  const result = await readCappedBody(new Response(endless, { headers: { 'content-length': '10' } }), 5_000)
+  expect(result).toEqual({ ok: false, reason: 'larger than 5000 bytes' })
+  expect(pulled).toBeLessThan(10)
+
+  const declared = await readCappedBody(new Response('x', { headers: { 'content-length': '999999' } }), 5_000)
+  expect(declared).toEqual({ ok: false, reason: 'larger than 5000 bytes' })
 })

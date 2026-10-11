@@ -4,6 +4,8 @@ import type { ReencodedImage } from './reencoded-image'
 // Decode in the worker, scale the long edge down to the cap, encode as WebP.
 // `createImageBitmap` throwing is how bytes that are not an image are refused,
 // so this doubles as the decode check for every raster format.
+// It decodes at full size, so it must only see images `checkDecodeSize` has
+// passed: `prepareImageAsset` is the one caller and checks first.
 export async function reencodeAsWebp(blob: Blob): Promise<ReencodedImage> {
   const bitmap = await createImageBitmap(blob)
   try {

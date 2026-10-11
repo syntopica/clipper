@@ -1,5 +1,7 @@
 import type { AssetResult } from './asset-result'
+import { LIMITS } from '../../shared/limits'
 import { MAX_ASSET_REDIRECTS } from './max-asset-redirects'
+import { readCappedBody } from './read-capped-body'
 import { vetAssetUrl } from './vet-asset-url'
 
 // Fetch one page-proposed asset under the policy: no cookies, and no redirect
@@ -35,6 +37,6 @@ export async function fetchVettedAsset(
       continue
     }
     if (!response.ok) return { ok: false, reason: `HTTP ${response.status}` }
-    return { ok: true, value: await response.blob() }
+    return readCappedBody(response, LIMITS.MAX_FETCHED_IMAGE_BYTES)
   }
 }

@@ -13,6 +13,12 @@ export const LIMITS = {
   // five-minute lease.
   IMAGE_FETCH_TIMEOUT_MS: 20_000,
   MAX_ASSET_BYTES: 12_000_000,
+  // The most a fetched image may weigh before it is processed, enforced while
+  // the body streams in, and the most pixels one may decode to. A small file
+  // can declare a huge canvas - 20000x20000 is 1.6 GB of RGBA - so dimensions
+  // are read from the header and checked before anything is decoded.
+  MAX_FETCHED_IMAGE_BYTES: 20_000_000,
+  MAX_DECODED_PIXELS: 24_000_000,
   // Raster images are re-encoded as WebP at this quality, the long edge capped.
   MAX_IMAGE_EDGE_PX: 1600,
   WEBP_QUALITY: 0.82,
