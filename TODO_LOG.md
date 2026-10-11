@@ -6,6 +6,34 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Security:** review of the phase 3 asset code. Fixed:
+  (1) `fetch-vetted-asset.ts` read any body whole (`response.blob()`); it now
+  streams through `readCappedBody`, refusing past 20 MB by `Content-Length` or
+  while counting. (2) `prepare-image-asset.ts`/`reencode-as-webp.ts` decoded
+  whatever canvas a header declared (a few KB of PNG can ask for 1.6 GB of
+  RGBA); width and height are now read from the PNG/GIF/JPEG/WebP/AVIF header
+  and anything over 24 million pixels, or unreadable, or another format, is
+  refused before `createImageBitmap`. (3) `keep-svg-attribute.ts` let through
+  `url('https://x/a)b')` (a quoted `)` hid the URL from its regex),
+  CSS-escaped `u\72l(...)` and `image-set('...')`; every `url(` must now open on
+  `#`, backslashes are refused, `image-set(`/`src(`/`@import` too, and the
+  `href` check covers any `*:href`. (4) `sanitize-svg.ts` XML-parsed input
+  with an internal DTD, open to entity expansion; such input is now refused
+  (external DTD references still pass). Evidence: `pnpm test` - 335 passed
+  (11 new SVG cases, 3 of which and the DTD case fail on the old code; pixel
+  cap per format; streaming cap against an endless body); `pnpm e2e` - 6
+  passed.
+- [x] 2026-10-11 - **Assets:** Wikipedia images were clipped as their
+  `/wiki/File:` pages (clip `brain-clips@4f0e3ac`, failures "does not decode
+  as an image"). Cause, reproduced on the live page in Playwright's Chromium:
+  Wikipedia's `<img>` carries an RDFa `resource` naming the File: page, and
+  Defuddle's lazy-image rule copies any attribute ending in `.jpg` into `src`.
+  Extracted images are now matched to the live image by `src` or any `srcset`
+  candidate, scheme ignored (protocol-relative `//upload...`), and take what
+  the browser displayed. Evidence: `tests/content/image-sources.test.ts`
+  (Wikipedia-shaped figure, fails on the old code); the live page now yields
+  `thumb.wikimedia.org` URLs, which answer 200 `image/jpeg` directly.
+
 - [x] 2026-10-11 - **Security:** Phase 3 asset pipeline, calling the policy in
   `src/background/assets/`. Images are off by default; the options page's
   "Download images into the clip" checkbox requests `https://*/*` inside its

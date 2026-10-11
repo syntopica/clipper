@@ -5,8 +5,12 @@ import { keepSvgAttribute } from './keep-svg-attribute'
 // handlers and anything that is not drawing; `<style>` and `<foreignObject>`
 // go too, and every external reference is cut (see `keepSvgAttribute`).
 // Serialised as XML so the file stands alone, `xmlns` included. Null when the
-// input does not parse as an SVG document - an HTML page, say.
+// input does not parse as an SVG document - an HTML page, say - or declares
+// an internal DTD subset: entities are expanded by the XML parse below, which
+// is how a few hundred bytes of nested entities ("billion laughs") exhaust
+// memory. Real SVGs name an external DTD at most, which is never fetched.
 export function sanitizeSvg(svg: string): string | null {
+  if (/<!ENTITY|<!DOCTYPE[^>]*\[/i.test(svg)) return null
   const parsed = new DOMParser().parseFromString(svg, 'image/svg+xml')
   if (parsed.getElementsByTagName('parsererror').length > 0) return null
   if (parsed.documentElement.localName !== 'svg') return null

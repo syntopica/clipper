@@ -351,11 +351,14 @@ a time:
    local or private host) and checks the host permission for its origin;
 2. fetches it without cookies, refusing a redirect Chrome hides (an extension
    worker's manual-redirect fetch is `opaqueredirect`, so its target cannot be
-   vetted);
+   vetted), and stops reading a body past 20 MB, counted as it streams;
 3. reads the format from the bytes: an SVG is sanitised in an offscreen
    document (DOMPurify's SVG profile, no `<style>` or `<foreignObject>`, no
-   reference outside the file) and stored; a GIF is stored as it came, so it
-   keeps its animation; anything else must decode, and is re-encoded as WebP at
+   reference outside the file, no CSS escapes, no internal DTD) and stored; a
+   PNG, JPEG, GIF, WebP or AVIF must declare at most 24 million pixels in its
+   header, read before anything is decoded - other formats are refused, since
+   their size cannot be checked first; a GIF is then stored as it came, so it
+   keeps its animation; the rest must decode, and are re-encoded as WebP at
    quality 0.82 with the long edge capped at 1600px - the original bytes are
    kept when that came out larger without having to shrink the image;
 4. drops whatever is still over the 950 KB git blob cap, deduplicates by content
