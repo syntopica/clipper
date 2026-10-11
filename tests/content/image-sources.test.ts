@@ -21,7 +21,7 @@ test('the largest srcset candidate wins, by width or by density', () => {
 })
 
 test('what the browser displayed comes first, then src', () => {
-  const displayed = new Map([['https://site.example/small.jpg', 'https://site.example/large.jpg']])
+  const displayed = new Map([['//site.example/small.jpg', 'https://site.example/large.jpg']])
   expect(chooseImageSource(image('<img src="/small.jpg" srcset="/large.jpg 2x">'), displayed, BASE)).toBe(
     'https://site.example/large.jpg',
   )
@@ -71,4 +71,46 @@ test('the payload proposes the images the markdown references, as written there'
 
   expect(payload.imageUrls).toEqual(['https://example.com/a.png', 'https://example.com/b.png'])
   for (const url of payload.imageUrls) expect(payload.markdown).toContain(`](${url})`)
+})
+
+// Wikipedia as served in 2026: protocol-relative thumbnails, and an RDFa
+// `resource` naming the File: page that Defuddle's lazy-image rule copies into
+// `src` because it ends in `.jpg`.
+function wikipediaDoc(): Document {
+  const thumb = '//upload.wikimedia.org/wikipedia/commons/thumb/9/94/Wanzijia.jpg'
+  const doc = new DOMParser().parseFromString(
+    `<html lang="en"><head><base href="https://en.wikipedia.org/wiki/Paper_clip"><title>Paper clip - Wikipedia</title></head><body>
+    <div id="mw-content-text"><div class="mw-parser-output">
+    <p>${'A paper clip holds sheets of paper together by pressure. '.repeat(12)}</p>
+    <figure class="mw-default-size" typeof="mw:File/Thumb"><a href="/wiki/File:Wanzijia.jpg" class="mw-file-description"><img resource="https://en.wikipedia.org/wiki/File:Wanzijia.jpg" src="${thumb}/500px-Wanzijia.jpg?utm_source=en.wikipedia.org&amp;utm_content=thumbnail" decoding="async" loading="lazy" srcset="${thumb}/960px-Wanzijia.jpg?utm_source=en.wikipedia.org&amp;utm_content=thumbnail 2x" width="340" height="295" class="mw-file-element"></a><figcaption>Paper clips coated in plastic</figcaption></figure>
+    <p>${'Its history begins with bent steel wire. '.repeat(12)}</p></div></div></body></html>`,
+    'text/html',
+  )
+  Object.defineProperty(doc, 'baseURI', { value: 'https://en.wikipedia.org/wiki/Paper_clip', configurable: true })
+  return doc
+}
+
+test('a Wikipedia figure is clipped as its upload image, not as the File: page its link and resource name', async () => {
+  const doc = wikipediaDoc()
+  const payload = await buildCapturedPayload(doc, window, 'https://en.wikipedia.org/wiki/Paper_clip')
+
+  const expected = 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Wanzijia.jpg/500px-Wanzijia.jpg?utm_source=en.wikipedia.org&utm_content=thumbnail'
+  expect(payload.imageUrls).toEqual([expected])
+  expect(payload.markdown).toContain(`](${expected})`)
+  expect(payload.markdown).not.toMatch(/!\[[^\]]*\]\([^)]*File:/)
+})
+
+test('a copy whose src the extractor replaced is matched to the live image by its srcset', () => {
+  const doc = wikipediaDoc()
+  const extracted =
+    '<img src="https://en.wikipedia.org/wiki/File:Wanzijia.jpg" srcset="http://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Wanzijia.jpg/960px-Wanzijia.jpg?utm_source=en.wikipedia.org&amp;utm_content=thumbnail 2x">'
+  expect(imageUrlsInHtml(pinImageSources(extracted, doc))).toEqual([
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Wanzijia.jpg/500px-Wanzijia.jpg?utm_source=en.wikipedia.org&utm_content=thumbnail',
+  ])
+})
+
+test('a protocol-relative src resolves to https on an https page', () => {
+  expect(chooseImageSource(image('<img src="//upload.wikimedia.org/a.png">'), new Map(), 'https://en.wikipedia.org/wiki/X')).toBe(
+    'https://upload.wikimedia.org/a.png',
+  )
 })
