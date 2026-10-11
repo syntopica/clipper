@@ -48,12 +48,22 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Integrations
 
-- [ ] Report upstream that `extractorType` is unusable in Defuddle's published
+- [!] Report upstream that `extractorType` is unusable in Defuddle's published
   browser bundles: it comes from `constructor.name`, and `dist/index.js` and
   `dist/index.full.js` are minified, so it arrives as `v` or `a`. The unbundled
   CJS under `dist/` keeps the names, which is why the node path reports `github`
   correctly and the extension cannot. `site_extractor` is a boolean because of
   this; restore the name if upstream sets `keep_classnames`.
+  Re-checked 2026-10-11 on defuddle 0.19.4: `dist/index.full.js` still sets
+  `extractorType: o.constructor.name.replace("Extractor", ...)` over classes
+  minified to `class a extends`. Blocked on external communication (owner
+  sends it). Draft for https://github.com/kepano/defuddle/issues/new :
+
+  ```
+  Title: extractorType is a minified class name in the browser bundles
+
+  `parse()` reports `extractorType` from `constructor.name`, but `dist/index.js` and `dist/index.full.js` are minified, so in a browser extension (or any bundler consuming those files) it comes back as `a`, `i` or `v` instead of `github`, `twitter` or `youtube`. The unbundled CJS keeps the names, which is why Node reports them correctly. Reproduced on 0.19.4: `grep -o 'extractorType:[^,]*' dist/index.full.js` shows `o.constructor.name.replace("Extractor", ...)`, and the classes are emitted as `class a extends`. Could the browser builds keep class names (esbuild `keepNames`, terser `keep_classnames`), or could each extractor declare a static name that `extractorType` reads instead? Downstream we currently record only whether a site extractor ran, because the name is unusable.
+  ```
 - [ ] Retire the url-labelled-link recovery (`dropped-content-links.ts`,
   `append-dropped-links.ts`, `is-url-like-text.ts`, `LIMITS.MAX_RECOVERED_LINKS`)
   if it never fires again. It was written for a Readability behaviour Defuddle does
