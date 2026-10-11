@@ -6,6 +6,21 @@
 
 ### 2026-10
 
+
+- [x] 2026-10-11 - **Security:** The hostname denylist is user-extendable from
+  the options page, and `sensitivity` is classified per clip. Codex decision
+  (high): an add-only `denylistedHostnames: string[]` in `chrome.storage.sync`,
+  one bare hostname per line, exact-or-subdomain match, applied to capture and
+  to capture-service status lookups; built-ins and loopback/private/`.local`
+  rules stay mandatory; invalid entries refused on save; an unreadable stored
+  list refuses capture and names nothing to the service. Codex decision
+  (medium): a separate `privateHostnames: string[]` (same contract) marks
+  matching clips `private`; denylist wins; everything else `public`;
+  `restricted` waits for an explicit manual-only choice. Configurations saved
+  before this load with both lists empty - no migration needed. Evidence:
+  `pnpm test` (`tests/shared/hostname-lists.test.ts`,
+  `tests/options/save-settings.test.ts`, new cases in
+  `handle-captured-page.test.ts` and `settings.test.ts`).
 - [x] 2026-10-11 - **Infrastructure:** Phase 2 durable IndexedDB job queue
   (`src/background/queue/`). Jobs are persisted `captured` before any network
   call; each transition (`uploading` under a five-minute lease,

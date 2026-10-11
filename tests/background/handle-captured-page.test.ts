@@ -142,3 +142,37 @@ test('the job mints the clip id and a second-precision UTC timestamp once', () =
   expect(job.clipId).toMatch(/^[0-9A-HJKMNP-TV-Z]{26}$/)
   expect(job.payload).toBe(payload)
 })
+
+function configured(extra: Record<string, unknown> = {}) {
+  const stores = installChromeMock()
+  Object.assign(stores.sync.data, { owner: 'o', repo: 'r', branch: 'main', ...extra })
+  stores.local.data.machineName = 'm'
+  stores.local.data.githubCredential = { accessToken: 'tok', refreshToken: null, expiresAt: null, login: 'x' }
+  return stores
+}
+
+test('refuses a host the user added to the denylist, before writing anything', async () => {
+  configured({ denylistedHostnames: ['example.com'] })
+  const github = mockGithub()
+  await expect(handleCapturedPage(newClipJob(payload))).rejects.toThrow(/your denylist/)
+  expect(github.paths).toHaveLength(0)
+})
+
+test('a host on the private list is clipped with sensitivity private; others stay public', async () => {
+  const sensitivities: string[] = []
+  for (const privateHostnames of [['example.com'], ['other.example']]) {
+    configured({ privateHostnames })
+    mockGithub()
+    const original = globalThis.fetch
+    globalThis.fetch = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
+      if (String(url).endsWith('/git/blobs')) {
+        const content = (JSON.parse(String(init?.body)) as { content: string }).content
+        const match = /"sensitivity": "(\w+)"/.exec(content)
+        if (match) sensitivities.push(match[1] as string)
+      }
+      return original(url, init)
+    }) as unknown as typeof fetch
+    await handleCapturedPage(newClipJob(payload))
+  }
+  expect(sensitivities).toEqual(['private', 'public'])
+})

@@ -4,12 +4,15 @@ import { isDenylistedHostname } from '../shared/is-denylisted-hostname'
 // not be sent there any more than it may be clipped: the lookup is a request
 // carrying that URL to a third machine, and the denylist exists precisely to
 // decide which URLs never leave this one.
-export function isInspectableUrl(url: string | undefined): url is string {
+export function isInspectableUrl(
+  url: string | undefined,
+  userDenylist: readonly string[] = [],
+): url is string {
   if (url === undefined) return false
   try {
     const parsed = new URL(url)
     if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return false
-    return !isDenylistedHostname(parsed.hostname)
+    return !isDenylistedHostname(parsed.hostname, userDenylist)
   } catch {
     return false
   }

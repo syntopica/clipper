@@ -20,6 +20,7 @@ const input = {
     language: 'en',
     site: 'example.com',
   },
+  sensitivity: 'public' as const,
   clippedAt: '2026-07-26T14:03:11Z',
   clippedFrom: 'mac-cristian',
   extensionVersion: '0.1.0',

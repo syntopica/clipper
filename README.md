@@ -311,9 +311,21 @@ and `src/shared/is-denylisted-hostname.ts` also refuses loopback addresses,
 up the same way any other failure does: a red badge and an action title you
 can hover to read.
 
-This starting list is not exhaustive - it is a starting point you are
-expected to extend in `denylisted-hostnames.ts` for your own banking, mail
-and admin domains before relying on this extension day to day.
+This starting list is not exhaustive. Extend it from the options page: the
+"Never clip these hosts" box takes one bare hostname per line, matches each
+one and its subdomains, and only adds - the built-in list and the loopback,
+private and `.local` rules always apply. The list is stored in
+`chrome.storage.sync`, so it follows you to every machine, and it also keeps
+those hosts' URLs from being sent to the capture service for the toolbar
+colour. An entry that is not a bare hostname (a URL, a path, a wildcard) is
+refused on save rather than dropped.
+
+## Sensitivity
+
+`sensitivity` in `metadata.json` is `public` unless the page's host (or a
+parent domain) is on the options page's "Mark clips from these hosts private"
+list, in which case it is `private`, which the ingest side routes to manual
+review instead of synthesis. Nothing emits `restricted` yet.
 
 ## Durable queue (Phase 2)
 

@@ -20,6 +20,7 @@ export interface BuildClipFilesInput {
   extractor: Extractor
   siteExtractor: boolean
   page: PageMetadata
+  sensitivity: ClipMetadata['sensitivity']
   clippedAt: string
   clippedFrom: string
   extensionVersion: string
@@ -62,7 +63,7 @@ export async function buildClipFiles(input: BuildClipFilesInput): Promise<ClipFi
     site_extractor: input.siteExtractor,
     extractor_version: input.extractor === 'defuddle' ? DEFUDDLE_VERSION : null,
     snapshot_mode: snapshotMode,
-    sensitivity: 'public',
+    sensitivity: input.sensitivity,
     content_sha256: await sha256Hex(body),
     source_html_sha256: await sha256Hex(input.sourceHtml),
     asset_count: 0,

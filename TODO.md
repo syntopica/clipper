@@ -67,12 +67,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Security
 
-- [ ] Make the hostname denylist user-editable from the options page. It is a
-  conservative constant today (`src/shared/denylisted-hostnames.ts`) and the user is
-  expected to extend it; a constant means editing code to do that.
-- [ ] `sensitivity` is hardcoded `public`. Honest in phase 1 only because a denylisted
-  host is refused outright, but phase 4's routing keys on this field, so per-clip
-  classification has to exist before that ships.
 - [ ] Phase 3 - asset fetch policy before any image download: https-only, port
   443, no URL credentials, block loopback / private / link-local / `.local`,
   `redirect: 'manual'` with per-hop revalidation, `credentials: 'omit'` first.

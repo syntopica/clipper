@@ -1,4 +1,5 @@
 import { applyTabStatus } from './apply-tab-status'
+import { getUserDenylist } from '../shared/get-user-denylist'
 import { isInspectableUrl } from './is-inspectable-url'
 import { resolveClipStatus } from './resolve-clip-status'
 
@@ -6,8 +7,10 @@ import { resolveClipStatus } from './resolve-clip-status'
 // setIcon call, and an icon that failed to change is not worth a console full
 // of errors on every window close.
 export async function refreshTabStatus(tabId: number, url: string | undefined): Promise<void> {
-  if (!isInspectableUrl(url)) return
   try {
+    // An unreadable user denylist names nothing to the service at all.
+    const userDenylist = await getUserDenylist()
+    if (userDenylist === null || !isInspectableUrl(url, userDenylist)) return
     await applyTabStatus(tabId, await resolveClipStatus(url))
   } catch {
     // The tab went away, or Chrome refused the icon for a page it no longer

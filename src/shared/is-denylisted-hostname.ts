@@ -1,4 +1,5 @@
 import { DENYLISTED_HOSTNAMES } from './denylisted-hostnames'
+import { matchesHostnameList } from './matches-hostname-list'
 import { normalizeHostname } from './normalize-hostname'
 
 const LOOPBACK_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1'])
@@ -27,11 +28,12 @@ function isPrivateIPv6(hostname: string): boolean {
   )
 }
 
-export function isDenylistedHostname(hostname: string): boolean {
+// `userEntries` extends the built-in list; it can never shorten it.
+export function isDenylistedHostname(hostname: string, userEntries: readonly string[] = []): boolean {
   const host = normalizeHostname(hostname)
   if (LOOPBACK_HOSTNAMES.has(host)) return true
   if (host.endsWith('.local')) return true
   if (isPrivateIPv4(host)) return true
   if (isPrivateIPv6(host)) return true
-  return DENYLISTED_HOSTNAMES.some((entry) => host === entry || host.endsWith(`.${entry}`))
+  return matchesHostnameList(host, DENYLISTED_HOSTNAMES) || matchesHostnameList(host, userEntries)
 }

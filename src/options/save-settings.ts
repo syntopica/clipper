@@ -4,8 +4,17 @@ import { setSettings } from '../shared/set-settings'
 import { SettingsSchema } from '../shared/settings-schema'
 import { field } from './field'
 import { say } from './say'
+import { textArea } from './text-area'
+import { parseHostnameList } from '../shared/parse-hostname-list'
 
 export async function saveSettings(): Promise<void> {
+  const denylisted = parseHostnameList(textArea('denylistedHostnames').value)
+  const privateHosts = parseHostnameList(textArea('privateHostnames').value)
+  for (const list of [denylisted, privateHosts]) {
+    if (!list.ok) {
+      return say(`Saved nothing: not a bare hostname: ${list.invalid.join(', ')}`)
+    }
+  }
   const parsed = SettingsSchema.safeParse({
     owner: field('owner').value.trim(),
     repo: field('repo').value.trim(),
@@ -13,6 +22,8 @@ export async function saveSettings(): Promise<void> {
     machineName: field('machineName').value.trim(),
     githubAppClientId: field('githubAppClientId').value.trim() || null,
     captureServiceOrigin: field('captureServiceOrigin').value.trim() || null,
+    denylistedHostnames: denylisted.ok ? denylisted.hostnames : [],
+    privateHostnames: privateHosts.ok ? privateHosts.hostnames : [],
   })
   if (!parsed.success) {
     return say(

@@ -3,6 +3,7 @@ import { getCaptureToken } from '../shared/get-capture-token'
 import { getSettings } from '../shared/get-settings'
 import { field } from './field'
 import { renderAuth } from './render-auth'
+import { textArea } from './text-area'
 
 export async function load(): Promise<void> {
   const settings = await getSettings()
@@ -15,5 +16,7 @@ export async function load(): Promise<void> {
   field('captureServiceOrigin').value = settings?.captureServiceOrigin ?? ''
   field('machineName').value = settings?.machineName ?? (await defaultMachineName())
   field('captureToken').value = (await getCaptureToken()) ?? ''
+  textArea('denylistedHostnames').value = (settings?.denylistedHostnames ?? []).join('\n')
+  textArea('privateHostnames').value = (settings?.privateHostnames ?? []).join('\n')
   await renderAuth()
 }

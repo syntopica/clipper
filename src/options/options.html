@@ -4,7 +4,8 @@
 <style>
   body { font: 14px system-ui, sans-serif; margin: 2rem; max-width: 34rem; }
   label { display: block; margin: 0.75rem 0 0.25rem; }
-  input { width: 100%; padding: 0.4rem; }
+  input, textarea { width: 100%; padding: 0.4rem; box-sizing: border-box; }
+  textarea { font: 13px ui-monospace, monospace; }
   .row { display: flex; gap: 0.5rem; margin-top: 1rem; }
   #authState { margin: 0; }
   #deviceCode { margin-top: 1rem; padding: 0.75rem; border: 1px solid #ccc; }
@@ -36,6 +37,15 @@
   >Capture token (colours the toolbar icon; leave empty and the icon stays grey)</label
 >
 <input id="captureToken" type="password" autocomplete="off" />
+<label for="denylistedHostnames"
+  >Never clip these hosts, or their subdomains - one per line, added to the built-in list of
+  mail, banking and local addresses</label
+>
+<textarea id="denylistedHostnames" rows="4" spellcheck="false"></textarea>
+<label for="privateHostnames"
+  >Mark clips from these hosts private (reviewed by hand instead of synthesised) - one per line</label
+>
+<textarea id="privateHostnames" rows="4" spellcheck="false"></textarea>
 <div class="row">
   <button id="save">Save</button>
 </div>

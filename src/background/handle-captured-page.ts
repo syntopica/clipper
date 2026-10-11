@@ -2,6 +2,7 @@ import { buildClipFiles } from '../shared/build-clip-files'
 import { getAccessToken } from '../shared/get-access-token'
 import { getSettings } from '../shared/get-settings'
 import { isDenylistedHostname } from '../shared/is-denylisted-hostname'
+import { matchesHostnameList } from '../shared/matches-hostname-list'
 import type { ClipJob } from './clip-job'
 import { commitClip } from './commit-clip'
 
@@ -21,6 +22,9 @@ export async function handleCapturedPage(job: ClipJob): Promise<{ dirPath: strin
 
   const settings = await getSettings()
   if (!settings) throw new Error('settings are incomplete - open the options page')
+  if (isDenylistedHostname(hostname, settings.denylistedHostnames)) {
+    throw new Error(`refusing to clip a host on your denylist: ${hostname}`)
+  }
   const token = await getAccessToken()
   if (!token) throw new Error('not signed in to GitHub on this device - open the options page')
 
@@ -33,6 +37,7 @@ export async function handleCapturedPage(job: ClipJob): Promise<{ dirPath: strin
     extractor: payload.extractor,
     siteExtractor: payload.siteExtractor,
     page: payload.page,
+    sensitivity: matchesHostnameList(hostname, settings.privateHostnames) ? 'private' : 'public',
     clippedAt: job.clippedAt,
     clippedFrom: settings.machineName,
     extensionVersion: chrome.runtime.getManifest().version,

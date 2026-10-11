@@ -9,6 +9,8 @@ const settings = {
   machineName: 'mac-arm64-a3f2',
   githubAppClientId: 'Iv1example',
   captureServiceOrigin: 'https://capture.example.test',
+  denylistedHostnames: ['bank.example'],
+  privateHostnames: ['intranet.example'],
 }
 
 test('round-trips settings, keeping the machine name out of sync storage', async () => {
@@ -22,6 +24,8 @@ test('round-trips settings, keeping the machine name out of sync storage', async
     branch: 'main',
     githubAppClientId: 'Iv1example',
     captureServiceOrigin: 'https://capture.example.test',
+    denylistedHostnames: ['bank.example'],
+    privateHostnames: ['intranet.example'],
   })
   expect(stores.local.data).toEqual({ machineName: 'mac-arm64-a3f2' })
 })
@@ -54,4 +58,18 @@ test('an install that configured neither the app nor the capture service is stil
     githubAppClientId: null,
     captureServiceOrigin: null,
   })
+})
+
+test('a configuration saved before the hostname lists existed still loads, with both lists empty', async () => {
+  const stores = installChromeMock()
+  Object.assign(stores.sync.data, { owner: 'o', repo: 'r', branch: 'main', githubAppClientId: 'Iv1', captureServiceOrigin: null })
+  stores.local.data.machineName = 'm'
+  expect(await getSettings()).toMatchObject({ owner: 'o', denylistedHostnames: [], privateHostnames: [] })
+})
+
+test('a malformed stored hostname list makes the settings unreadable rather than silently empty', async () => {
+  const stores = installChromeMock()
+  Object.assign(stores.sync.data, { owner: 'o', repo: 'r', branch: 'main', denylistedHostnames: ['https://x.example/'] })
+  stores.local.data.machineName = 'm'
+  expect(await getSettings()).toBeNull()
 })
