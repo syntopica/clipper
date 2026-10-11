@@ -1,3 +1,4 @@
+import { GithubRequestError } from './github-request-error'
 import { githubFetch, type GithubContext } from './github-fetch'
 
 export type ExistingClipStatus = 'absent' | 'identical' | 'conflict'
@@ -12,7 +13,7 @@ export async function checkExistingClip(
     { headers: { accept: 'application/vnd.github.raw+json' } },
   )
   if (response.status === 404) return 'absent'
-  if (!response.ok) throw new Error(`existing clip lookup failed: ${response.status}`)
+  if (!response.ok) throw new GithubRequestError('existing clip lookup', response)
 
   const existing = (await response.json()) as { clip_id?: string; content_sha256?: string }
   const identical =

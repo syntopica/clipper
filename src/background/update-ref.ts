@@ -1,3 +1,4 @@
+import { GithubRequestError } from './github-request-error'
 import { githubFetch, type GithubContext } from './github-fetch'
 import { NotFastForwardError } from './not-fast-forward-error'
 import { encodeBranchPath } from './encode-branch-path'
@@ -13,5 +14,5 @@ export async function updateRef(
   })
   if (response.ok) return
   if (response.status === 409 || response.status === 422) throw new NotFastForwardError()
-  throw new Error(`ref update failed: ${response.status}`)
+  throw new GithubRequestError('ref update', response)
 }

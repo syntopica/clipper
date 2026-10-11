@@ -1,3 +1,4 @@
+import { GithubRequestError } from './github-request-error'
 import { githubFetch, type GithubContext } from './github-fetch'
 
 export async function createTree(
@@ -12,6 +13,6 @@ export async function createTree(
       tree: entries.map((entry) => ({ path: entry.path, mode: '100644', type: 'blob', sha: entry.sha })),
     }),
   })
-  if (!response.ok) throw new Error(`tree creation failed: ${response.status}`)
+  if (!response.ok) throw new GithubRequestError('tree creation', response)
   return ((await response.json()) as { sha: string }).sha
 }

@@ -1,3 +1,4 @@
+import { GithubRequestError } from './github-request-error'
 import { githubFetch, type GithubContext } from './github-fetch'
 import { encodeBranchPath } from './encode-branch-path'
 
@@ -6,11 +7,11 @@ export async function getHeadCommit(
   branch: string,
 ): Promise<{ commitSha: string; treeSha: string }> {
   const refResponse = await githubFetch(context, `/git/ref/heads/${encodeBranchPath(branch)}`)
-  if (!refResponse.ok) throw new Error(`ref lookup failed: ${refResponse.status}`)
+  if (!refResponse.ok) throw new GithubRequestError('ref lookup', refResponse)
   const ref = (await refResponse.json()) as { object: { sha: string } }
 
   const commitResponse = await githubFetch(context, `/git/commits/${ref.object.sha}`)
-  if (!commitResponse.ok) throw new Error(`commit lookup failed: ${commitResponse.status}`)
+  if (!commitResponse.ok) throw new GithubRequestError('commit lookup', commitResponse)
   const commit = (await commitResponse.json()) as { sha: string; tree: { sha: string } }
 
   return { commitSha: commit.sha, treeSha: commit.tree.sha }

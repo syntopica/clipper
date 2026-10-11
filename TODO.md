@@ -125,10 +125,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Infrastructure
 
-- [ ] Phase 2 - a `GithubRequestError` carrying status and response headers. Status
-  currently lives only inside error message strings across six call sites, and the
-  queue's state machine has to separate permanent (401/403, conflict) from transient
-  (429/5xx/offline) and read `Retry-After`.
 - [ ] Phase 2 - no MV3 keepalive around the commit sequence: `fetch` does not reset the
   30-second idle timer, so a slow connection can lose a clip and leave the badge stuck
   on `...`. No partial clip can result - the ref update is the only mutation. A stuck

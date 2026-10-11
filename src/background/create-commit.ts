@@ -1,3 +1,4 @@
+import { GithubRequestError } from './github-request-error'
 import { githubFetch, type GithubContext } from './github-fetch'
 
 export async function createCommit(
@@ -8,6 +9,6 @@ export async function createCommit(
     method: 'POST',
     body: JSON.stringify({ message: input.message, tree: input.treeSha, parents: [input.parentSha] }),
   })
-  if (!response.ok) throw new Error(`commit creation failed: ${response.status}`)
+  if (!response.ok) throw new GithubRequestError('commit creation', response)
   return ((await response.json()) as { sha: string }).sha
 }

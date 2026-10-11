@@ -6,6 +6,14 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Infrastructure:** Phase 2 - `GithubRequestError` carries
+  status and response headers at all seven Git Database call sites (ref and
+  commit lookup, blob, tree, commit, ref update, existing-clip lookup), with
+  the old messages kept. `githubFailureKind()` separates permanent (401/403,
+  404, 422) from transient (429, 5xx, rate-limited 403, offline `TypeError`)
+  and `retryAfterMs()` reads `Retry-After` (seconds or HTTP date) or
+  `x-ratelimit-reset`. Evidence: `pnpm test`
+  (`tests/background/github-request-error.test.ts`, 14 cases).
 - [x] 2026-10-11 - **Infrastructure:** Phase 2 prerequisite - `newClipId()`
   and `clippedAt` moved out of `handleCapturedPage` to the enqueue boundary.
   The service worker mints a `ClipJob` (`new-clip-job.ts`) when it accepts a
