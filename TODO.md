@@ -129,8 +129,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   30-second idle timer, so a slow connection can lose a clip and leave the badge stuck
   on `...`. No partial clip can result - the ref update is the only mutation. A stuck
   `...` means "worker died, clip lost", not "hung".
-- [ ] Backoff on the four concurrent blob POSTs - exactly the burst pattern GitHub's
-  secondary rate limits watch for. Phase 1 has none.
 - [ ] Per-tab badge. It is global today, so two captures within four seconds can clear
   each other's result.
 - [ ] Phase 2 - durable IndexedDB job queue, state machine persisted per

@@ -7,6 +7,7 @@ import { createTree } from './create-tree'
 import { getHeadCommit } from './get-head-commit'
 import type { GithubContext } from './github-fetch'
 import { NotFastForwardError } from './not-fast-forward-error'
+import { DEFAULT_RETRY, retryTransientGithub, type RetryOptions } from './retry-transient-github'
 import { updateRef } from './update-ref'
 
 const MAX_ATTEMPTS = 3
@@ -14,6 +15,7 @@ const MAX_ATTEMPTS = 3
 export async function commitClip(
   context: GithubContext,
   input: { branch: string; clip: ClipFiles },
+  retry: RetryOptions = DEFAULT_RETRY,
 ): Promise<{ commitSha: string | null; alreadyPresent: boolean }> {
   const existing = await checkExistingClip(context, {
     branch: input.branch,
@@ -24,12 +26,13 @@ export async function commitClip(
   if (existing === 'identical') return { commitSha: null, alreadyPresent: true }
   if (existing === 'conflict') throw new ClipConflictError(input.clip.dirPath)
 
-  const entries = await Promise.all(
-    Object.entries(input.clip.files).map(async ([path, content]) => ({
-      path,
-      sha: await createBlob(context, content),
-    })),
-  )
+  // One blob at a time, each retried with backoff. Firing them concurrently is
+  // the burst pattern GitHub's secondary rate limits watch for, and four
+  // requests in sequence cost well under a second.
+  const entries: Array<{ path: string; sha: string }> = []
+  for (const [path, content] of Object.entries(input.clip.files)) {
+    entries.push({ path, sha: await retryTransientGithub(() => createBlob(context, content), retry) })
+  }
 
   const message = `Clip: ${input.clip.metadata.title}`
 

@@ -6,6 +6,15 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Infrastructure:** Backoff on the blob POSTs. Blobs are now
+  created one at a time instead of four concurrently, and each goes through
+  `retryTransientGithub()`: transient failures (429, 5xx, rate-limited 403,
+  offline) are retried up to four attempts, waiting `Retry-After` when GitHub
+  gives it and 1s/2s/4s otherwise; a wait over 30s is not held open in the
+  worker, the error surfaces instead (the durable queue is where long waits
+  belong). Evidence: `pnpm test`
+  (`tests/background/retry-transient-github.test.ts`: max one blob in flight,
+  a throttled blob retried after its `Retry-After`).
 - [x] 2026-10-11 - **Infrastructure:** Phase 2 - `GithubRequestError` carries
   status and response headers at all seven Git Database call sites (ref and
   commit lookup, blob, tree, commit, ref update, existing-clip lookup), with
