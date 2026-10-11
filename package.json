@@ -8,7 +8,8 @@
     "build": "node build.mjs",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "icons": "node scripts/build-icons.mjs"
+    "icons": "node scripts/build-icons.mjs",
+    "e2e": "pnpm build && playwright test -c e2e/playwright.config.ts"
   },
   "dependencies": {
     "any-ascii": "^0.3.3",
@@ -21,6 +22,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@types/chrome": "^0.3.5",
     "@types/node": "^26.6.5",
     "@types/turndown": "^5.0.6",

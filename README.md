@@ -380,4 +380,5 @@ it does not merge them.
 pnpm test        # Vitest, jsdom
 pnpm typecheck   # tsc --noEmit
 pnpm build       # esbuild -> dist/, load unpacked from there
+pnpm e2e         # builds, then drives dist/ in Playwright's Chromium
 ```

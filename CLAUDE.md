@@ -41,6 +41,7 @@ say which before changing either.
 pnpm test        # Vitest, jsdom
 pnpm typecheck   # tsc --noEmit
 pnpm build       # esbuild -> dist/, load unpacked from there
+pnpm e2e         # builds, then drives dist/ in Playwright's Chromium
 ```
 
 `key.pem` is the extension signing key: gitignored, canonical copy at the password manager.

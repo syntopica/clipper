@@ -94,10 +94,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Testing
 
-- [ ] Phase 2 - Playwright against real Chromium for the extension lifecycle
-  (permissions, commands, `OffscreenCanvas`, service worker termination and
-  resume). jsdom cannot cover any of it.
-
 ## Pending Decisions
 
 - [!] Cross-repo bookkeeping: the clips repository's

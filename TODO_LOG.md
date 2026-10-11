@@ -6,6 +6,18 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Testing:** Playwright against real Chromium for the
+  extension lifecycle. Codex decision (medium): local script now, CI job once
+  the durable queue ships - it shipped the same day, so both landed. `pnpm e2e`
+  builds and side-loads `dist/` into Playwright's Chromium (headless) and
+  checks: the manifest loads under the id its key pins; the options page saves
+  both hostname lists to real `chrome.storage.sync`; a capture whose blob POST
+  answers 503 `Retry-After: 45` is persisted `transient-failure` in the real
+  IndexedDB, survives `ServiceWorker.stopAllWorkers`, and is committed exactly
+  once (one ref PATCH) when the alarm wakes a fresh worker, leaving the queue
+  empty. GitHub is served by `context.route`, which does intercept the service
+  worker's requests. CI runs it as the `e2e` job. Evidence: `pnpm e2e` - 3
+  passed (1.1m). Not covered: keyboard commands and `OffscreenCanvas` (phase 3).
 - [x] 2026-10-11 - **Integrations:** MDN's "See also" and "Browser
   compatibility" losses are accepted. Codex decision (medium): add a
   `developer.mozilla.org` `contentSelector` override only if a fixture shows
