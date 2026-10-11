@@ -6,6 +6,17 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Integrations:** MDN's "See also" and "Browser
+  compatibility" losses are accepted. Codex decision (medium): add a
+  `developer.mozilla.org` `contentSelector` override only if a fixture shows
+  both sections retained without navigation or footer; otherwise keep
+  Defuddle's result. Measured on live pages (`Web/API/Window/fetch`,
+  `Web/API/Fetch_API/Using_Fetch`) under Defuddle 0.19.4: with
+  `contentSelector: '.reference-layout__body'` neither section survives; adding
+  `removeExactSelectors/removePartialSelectors: false` brings back
+  compatibility but still not "See also", and switches off clutter removal for
+  the whole page. Condition not met, so no override. Reopens if a Defuddle
+  release keeps those sections or exposes a narrower knob.
 - [x] 2026-10-11 - **Future idea:** Non-ASCII titles are transliterated in
   clip directory names. Codex decision (medium): a transliteration dependency
   for new directory names, the Unicode title kept in metadata and frontmatter,

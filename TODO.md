@@ -27,7 +27,7 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   not yet seen a real capture. Reload the extension and the x.com tab first —
   the collector only stashes responses from pages loaded after install.
 
-- [ ] Logged-out x.com is a different app the clipper cannot read: guest status
+- [!] Logged-out x.com is a different app the clipper cannot read: guest status
   pages are server-rendered by a Relay/TanStack app with none of the logged-in
   DOM (`cellInnerDiv`, `tweetText`, `User-Name` testids absent; articles carry
   `data-tweet-id` + Tailwind classes), they fire no GraphQL requests (so
@@ -39,6 +39,10 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   `core.user_results.result.core`). The 2026-07-29 clip rescue proved this
   path end to end (clip repository, commit ef86110); decide whether the extension grows a
   guest-page fallback that mines the store the same way.
+  Decided 2026-10-11 (Codex, high): keep deferred - React fiber and Relay
+  store internals are a brittle dependency for a mode the owner rarely uses.
+  Unblocks after repeated real guest-page captures fail; use those captures to
+  define the required content.
 
 ## Backend
 
@@ -50,10 +54,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   CJS under `dist/` keeps the names, which is why the node path reports `github`
   correctly and the extension cannot. `site_extractor` is a boolean because of
   this; restore the name if upstream sets `keep_classnames`.
-- [ ] Defuddle drops MDN's "See also" and "Browser compatibility" sections, which
-  Readability kept - five real content links lost on the one MDN clip on disk.
-  Decide whether that is acceptable or worth a `contentSelector` override for
-  `developer.mozilla.org`.
 - [ ] Retire the url-labelled-link recovery (`dropped-content-links.ts`,
   `append-dropped-links.ts`, `is-url-like-text.ts`, `LIMITS.MAX_RECOVERED_LINKS`)
   if it never fires again. It was written for a Readability behaviour Defuddle does
