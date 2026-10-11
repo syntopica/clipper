@@ -1,6 +1,5 @@
 # TODO
 
-- [~] Phase 2 real-browser smoke check. The extension is loaded again in Chrome's Default profile (2026-10-11): it had silently failed to load at startup, so it was re-added with "Load unpacked" from `~/p/brain-clipper/dist`; Chrome resolved the symlink and now registers `~/p/clipper/dist`, id `odfmlmgmcdlmmclnlagohplgpeijjeoa` unchanged (it matches the `key.pem`-derived manifest key), `Local Extension Settings/<id>` intact, no error on the card. Remaining: clip one page and check the badge goes `...` then `ok`. Never use "Remove" (it deletes the extension's storage).
 
 > Consolidated from the accessible Claude, Codex, and Antigravity project
 > history. Last reviewed: 2026-07-26. History coverage: Partial.

@@ -6,6 +6,14 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Phase 2 real-browser smoke check:** clipping
+  https://github.com/kepano/defuddle/issues/414 from the toolbar produced
+  `CristianDeluxe/brain-clips@60ebb1c`. The first attempt failed with "no
+  GitHub App client id is configured": the setting made configurable in
+  `69200c7` was never filled on this device, so the client id compiled into
+  earlier builds (`git log -S` on `src/shared/github-app-client-id.ts`) was
+  entered on the options page.
+
 - [x] 2026-10-11 - **Extension reload:** Chrome's Default profile listed
   "brain clipper" in `Secure Preferences` but not on `chrome://extensions`
   (startup load failure from the old placeholder key). After `pnpm build`,
