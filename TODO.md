@@ -51,6 +51,10 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   minified to `class a extends`. Reported upstream 2026-10-11 as
   https://github.com/kepano/defuddle/issues/414 ; waiting on a fix there.
   Re-checked 2026-10-11 on defuddle 0.19.5: unchanged.
+  Re-checked 2026-10-11 later: 0.19.5 is still the latest npm release, the
+  bundle still minifies the extractor classes (`class a extends`), issue #414
+  is open with no reply, and the two upstream commits since 0.19.5 touch only
+  YouTube.
 
 ## Security
 
@@ -83,3 +87,5 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   repos/<owner>/<clips-repo> --jq .size`), all history, since `clips pull`
   empties it on every run; the archive moved to the wiki. No images are
   clipped yet (phase 3), so the trigger is still far off.
+  Re-measured 2026-10-11 later: 423301 KB (~413 MiB) by the same `gh api`
+  call; unchanged, well under the ~1 GB trigger.
