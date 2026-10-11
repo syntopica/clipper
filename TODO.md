@@ -73,16 +73,20 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Security
 
-- [ ] Phase 3 - the asset pipeline that calls the policy in
+- [!] Phase 3 - the asset pipeline that calls the policy in
   `src/background/assets/`: collect `currentSrc`/`src`/`srcset`/`<picture>` and
   lazy-loading candidates in the content script, request the optional host
   permission per asset origin, dedupe by URL then sha256, concurrency 4 and at
   most 30 images, SVG sanitising, WebP re-encode via `OffscreenCanvas` capped
   at 1600px, the blob caps, `assets/*` in the commit, `asset_count` and
-  `asset_failures` filled, the `fetching-assets` and `ready` queue states. The
-  design's per-hop redirect revalidation cannot see `Location` in Chrome
-  (`opaqueredirect`); decide whether redirected assets stay refused or go
-  through a `declarativeNetRequest`/`webRequest` observer. Not started.
+  `asset_failures` filled, the `fetching-assets` and `ready` queue states. Decided
+  2026-10-11 (Codex, high): images are off by default and switched on by a
+  "Download images" control on the options page that requests `https://*/*`
+  once (a permission request needs a user gesture, and image hosts are only
+  known after the clip); redirects Chrome hides (`opaqueredirect`) stay
+  refused, remote URL kept, reason in `asset_failures`. Blocked (Codex,
+  medium): build it after the phase 2 real-browser smoke check - the reload
+  item at the top of this file - not before. Not started.
 - [!] Move the GitHub token out of `chrome.storage.local` into the OS keychain via
   native messaging. Deferred by design; the token is currently a persisted secret
   with no keychain protection. Decided 2026-10-11 (Codex, high): stay deferred.

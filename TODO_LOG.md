@@ -6,6 +6,11 @@
 
 ### 2026-10
 
+- [!] 2026-10-11 - **Decisions (asset pipeline, kept open in TODO.md):**
+  Codex, high: image downloads off by default, enabled by an options-page
+  control that requests `https://*/*` once; redirects whose target Chrome
+  hides are refused and recorded. Codex, medium: build the pipeline after the
+  phase 2 real-browser smoke check.
 
 - [x] 2026-10-11 - **Security:** Phase 3 asset fetch policy and decode
   validation, as modules ahead of the pipeline that will call them
