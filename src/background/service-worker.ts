@@ -7,6 +7,7 @@ import { refreshTabStatus } from './refresh-tab-status'
 import { reportClipToService } from './report-clip-to-service'
 import { reportFailure } from './report-failure'
 import { setBadge } from './set-badge'
+import { withKeepalive } from './with-keepalive'
 
 chrome.runtime.onInstalled.addListener(() => void hardenTokenStorageSafely())
 chrome.runtime.onStartup.addListener(() => void hardenTokenStorageSafely())
@@ -54,7 +55,7 @@ chrome.runtime.onMessage.addListener((message: unknown, sender) => {
   // The enqueue boundary: the clip's id and timestamp are fixed here, once,
   // so every attempt at this capture targets the same directory.
   const job = newClipJob(message)
-  void (async () => {
+  void withKeepalive(async () => {
     await setBadge('working')
     try {
       const clip = await handleCapturedPage(job)
@@ -72,5 +73,5 @@ chrome.runtime.onMessage.addListener((message: unknown, sender) => {
     } catch (error) {
       reportFailure('clip failed', error)
     }
-  })()
+  })
 })

@@ -6,6 +6,16 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Infrastructure:** MV3 keepalive around the commit
+  sequence. `withKeepalive()` calls `chrome.runtime.getPlatformInfo()` every
+  20s while a capture is committed and reported, and clears the interval
+  however the work ends. Chrome's lifecycle doc (checked 2026-10-11) says
+  events and extension API calls reset the 30s idle timer and does not list
+  `fetch`; it also stops a worker whose single `fetch` response takes over
+  30s, which a keepalive cannot prevent and the durable queue must absorb.
+  Evidence: `pnpm test` (`tests/background/with-keepalive.test.ts`, fake
+  timers: three pings in 65s, none after completion or failure). Not yet seen
+  in a real browser; needs the extension reload parked at the top of TODO.md.
 - [x] 2026-10-11 - **Infrastructure:** Backoff on the blob POSTs. Blobs are now
   created one at a time instead of four concurrently, and each goes through
   `retryTransientGithub()`: transient failures (429, 5xx, rate-limited 403,

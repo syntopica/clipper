@@ -125,10 +125,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Infrastructure
 
-- [ ] Phase 2 - no MV3 keepalive around the commit sequence: `fetch` does not reset the
-  30-second idle timer, so a slow connection can lose a clip and leave the badge stuck
-  on `...`. No partial clip can result - the ref update is the only mutation. A stuck
-  `...` means "worker died, clip lost", not "hung".
 - [ ] Per-tab badge. It is global today, so two captures within four seconds can clear
   each other's result.
 - [ ] Phase 2 - durable IndexedDB job queue, state machine persisted per
