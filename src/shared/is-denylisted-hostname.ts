@@ -1,39 +1,9 @@
 import { DENYLISTED_HOSTNAMES } from './denylisted-hostnames'
+import { isPrivateNetworkHost } from './is-private-network-host'
 import { matchesHostnameList } from './matches-hostname-list'
-import { normalizeHostname } from './normalize-hostname'
-
-const LOOPBACK_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1'])
-
-function isPrivateIPv4(hostname: string): boolean {
-  const match = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(hostname)
-  if (!match) return false
-  const octets = match.slice(1, 5).map(Number)
-  if (octets.some((octet) => octet > 255)) return false
-  const [a, b] = octets as [number, number, number, number]
-  return (
-    a === 127 || // loopback
-    a === 10 || // 10.0.0.0/8
-    (a === 172 && b >= 16 && b <= 31) || // 172.16.0.0/12
-    (a === 192 && b === 168) || // 192.168.0.0/16
-    (a === 169 && b === 254) // 169.254.0.0/16 link-local
-  )
-}
-
-// Prefix checks, not a full address parse: good enough to catch the common
-// literal forms without pulling in an IPv6 parsing library for phase 1.
-function isPrivateIPv6(hostname: string): boolean {
-  return (
-    /^fe[89ab][0-9a-f]?:/.test(hostname) || // fe80::/10 link-local
-    /^f[cd][0-9a-f]{0,2}:/.test(hostname) // fc00::/7 unique-local
-  )
-}
 
 // `userEntries` extends the built-in list; it can never shorten it.
 export function isDenylistedHostname(hostname: string, userEntries: readonly string[] = []): boolean {
-  const host = normalizeHostname(hostname)
-  if (LOOPBACK_HOSTNAMES.has(host)) return true
-  if (host.endsWith('.local')) return true
-  if (isPrivateIPv4(host)) return true
-  if (isPrivateIPv6(host)) return true
-  return matchesHostnameList(host, DENYLISTED_HOSTNAMES) || matchesHostnameList(host, userEntries)
+  if (isPrivateNetworkHost(hostname)) return true
+  return matchesHostnameList(hostname, DENYLISTED_HOSTNAMES) || matchesHostnameList(hostname, userEntries)
 }

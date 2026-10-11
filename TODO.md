@@ -67,13 +67,16 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Security
 
-- [ ] Phase 3 - asset fetch policy before any image download: https-only, port
-  443, no URL credentials, block loopback / private / link-local / `.local`,
-  `redirect: 'manual'` with per-hop revalidation, `credentials: 'omit'` first.
-  Not optional - without it the extension is an SSRF proxy for any page it clips.
-- [ ] Phase 3 - keep only assets that decode via `createImageBitmap`. Documented
-  as a partial mitigation: DNS rebinding to a private service that returns a real
-  image remains residual accepted risk.
+- [ ] Phase 3 - the asset pipeline that calls the policy in
+  `src/background/assets/`: collect `currentSrc`/`src`/`srcset`/`<picture>` and
+  lazy-loading candidates in the content script, request the optional host
+  permission per asset origin, dedupe by URL then sha256, concurrency 4 and at
+  most 30 images, SVG sanitising, WebP re-encode via `OffscreenCanvas` capped
+  at 1600px, the blob caps, `assets/*` in the commit, `asset_count` and
+  `asset_failures` filled, the `fetching-assets` and `ready` queue states. The
+  design's per-hop redirect revalidation cannot see `Location` in Chrome
+  (`opaqueredirect`); decide whether redirected assets stay refused or go
+  through a `declarativeNetRequest`/`webRequest` observer. Not started.
 - [!] Move the GitHub token out of `chrome.storage.local` into the OS keychain via
   native messaging. Deferred by design; the token is currently a persisted secret
   with no keychain protection. Decided 2026-10-11 (Codex, high): stay deferred.
@@ -95,7 +98,10 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   `snapshot_mode: full-page` "remains available per clip"; no UI or code path
   produces it. Not filed in that repository on 2026-10-11 because its checkout
   held another session's unpushed commits. Smallest step: when `~/p/clips` is
-  clean and in sync, add a TODO there to correct the sentence.
+  clean and in sync, add a TODO there to correct the sentence, and a second
+  one: the same spec's asset policy says `redirect: 'manual'` with per-hop
+  `Location` revalidation, which Chrome makes impossible (an extension
+  worker's manual-redirect fetch is `opaqueredirect`, no `Location`).
 
 ## Future Ideas
 

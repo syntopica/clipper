@@ -6,6 +6,26 @@
 
 ### 2026-10
 
+
+- [x] 2026-10-11 - **Security:** Phase 3 asset fetch policy and decode
+  validation, as modules ahead of the pipeline that will call them
+  (`src/background/assets/`). `vetAssetUrl` allows https on port 443 only,
+  no URL credentials, and no localhost, `.localhost`, `.local`, 0/8, 127/8,
+  RFC 1918, 169.254/16, `::1`, `::`, fe80::/10, fc00::/7 or IPv4-mapped
+  private addresses (decimal and hex IPv4 forms are canonicalised by `new
+  URL()` first). `fetchVettedAsset` uses `credentials: 'omit'`,
+  `redirect: 'manual'`, and vets every `Location` before the next request, up
+  to 3 hops. Finding: Chrome returns `opaqueredirect` with no `Location` to a
+  manual-redirect fetch in an extension service worker (measured with
+  Playwright on 2026-10-11), so per-hop revalidation as the design describes
+  is impossible there; such a hop is refused, the asset keeps its remote URL.
+  `decodesAsImage`/`fetchImageAsset` keep only bytes `createImageBitmap`
+  decodes - a partial mitigation; DNS rebinding to an internal image stays
+  accepted residual risk. The private-range checks now live in shared modules
+  that the hostname denylist uses too, which also gained 0/8 and IPv4-mapped
+  IPv6. Evidence: `pnpm test` (`tests/background/assets/asset-policy.test.ts`,
+  29 cases, including a redirect to 169.254.169.254 refused before any
+  request to it).
 - [x] 2026-10-11 - **Future idea:** `MIN_EXTRACTED_TEXT_LENGTH = 100`
   revisited against real use and kept. In the wiki archive, every clip the
   extension produced since the Defuddle swap (312) reports `extractor:
