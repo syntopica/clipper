@@ -9,7 +9,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "icons": "node scripts/build-icons.mjs",
-    "e2e": "pnpm build && playwright test -c e2e/playwright.config.ts"
+    "e2e": "pnpm build && playwright test -c e2e/playwright.config.ts",
+    "store:zip": "pnpm build && node scripts/package-store.mjs"
   },
   "dependencies": {
     "any-ascii": "^0.3.3",

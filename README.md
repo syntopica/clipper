@@ -360,7 +360,9 @@ Deliberately out of scope so far:
 - No Mac-side ingest CLI, no ledger, no domain adapters - this extension
   stops at "clip committed to the clip repository"; anything that reads
   `clips/pending/` afterward is out of this repo.
-- No Chrome Web Store packaging - "Load unpacked" only.
+- Chrome Web Store: `pnpm store:zip` packages the build for the store
+  (listing text in `docs/chrome-web-store.md`, policy in `PRIVACY.md`); an
+  unpacked load keeps the id derived from `key.pem`.
 - No broad host permissions granted up front - the extension reaches
   `https://api.github.com/*` and `https://github.com/*` (the latter solely for
   the device-flow endpoints). The capture service's origin is a setting, so it

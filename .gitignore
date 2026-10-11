@@ -1,5 +1,7 @@
 node_modules/
 dist/
+/store/
+/clipper-store.zip
 key.pem
 
 # Local agent-history bookkeeping: conversation ids and workspace paths
