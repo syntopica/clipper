@@ -11,19 +11,21 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
 }
 
-export function reportFailure(context: string, error: unknown): void {
+export function reportFailure(context: string, error: unknown, tabId?: number): void {
   const reason = errorMessage(error)
   console.error(`brain clipper: ${context}`, error)
 
-  void setBadge('error').catch((badgeError) => {
+  void setBadge('error', tabId).catch((badgeError) => {
     console.error('brain clipper: could not set the error badge', badgeError)
   })
 
   flashErrorIcon()
 
-  void chrome.action.setTitle({ title: reason }).catch((titleError) => {
-    console.error('brain clipper: could not set the action title', titleError)
-  })
+  void chrome.action
+    .setTitle(tabId === undefined ? { title: reason } : { title: reason, tabId })
+    .catch((titleError) => {
+      console.error('brain clipper: could not set the action title', titleError)
+    })
 
   if (reason.toLowerCase().includes(OPEN_OPTIONS_PAGE_MARKER)) {
     void chrome.runtime.openOptionsPage().catch((optionsError) => {

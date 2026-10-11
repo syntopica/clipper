@@ -6,6 +6,14 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Infrastructure:** Per-tab badge. `setBadge(state, tabId)`
+  scopes the badge colour, text and its delayed clear to the capturing tab;
+  `reportFailure` takes the tab too and scopes the explanatory title; the
+  success path resets only that tab's title. Failures with no tab (token
+  hardening, a closed tab) stay global, as does the red icon flash by design
+  (`flash-error-icon.ts`). Evidence: `pnpm test`
+  (`tests/background/set-badge.test.ts`: tab 1's clear does not touch tab 2's
+  result).
 - [x] 2026-10-11 - **Infrastructure:** MV3 keepalive around the commit
   sequence. `withKeepalive()` calls `chrome.runtime.getPlatformInfo()` every
   20s while a capture is committed and reported, and clears the interval

@@ -48,30 +48,33 @@ chrome.runtime.onMessage.addListener((message: unknown, sender) => {
     return
   }
   if (message.type === 'clip-failed') {
-    reportFailure('capture failed in the page', message.reason)
+    reportFailure('capture failed in the page', message.reason, sender.tab?.id)
     return
   }
   if (message.type !== 'clip-captured') return
   // The enqueue boundary: the clip's id and timestamp are fixed here, once,
   // so every attempt at this capture targets the same directory.
   const job = newClipJob(message)
+  const tabId = sender.tab?.id
   void withKeepalive(async () => {
-    await setBadge('working')
+    await setBadge('working', tabId)
     try {
       const clip = await handleCapturedPage(job)
-      await setBadge('ok')
+      await setBadge('ok', tabId)
       // A previous failure may have left an explanatory title behind (see
       // reportFailure); a successful capture clears it back to the manifest
       // default.
       const defaultTitle = chrome.runtime.getManifest().action?.default_title ?? ''
-      await chrome.action.setTitle({ title: defaultTitle })
+      await chrome.action.setTitle(
+        tabId === undefined ? { title: defaultTitle } : { title: defaultTitle, tabId },
+      )
       // The service hears about the clip, and this tab is repainted, so the
       // icon turns amber as the clip lands rather than on the next visit.
       // Neither can fail the capture: it is already committed by here.
       await reportClipToService(message.url, clip.dirPath)
-      if (sender.tab?.id !== undefined) await refreshTabStatus(sender.tab.id, message.url)
+      if (tabId !== undefined) await refreshTabStatus(tabId, message.url)
     } catch (error) {
-      reportFailure('clip failed', error)
+      reportFailure('clip failed', error, tabId)
     }
   })
 })

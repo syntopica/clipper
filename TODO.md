@@ -125,8 +125,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Infrastructure
 
-- [ ] Per-tab badge. It is global today, so two captures within four seconds can clear
-  each other's result.
 - [ ] Phase 2 - durable IndexedDB job queue, state machine persisted per
   transition, `alarms` permission with `onStartup`/`onInstalled` resume, job
   leases, exponential backoff honouring `Retry-After`.
