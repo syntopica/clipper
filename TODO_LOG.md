@@ -6,6 +6,13 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Extension reload:** Chrome's Default profile listed
+  "brain clipper" in `Secure Preferences` but not on `chrome://extensions`
+  (startup load failure from the old placeholder key). After `pnpm build`,
+  "Load unpacked" on the dist directory restored it with the same id and its
+  stored settings; verified on `chrome://extensions` and in `Secure
+  Preferences` (`path` `~/p/clipper/dist`, no disable reasons).
+
 - [!] 2026-10-11 - **Decisions (asset pipeline, kept open in TODO.md):**
   Codex, high: image downloads off by default, enabled by an options-page
   control that requests `https://*/*` once; redirects whose target Chrome
