@@ -19,7 +19,7 @@ export function jpegDimensions(bytes: Uint8Array): ImageDimensions | null {
     }
     const length = view.getUint16(offset + 2)
     if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
-      return { height: view.getUint16(offset + 5), width: view.getUint16(offset + 7) }
+      return { height: view.getUint16(offset + 5), width: view.getUint16(offset + 7), frames: 1 }
     }
     if (length < 2) return null
     offset += 2 + length

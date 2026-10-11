@@ -6,6 +6,19 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Security:** second review of the pre-decode size check.
+  `gif-dimensions.ts` read only the logical screen, but a frame's image
+  descriptor can reach past it and decoders grow the canvas; it now walks every
+  block, sizes the canvas by the largest frame extent, counts frames (frames x
+  area capped at 200 M pixels, `MAX_ANIMATION_PIXELS`), and refuses an unknown
+  block or a frameless file. `avif-dimensions.ts` keeps the largest `ispe`
+  anywhere (thumbnail, alpha, auxiliary) and now refuses `grid`/`iovl` derived
+  images, whose output size lives in item data rather than `ispe`. Backstop:
+  `fitsDecodeCap` rejects a decoded bitmap over the cap before any canvas is
+  drawn (`reencode-as-webp.ts`) and in the GIF decode check. Evidence: `pnpm
+  test` - 340 passed (frame past the screen, 13-frame animation, unknown block,
+  thumbnail-first AVIF, grid AVIF, oversized decoded bitmap released).
+
 - [x] 2026-10-11 - **Real-browser checks:** images on - clipping
   https://en.wikipedia.org/wiki/Paper_clip produced
   `CristianDeluxe/brain-clips@77acc1a` with 9 files under `assets/` (8 WebP, 1

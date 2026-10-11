@@ -19,6 +19,10 @@ export const LIMITS = {
   // are read from the header and checked before anything is decoded.
   MAX_FETCHED_IMAGE_BYTES: 20_000_000,
   MAX_DECODED_PIXELS: 24_000_000,
+  // Frames times canvas area for an animation. Only the first frame is ever
+  // decoded here, but the GIF is stored as it came and every viewer of the clip
+  // decodes all of it.
+  MAX_ANIMATION_PIXELS: 200_000_000,
   // Raster images are re-encoded as WebP at this quality, the long edge capped.
   MAX_IMAGE_EDGE_PX: 1600,
   WEBP_QUALITY: 0.82,

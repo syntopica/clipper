@@ -1,4 +1,5 @@
 import { LIMITS } from '../../shared/limits'
+import { fitsDecodeCap } from './fits-decode-cap'
 import type { ReencodedImage } from './reencoded-image'
 
 // Decode in the worker, scale the long edge down to the cap, encode as WebP.
@@ -9,6 +10,7 @@ import type { ReencodedImage } from './reencoded-image'
 export async function reencodeAsWebp(blob: Blob): Promise<ReencodedImage> {
   const bitmap = await createImageBitmap(blob)
   try {
+    if (!fitsDecodeCap(bitmap)) throw new Error(`decoded to ${bitmap.width}x${bitmap.height}, over the pixel cap`)
     const scale = Math.min(1, LIMITS.MAX_IMAGE_EDGE_PX / Math.max(bitmap.width, bitmap.height))
     const width = Math.max(1, Math.round(bitmap.width * scale))
     const height = Math.max(1, Math.round(bitmap.height * scale))

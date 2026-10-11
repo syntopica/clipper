@@ -355,9 +355,12 @@ a time:
 3. reads the format from the bytes: an SVG is sanitised in an offscreen
    document (DOMPurify's SVG profile, no `<style>` or `<foreignObject>`, no
    reference outside the file, no CSS escapes, no internal DTD) and stored; a
-   PNG, JPEG, GIF, WebP or AVIF must declare at most 24 million pixels in its
-   header, read before anything is decoded - other formats are refused, since
-   their size cannot be checked first; a GIF is then stored as it came, so it
+   PNG, JPEG, GIF, WebP or AVIF must declare at most 24 million pixels,
+   read from its container before anything is decoded - the largest extent any
+   GIF frame or AVIF `ispe` declares, with GIF frames times area capped at 200
+   million and AVIF grids refused - and other formats are refused, since their
+   size cannot be checked first; the decoded bitmap is checked again before any
+   canvas is drawn from it; a GIF is then stored as it came, so it
    keeps its animation; the rest must decode, and are re-encoded as WebP at
    quality 0.82 with the long edge capped at 1600px - the original bytes are
    kept when that came out larger without having to shrink the image;

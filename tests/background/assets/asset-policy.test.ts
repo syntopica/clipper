@@ -111,6 +111,6 @@ test('a response that does not decode as an image is discarded', async () => {
     ok: false,
     reason: 'does not decode as an image',
   })
-  const decoding = async () => ({ close: () => undefined }) as unknown as ImageBitmap
+  const decoding = async () => ({ width: 10, height: 10, close: () => undefined }) as unknown as ImageBitmap
   expect((await fetchImageAsset('https://cdn.example.com/a.png', impl, decoding)).ok).toBe(true)
 })
