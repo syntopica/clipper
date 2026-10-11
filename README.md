@@ -355,12 +355,10 @@ a time:
 3. reads the format from the bytes: an SVG is sanitised in an offscreen
    document (DOMPurify's SVG profile, no `<style>` or `<foreignObject>`, no
    reference outside the file, no CSS escapes, no internal DTD) and stored; a
-   PNG, JPEG, GIF, WebP or AVIF must declare at most 24 million pixels,
-   read from its container before anything is decoded - the largest extent any
-   GIF frame or AVIF `ispe` declares, with GIF frames times area capped at 200
-   million and AVIF grids refused - and other formats are refused, since their
-   size cannot be checked first; the decoded bitmap is checked again before any
-   canvas is drawn from it; a GIF is then stored as it came, so it
+   PNG, JPEG, GIF or WebP must declare at most 24 million pixels, read from
+   its container before anything is decoded - for a GIF the largest extent any
+   frame reaches, with all frame areas summed and capped at 200 million; the
+   decoded bitmap is checked again before any canvas is drawn from it; a GIF is then stored as it came, so it
    keeps its animation; the rest must decode, and are re-encoded as WebP at
    quality 0.82 with the long edge capped at 1600px - the original bytes are
    kept when that came out larger without having to shrink the image;
@@ -372,6 +370,17 @@ Stored images are committed in the same commit as `assets/01-<sha8>.webp`
 path. Every image that is not stored keeps its remote URL, and
 `asset_failures` lists it as `<url>: <reason>`. No image failure fails a clip.
 This needs the `offscreen` permission, which shows no warning.
+
+Some images are refused on purpose, by format rather than by content, and
+keep their remote URL. AVIF is not supported at all: its HEIF item graph
+(grids, overlays, auxiliary images, transforms) is too rich to bound from a
+header read, so its real decode size cannot be vouched for before decoding. A
+WebP is stored only as a single still image - a simple VP8 or VP8L file, or an
+extended one without animation whose canvas matches its one bitstream exactly;
+animated WebP is refused for the same reason. BMP, ICO and anything else
+without a size check are refused too. Every other path to a decoder is
+bounded first, which is the trade: a few images on a few pages, for a size
+check that does not depend on parsing a rich container correctly.
 
 ## Durable queue (Phase 2)
 

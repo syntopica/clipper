@@ -4,5 +4,7 @@ import type { ImageDimensions } from './image-dimensions'
 export function pngDimensions(bytes: Uint8Array): ImageDimensions | null {
   if (bytes.length < 24) return null
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
-  return { width: view.getUint32(16), height: view.getUint32(20), frames: 1 }
+  const width = view.getUint32(16)
+  const height = view.getUint32(20)
+  return { width, height, totalPixels: width * height }
 }

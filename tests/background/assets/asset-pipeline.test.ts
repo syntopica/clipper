@@ -275,20 +275,6 @@ test('a format whose size cannot be read from its header is never decoded', asyn
   expect(reencode).not.toHaveBeenCalled()
 })
 
-test('WebP and AVIF headers are sized too', async () => {
-  const { readImageDimensions } = await import('../../../src/background/assets/read-image-dimensions')
-  const vp8x = new Uint8Array(30)
-  vp8x.set(new TextEncoder().encode('RIFF\0\0\0\0WEBPVP8X'))
-  vp8x.set([0xff, 0x3f, 0, 0x7f, 0x1f, 0], 24)
-  expect(readImageDimensions(vp8x, 'webp')).toEqual({ width: 16384, height: 8064, frames: 1 })
-  const avif = new Uint8Array(40)
-  avif.set(new TextEncoder().encode('ftypavif'), 4)
-  avif.set(new TextEncoder().encode('ispe'), 20)
-  new DataView(avif.buffer).setUint32(28, 9000)
-  new DataView(avif.buffer).setUint32(32, 9000)
-  expect(readImageDimensions(avif, 'avif')).toEqual({ width: 9000, height: 9000, frames: 1 })
-})
-
 test('a body over the byte cap is refused while it streams, whatever Content-Length says', async () => {
   const { readCappedBody } = await import('../../../src/background/assets/read-capped-body')
   let pulled = 0
@@ -309,7 +295,7 @@ test('a body over the byte cap is refused while it streams, whatever Content-Len
 test('a GIF frame reaching past the logical screen sizes the canvas, not the header', async () => {
   const { readImageDimensions } = await import('../../../src/background/assets/read-image-dimensions')
   const bomb = gif(10, 10, [60_000, 60_000, 5_000, 5_000])
-  expect(readImageDimensions(bomb, 'gif')).toEqual({ width: 65_000, height: 65_000, frames: 1 })
+  expect(readImageDimensions(bomb, 'gif')).toEqual({ width: 65_000, height: 65_000, totalPixels: 65_000 * 65_000 })
   const prepared = await prepareImageAsset(new Blob([bomb]), processors())
   expect(!prepared.ok && prepared.reason).toMatch(/exceeds 24000000 pixels/)
 })
@@ -317,7 +303,7 @@ test('a GIF frame reaching past the logical screen sizes the canvas, not the hea
 test('a GIF whose frames together exceed the animation cap is refused', async () => {
   const many = gif(4_000, 4_000, [0, 0, 4_000, 4_000], 13)
   const prepared = await prepareImageAsset(new Blob([many]), processors())
-  expect(!prepared.ok && prepared.reason).toMatch(/13 frames exceed/)
+  expect(!prepared.ok && prepared.reason).toMatch(/frames together exceed 200000000 pixels/)
   expect((await prepareImageAsset(new Blob([gif(400, 400, [0, 0, 400, 400], 13)]), processors())).ok).toBe(true)
 })
 
@@ -329,22 +315,6 @@ test('a GIF with an unknown block, or without any frame, is refused as unreadabl
   expect(readImageDimensions(new Uint8Array([...new TextEncoder().encode('GIF89a'), 10, 0, 10, 0, 0, 0, 0, 0x3b]), 'gif')).toBeNull()
 })
 
-test('an AVIF is sized by its largest ispe, wherever it sits, and a derived grid is refused', async () => {
-  const { readImageDimensions } = await import('../../../src/background/assets/read-image-dimensions')
-  const ispe = (width: number, height: number) => {
-    const box = new Uint8Array(20)
-    box.set(new TextEncoder().encode('ispe'), 4)
-    new DataView(box.buffer).setUint32(12, width)
-    new DataView(box.buffer).setUint32(16, height)
-    return [...box]
-  }
-  const head = [0, 0, 0, 0x1c, ...new TextEncoder().encode('ftypavif')]
-  const thumbFirst = new Uint8Array([...head, ...ispe(64, 64), ...ispe(20_000, 20_000)])
-  expect(readImageDimensions(thumbFirst, 'avif')).toEqual({ width: 20_000, height: 20_000, frames: 1 })
-  const grid = new Uint8Array([...head, ...new TextEncoder().encode('infe\0\0\0\0grid'), ...ispe(64, 64)])
-  expect(readImageDimensions(grid, 'avif')).toBeNull()
-})
-
 test('a bitmap that decodes larger than its container declared is released, never drawn', async () => {
   const close = vi.fn()
   const oversized = async () => ({ width: 10_000, height: 10_000, close }) as unknown as ImageBitmap
@@ -353,4 +323,64 @@ test('a bitmap that decodes larger than its container declared is released, neve
     reason: 'does not decode as an image',
   })
   expect(close).toHaveBeenCalled()
+})
+
+const ascii = (text: string) => [...new TextEncoder().encode(text)]
+const le16 = (value: number) => [value & 0xff, value >> 8]
+const le24 = (value: number) => [value & 0xff, (value >> 8) & 0xff, value >> 16]
+const le32 = (value: number) => [value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff, value >>> 24]
+const chunk = (name: string, data: number[]) => [...ascii(name), ...le32(data.length), ...data, ...(data.length % 2 ? [0] : [])]
+const vp8Data = (width: number, height: number) => [0, 0, 0, 0x9d, 0x01, 0x2a, ...le16(width), ...le16(height)]
+const vp8lData = (width: number, height: number) => {
+  const bits = (width - 1) | ((height - 1) << 14)
+  return [0x2f, ...le32(bits >>> 0)]
+}
+const webp = (...chunks: number[][]) => {
+  const body = [...ascii('WEBP'), ...chunks.flat()]
+  return new Uint8Array([...ascii('RIFF'), ...le32(body.length), ...body])
+}
+const vp8x = (flags: number, width: number, height: number) =>
+  chunk('VP8X', [flags, 0, 0, 0, ...le24(width - 1), ...le24(height - 1)])
+
+test('a still WebP is sized from its bitstream, simple or extended with matching canvas', async () => {
+  const { readImageDimensions } = await import('../../../src/background/assets/read-image-dimensions')
+  expect(readImageDimensions(webp(chunk('VP8 ', vp8Data(640, 480))), 'webp')).toMatchObject({ width: 640, height: 480 })
+  expect(readImageDimensions(webp(chunk('VP8L', vp8lData(300, 200))), 'webp')).toMatchObject({ width: 300, height: 200 })
+  const extended = webp(vp8x(0x10, 640, 480), chunk('ALPH', [0, 1, 2]), chunk('VP8 ', vp8Data(640, 480)))
+  expect(readImageDimensions(extended, 'webp')).toEqual({ width: 640, height: 480, totalPixels: 307_200 })
+})
+
+test.each([
+  ['an animated WebP', webp(vp8x(0x02, 64, 64), chunk('ANIM', [0, 0, 0, 0, 0, 0]), chunk('ANMF', [0]))],
+  ['a canvas larger than its bitstream', webp(vp8x(0, 16_000, 16_000), chunk('VP8 ', vp8Data(64, 64)))],
+  ['a canvas smaller than its bitstream', webp(vp8x(0, 64, 64), chunk('VP8L', vp8lData(16_000, 16_000)))],
+  ['two bitstreams', webp(vp8x(0, 64, 64), chunk('VP8 ', vp8Data(64, 64)), chunk('VP8 ', vp8Data(64, 64)))],
+  ['an unknown chunk', webp(vp8x(0, 64, 64), chunk('ANMF', [0]), chunk('VP8 ', vp8Data(64, 64)))],
+  ['an extended file with no bitstream', webp(vp8x(0, 64, 64), chunk('EXIF', [1, 2]))],
+  ['a VP8 frame without its start code', webp(chunk('VP8 ', [0, 0, 0, 1, 2, 3, 64, 0, 64, 0]))],
+  ['a VP8 frame asking to be upscaled', webp(chunk('VP8 ', [0, 0, 0, 0x9d, 0x01, 0x2a, 64, 0xc0, 64, 0]))],
+])('%s is refused before any decode', async (_name, bytes) => {
+  const reencode = vi.fn()
+  const prepared = await prepareImageAsset(new Blob([bytes as Uint8Array<ArrayBuffer>]), processors({ reencode }))
+  expect(prepared).toEqual({ ok: false, reason: 'unreadable or unsupported webp layout' })
+  expect(reencode).not.toHaveBeenCalled()
+})
+
+test('AVIF is not supported, whatever its header says', async () => {
+  const avif = new Uint8Array([0, 0, 0, 0x1c, ...ascii('ftypavif'), ...new Array(20).fill(0)])
+  const reencode = vi.fn()
+  expect(await prepareImageAsset(new Blob([avif]), processors({ reencode }))).toEqual({
+    ok: false,
+    reason: 'unsupported format',
+  })
+  expect(reencode).not.toHaveBeenCalled()
+})
+
+test('a still image the re-encoder decodes larger than declared is refused there', async () => {
+  const oversized = processors({
+    reencode: async () => {
+      throw new Error('decoded to 10000x10000, over the pixel cap')
+    },
+  })
+  expect(await prepareImageAsset(new Blob([PNG]), oversized)).toEqual({ ok: false, reason: 'does not decode as an image' })
 })

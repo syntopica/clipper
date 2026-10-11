@@ -6,6 +6,18 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Security:** pre-decode size checks made robust by
+  construction after further parser-differential findings (`avif-dimensions.ts`,
+  `webp-dimensions.ts`). AVIF is refused outright ("unsupported format") and
+  its parser deleted. WebP is accepted only as one still image: simple VP8
+  (start code checked, no upscaling bits) or VP8L, or VP8X without the
+  animation flag whose chunks are metadata (ICCP, ALPH, EXIF, XMP) plus exactly
+  one bitstream with the same size as the canvas; anything else is refused.
+  GIF frame areas are summed (cap 200 M pixels) and the canvas is the largest
+  frame extent. The post-decode `fitsDecodeCap` backstop stays before any
+  canvas. Trade-off documented in README. Evidence: `pnpm test` - 350 passed
+  (8 WebP refusals, AVIF refusal, simple and extended still WebP accepted).
+
 - [x] 2026-10-11 - **Testing:** mangled tweet links in X clips (thread clip
   `brain-clips@3e94315`, e.g. `https://x.com/GCRClassic/sta/GCRClassic/status/1621990690304442370…`).
   Cause: X renders a link in tweet text as hidden `https://`, a cut display
