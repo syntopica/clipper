@@ -108,10 +108,13 @@ Then in Chrome:
 1. Open `chrome://extensions`, enable Developer mode.
 2. Click "Load unpacked" and select the `dist/` directory.
 
-The extension id is pinned via the `key` field in `src/manifest.json` (signed
-with `key.pem`, which is gitignored and kept in a password manager), so it stays
-stable across machines and across unpacked loads from different paths:
-`<extension-id>`.
+The extension id is pinned via the manifest `key` field, so it stays stable
+across machines and across unpacked loads from different paths:
+`<extension-id>`. The committed `src/manifest.json` carries a placeholder;
+`pnpm build` derives the real public key from `key.pem` (gitignored, kept in a
+password manager) and writes it into `dist/manifest.json`. A clone without
+`key.pem` builds a manifest with no `key`, which Chrome loads under an id
+derived from the directory path.
 
 After loading, open the extension's options page (right-click the toolbar
 icon -> Options, or `chrome://extensions` -> Details -> Extension options)

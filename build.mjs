@@ -1,5 +1,6 @@
 import { build } from 'esbuild'
-import { cp, mkdir, readFile, rm } from 'node:fs/promises'
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { manifestPublicKey } from './scripts/manifest-public-key.mjs'
 
 const define = {
   DEFUDDLE_VERSION: JSON.stringify(
@@ -48,7 +49,11 @@ await build({
   define,
 })
 
-await cp('src/manifest.json', 'dist/manifest.json')
+const manifest = JSON.parse(await readFile('src/manifest.json', 'utf8'))
+const publicKey = await manifestPublicKey('key.pem')
+if (publicKey === null) delete manifest.key
+else manifest.key = publicKey
+await writeFile('dist/manifest.json', `${JSON.stringify(manifest, null, 2)}\n`)
 
 // The rasterised icons, one set per state. They are committed rather than
 // generated here: `scripts/build-icons.mjs` needs rsvg-convert, and a clone
