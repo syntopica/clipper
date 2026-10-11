@@ -6,6 +6,13 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Release prep:** version 0.2.0 in `src/manifest.json` and
+  `package.json` (image downloads and the failed-clips list are a feature
+  release). `pnpm store:zip` wrote `clipper-store.zip` (926,883 bytes,
+  manifest 0.2.0 without `key`, `offscreen` permission included). The GitHub
+  release and the store upload stay with the Phase 5 item. Evidence: `pnpm
+  test` - 350 passed; `pnpm e2e` - 6 passed.
+
 - [x] 2026-10-11 - **Security:** pre-decode size checks made robust by
   construction after further parser-differential findings (`avif-dimensions.ts`,
   `webp-dimensions.ts`). AVIF is refused outright ("unsupported format") and
