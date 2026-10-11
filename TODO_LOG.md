@@ -6,6 +6,23 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Future idea:** `MIN_EXTRACTED_TEXT_LENGTH = 100`
+  revisited against real use and kept. In the wiki archive, every clip the
+  extension produced since the Defuddle swap (312) reports `extractor:
+  defuddle`; none fell through to the DOM-shape chain. The shortest two (16 and
+  35 words) are short X posts, correctly extracted. The `article` clips there
+  (1,909) come from `clips-harvest`, not from this extension. No clip shows a
+  wrong extractor choice, which was Codex's (high) condition for changing it.
+  Evidence: a Python pass over `wiki/clips/clips/**/metadata.json` grouping by
+  `extractor` and `clipped_from`.
+- [-] 2026-10-11 - **Integrations:** Retiring the url-labelled-link recovery
+  is rejected on real-use evidence: it fires under Defuddle. Of 312
+  Defuddle clips in the wiki archive (`wiki/clips/clips/`), 9 carry
+  `## Links removed by the extractor`, recovering 55 links in total (GitHub
+  READMEs 8, 13 and 24; X posts 1-2; YouTube 4; a blog 1), the latest on
+  2026-09-03. Evidence: `grep -rl "## Links removed by the extractor"
+  --include=index.md wiki/clips/clips` (9 files) and the `"extractor":
+  "defuddle"` count (312). The recovery stays.
 - [x] 2026-10-11 - **Testing:** Playwright against real Chromium for the
   extension lifecycle. Codex decision (medium): local script now, CI job once
   the durable queue ships - it shipped the same day, so both landed. `pnpm e2e`

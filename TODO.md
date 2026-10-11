@@ -64,12 +64,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
   `parse()` reports `extractorType` from `constructor.name`, but `dist/index.js` and `dist/index.full.js` are minified, so in a browser extension (or any bundler consuming those files) it comes back as `a`, `i` or `v` instead of `github`, `twitter` or `youtube`. The unbundled CJS keeps the names, which is why Node reports them correctly. Reproduced on 0.19.4: `grep -o 'extractorType:[^,]*' dist/index.full.js` shows `o.constructor.name.replace("Extractor", ...)`, and the classes are emitted as `class a extends`. Could the browser builds keep class names (esbuild `keepNames`, terser `keep_classnames`), or could each extractor declare a static name that `extractorType` reads instead? Downstream we currently record only whether a site extractor ran, because the name is unusable.
   ```
-- [ ] Retire the url-labelled-link recovery (`dropped-content-links.ts`,
-  `append-dropped-links.ts`, `is-url-like-text.ts`, `LIMITS.MAX_RECOVERED_LINKS`)
-  if it never fires again. It was written for a Readability behaviour Defuddle does
-  not share, and it is kept only as a net for the same failure elsewhere - which
-  the MDN item above shows is not hypothetical. Needs real-use evidence, not a
-  decision now.
 
 ## Security
 
@@ -105,8 +99,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Future Ideas
 
-- [ ] Revisit `MIN_EXTRACTED_TEXT_LENGTH = 100` after real use. It is fixture-fitted,
-  and it is the single knob deciding `defuddle` versus the DOM-shape chain.
 - [ ] Migrate images to Cloudflare R2 if the clips repo approaches ~1 GB. Note
   the real cost: rewriting asset paths does not shrink history, so reclaiming
   space needs `git filter-repo`, a force-push and a re-clone everywhere.
