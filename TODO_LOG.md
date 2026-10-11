@@ -6,6 +6,20 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Real-browser checks:** images on - clipping
+  https://en.wikipedia.org/wiki/Paper_clip produced
+  `CristianDeluxe/brain-clips@77acc1a` with 9 files under `assets/` (8 WebP, 1
+  GIF), `asset_count: 9`, `asset_failures: []`, every image referenced as
+  `assets/...` (the first attempt, `4f0e3ac`, exposed the Defuddle `resource`
+  attribute bug fixed in `3828ff4`). X threads - a 17-tweet thread
+  (`3e94315`) and a long note tweet with quote and replies (`9444b56`) came
+  out complete with no "Show more" truncation.
+
+- [x] 2026-10-11 - **Cross-repo bookkeeping:** the clips design spec now
+  says `full-page` is reserved but never produced, and records that Chrome
+  hides manual-redirect targets, so such hops are refused (`syntopica/clips`
+  `dfa428f`, `71c911a`).
+
 - [x] 2026-10-11 - **Security:** review of the phase 3 asset code. Fixed:
   (1) `fetch-vetted-asset.ts` read any body whole (`response.blob()`); it now
   streams through `readCappedBody`, refusing past 20 MB by `Content-Length` or

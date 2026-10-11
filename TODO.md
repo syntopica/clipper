@@ -19,26 +19,13 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Testing
 
-- [ ] Real-browser check of image downloads (phase 3). Unit tests and
-  `pnpm e2e` cover the pipeline in pieces, but no end-to-end clip with images
-  has run: the `https://*/*` prompt cannot be accepted in headless Playwright.
-  Smallest step: reload the extension (it now also asks for `offscreen`, which
-  shows no warning), tick "Download images into the clip" on the options page
-  and accept Chrome's prompt, clip a page with a few raster images, an SVG and a
-  lazy-loaded image (a Wikipedia article works), then check the commit has
-  `assets/01-<sha8>.webp` and friends, `index.md` points at them, and
-  `asset_count`/`asset_failures` add up.
-- [~] Verify the X thread repair on a real multi-thread clip. One captured X thread (clip 01KYN4S3) captured 4 tweets truncated behind "Show more" and
-  one thread tweet missing from the virtualized DOM; the GraphQL-stash repair
-  (x-page-hook / x-collector / prepare-x-page) fixes that in unit tests but has
-  not yet seen a real capture. Reload the extension and the x.com tab first —
-  the collector only stashes responses from pages loaded after install.
-  Checked 2026-10-11 against the wiki archive: the 26 extension x.com clips
-  since the repair (2026-07-29) contain no "Show more" truncation, but all are
-  single posts or X Articles - none is a multi-tweet thread, so the repair is
-  still unseen on a real thread. Needs a logged-in x.com tab: reload the
-  extension (item above), reload a thread page, clip it, and check every
-  thread tweet is present and untruncated.
+- [ ] Quoted-tweet links in X clips come out mangled: in the thread clip
+  `CristianDeluxe/brain-clips@3e94315` (milesdeutscher/status/1772336684472090856)
+  each linked tweet reads like `https://x.com/GCRClassic/sta/GCRClassic/status/1621990690304442370…`
+  or `https://x.com/14841123933618/1484112393361891328/status/...` - X's
+  truncated display text and the expanded URL are concatenated. Found
+  2026-10-11. Smallest step: reproduce with that thread's GraphQL stash in a
+  unit test and emit the `expanded_url` alone.
 
 - [!] Logged-out x.com is a different app the clipper cannot read: guest status
   pages are server-rendered by a Relay/TanStack app with none of the logged-in
@@ -95,16 +82,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 ## Testing
 
 ## Pending Decisions
-
-- [!] Cross-repo bookkeeping: the clips repository's
-  `docs/superpowers/specs/2026-07-26-brain-clipper-design.md` says
-  `snapshot_mode: full-page` "remains available per clip"; no UI or code path
-  produces it. Not filed in that repository on 2026-10-11 because its checkout
-  held another session's unpushed commits. Smallest step: when `~/p/clips` is
-  clean and in sync, add a TODO there to correct the sentence, and a second
-  one: the same spec's asset policy says `redirect: 'manual'` with per-hop
-  `Location` revalidation, which Chrome makes impossible (an extension
-  worker's manual-redirect fetch is `opaqueredirect`, no `Location`).
 
 ## Future Ideas
 
