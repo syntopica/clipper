@@ -11,6 +11,9 @@
   #deviceCode { margin-top: 1rem; padding: 0.75rem; border: 1px solid #ccc; }
   #userCode { font: 700 1.6rem ui-monospace, monospace; letter-spacing: 0.2em; margin: 0.25rem 0; }
   #status { margin-top: 1rem; min-height: 1.2em; }
+  #failedJobs { padding-left: 1.2rem; }
+  #failedJobs li { margin: 0.5rem 0; overflow-wrap: anywhere; }
+  #failedJobs button { margin: 0.25rem 0.5rem 0 0; }
 </style>
 <h1>brain clipper</h1>
 
@@ -50,4 +53,9 @@
   <button id="save">Save</button>
 </div>
 <p id="status"></p>
+
+<h2>Failed clips</h2>
+<p id="failedJobsEmpty">None. A clip that fails for a reason you have to fix - settings, sign-in, a
+  conflicting clip - waits here instead of being retried.</p>
+<ul id="failedJobs"></ul>
 <script src="options.js"></script>

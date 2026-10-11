@@ -3,6 +3,7 @@ import { getCaptureToken } from '../shared/get-capture-token'
 import { getSettings } from '../shared/get-settings'
 import { field } from './field'
 import { renderAuth } from './render-auth'
+import { renderFailedJobs } from './render-failed-jobs'
 import { textArea } from './text-area'
 
 export async function load(): Promise<void> {
@@ -19,4 +20,5 @@ export async function load(): Promise<void> {
   textArea('denylistedHostnames').value = (settings?.denylistedHostnames ?? []).join('\n')
   textArea('privateHostnames').value = (settings?.privateHostnames ?? []).join('\n')
   await renderAuth()
+  await renderFailedJobs()
 }

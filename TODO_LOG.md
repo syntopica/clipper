@@ -6,6 +6,17 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Infrastructure:** `permanent-failure` jobs no longer sit
+  in the IndexedDB queue with no way out. The options page lists them under
+  "Failed clips" (title, capture time, URL, last error) with *Retry* - reset
+  to `captured` with the same clip id and a zero attempt count
+  (`resetFailedJob`), then a `resume-queue` message wakes the worker - and
+  *Discard* (delete). The page writes IndexedDB itself: it shares the
+  extension origin with the worker. Evidence: `pnpm test`
+  (`tests/options/failed-jobs.test.ts`, 5 cases) and `pnpm e2e` (a seeded
+  failed job is listed, retried by the real worker - it fails again with the
+  new reason - then discarded, leaving the queue empty).
+
 - [x] 2026-10-11 - **Phase 2 real-browser smoke check:** clipping
   https://github.com/kepano/defuddle/issues/414 from the toolbar produced
   `CristianDeluxe/brain-clips@60ebb1c`. The first attempt failed with "no

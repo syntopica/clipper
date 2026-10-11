@@ -10,6 +10,7 @@ export interface ChromeMock {
   iconPaths: Record<number, string>[]
   openOptionsPageCalls: unknown[]
   alarms: Map<string, number>
+  sentMessages: unknown[]
 }
 
 export function installChromeMock(): ChromeMock {
@@ -19,6 +20,7 @@ export function installChromeMock(): ChromeMock {
   const iconPaths: Record<number, string>[] = []
   const openOptionsPageCalls: unknown[] = []
   const alarms = new Map<string, number>()
+  const sentMessages: unknown[] = []
 
   const area = (store: Store) => ({
     get: async (keys: string[]) =>
@@ -58,8 +60,11 @@ export function installChromeMock(): ChromeMock {
       openOptionsPage: async () => {
         openOptionsPageCalls.push(undefined)
       },
+      sendMessage: async (message: unknown) => {
+        sentMessages.push(message)
+      },
     },
   }
 
-  return { sync, local, actionTitles, iconPaths, openOptionsPageCalls, alarms }
+  return { sync, local, actionTitles, iconPaths, openOptionsPageCalls, alarms, sentMessages }
 }

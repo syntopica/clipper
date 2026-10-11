@@ -58,6 +58,10 @@ chrome.runtime.onMessage.addListener((message: unknown, sender) => {
     beginCapture(message.tabId)
     return
   }
+  if (message.type === 'resume-queue') {
+    resumeQueueSafely()
+    return
+  }
   if (message.type === 'clip-failed') {
     reportFailure('capture failed in the page', message.reason, sender.tab?.id)
     return

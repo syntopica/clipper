@@ -115,3 +115,58 @@ test('a capture is queued in IndexedDB, survives the worker being stopped, and i
 
   expect(await readJobStates(worker)).toEqual([])
 })
+
+test('a permanently failed clip is listed on the options page, retried by the worker, then discarded', async ({
+  context,
+  extensionId,
+  worker,
+}) => {
+  await worker.evaluate(
+    (job) =>
+      new Promise<void>((resolve, reject) => {
+        const open = indexedDB.open('clip-queue', 1)
+        open.onupgradeneeded = () => open.result.createObjectStore('jobs', { keyPath: 'clipId' })
+        open.onsuccess = () => {
+          const transaction = open.result.transaction('jobs', 'readwrite')
+          transaction.objectStore('jobs').put(job)
+          transaction.oncomplete = () => {
+            open.result.close()
+            resolve()
+          }
+          transaction.onerror = () => reject(transaction.error)
+        }
+        open.onerror = () => reject(open.error)
+      }),
+    {
+      clipId: '01J3ABCDEF123456789ABCDEFG',
+      clippedAt: '2026-10-11T10:00:00Z',
+      payload,
+      tabId: null,
+      state: 'permanent-failure',
+      nextAttemptAt: null,
+      leaseOwner: null,
+      leaseExpiresAt: null,
+      attemptCount: 1,
+      lastError: 'not signed in to GitHub on this device - open the options page',
+      assets: null,
+    },
+  )
+
+  const page = await context.newPage()
+  await page.goto(`chrome-extension://${extensionId}/options/options.html`)
+  const row = page.locator('#failedJobs li')
+  await expect(row).toHaveCount(1)
+  await expect(row).toContainText('not signed in to GitHub')
+
+  // No settings are stored, so the worker runs the job and it fails for good
+  // again - with the new reason, which proves the retry really ran.
+  await row.locator('button[data-action="retry"]').click()
+  await expect(page.locator('#status')).toHaveText('Queued again.')
+  await expect.poll(() => readJobStates(worker), { timeout: 30_000 }).toEqual(['permanent-failure'])
+  await page.reload()
+  await expect(row).toContainText('settings are incomplete')
+
+  await row.locator('button[data-action="discard"]').click()
+  await expect(row).toHaveCount(0)
+  expect(await readJobStates(worker)).toEqual([])
+})

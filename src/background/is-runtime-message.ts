@@ -1,6 +1,7 @@
 import type { CaptureFailedPayload } from './capture-failed-payload'
 import type { ClipAgainPayload } from './clip-again-payload'
 import type { CapturedPagePayload } from './captured-page-payload'
+import type { ResumeQueuePayload } from './resume-queue-payload'
 
 // chrome.runtime.onMessage delivers whatever any extension context sent,
 // with no guarantee it came from capture-page.ts - guard the shape before
@@ -8,6 +9,6 @@ import type { CapturedPagePayload } from './captured-page-payload'
 // listener.
 export function isRuntimeMessage(
   value: unknown,
-): value is CapturedPagePayload | CaptureFailedPayload | ClipAgainPayload {
+): value is CapturedPagePayload | CaptureFailedPayload | ClipAgainPayload | ResumeQueuePayload {
   return typeof value === 'object' && value !== null && typeof (value as { type?: unknown }).type === 'string'
 }

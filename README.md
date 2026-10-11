@@ -341,7 +341,10 @@ A `chrome.alarms` alarm wakes the worker for it, and `onStartup` and
 `onInstalled` resume anything left behind, including a job whose worker died
 mid-upload. Everything the user has to fix - settings, sign-in, a revoked
 token, a conflicting clip - is a `permanent-failure`: kept in the store,
-reported, never retried. The badge reads `...` in amber while a clip waits
+reported, never retried on its own. The options page lists those under
+**Failed clips**, each with its reason: *Retry* puts it back to `captured` under
+the same clip id once you have fixed the cause, and *Discard* deletes it, page
+payload and all. The badge reads `...` in amber while a clip waits
 for its retry. This needs the `alarms` permission, which shows no warning.
 
 Within one attempt, blobs are created one at a time, each retried with
