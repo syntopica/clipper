@@ -9,6 +9,9 @@ Trigger: click the toolbar icon, or press `Cmd+Shift+S` (`Ctrl+Shift+S` on
 non-Mac). On a page nothing has clipped, the click fires the capture directly -
 no popup in the way. On a page the store already holds, the same click opens a
 small panel instead, which is where a second capture is asked for deliberately.
+Chrome assigns the suggested shortcut only on a first install; after a
+reinstall it can be left unbound with no warning, so check
+`chrome://extensions/shortcuts` if the key does nothing.
 
 - If you have a text selection on the page, only that selection is clipped
   (`extractor: selection`).
