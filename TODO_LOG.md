@@ -6,6 +6,32 @@
 
 ### 2026-10
 
+
+
+- [x] 2026-10-11 - **Testing:** Defuddle's site extractors confirmed per site:
+  X (real clip), Hacker News, Reddit, GitHub and Wikipedia (shipped bundle
+  over live html), YouTube (async transcript path, confirmed in a real
+  browser), and a plain blog correctly `site_extractor: false`. The entry had
+  stayed `[~]` with every listed site already verified.
+- [-] 2026-10-11 - **Infrastructure:** Pin `@types/node` to the Node >= 20
+  floor. No such floor exists: the extension runs in Chrome, and Node only
+  runs the tooling, where vitest 5 already requires `^22.12 || ^24 || >=26`
+  and both CI and the local machine run Node 26. `@types/node` 26 matches
+  that, and the owner's standing rule is to take every dependency's latest
+  major and fix forward, never pin back.
+
+- [-] 2026-10-11 - **Integrations:** Phase 4 Mac-side ingest CLI and "revisit
+  codex synthesis via a stronger boundary" are owned by the clips repository
+  (`~/p/clips`), not this extension. That repository shipped the ingest
+  pipeline and records, in `docs/sandbox-boundary.md` and
+  `boundary-decision.json`, the operator's 2026-07-28 override
+  (`CODEX_OPERATOR_OVERRIDE`) that superseded the codex-disabled verdict both
+  items were waiting on. Nothing left for the clipper to do.
+- [x] 2026-10-11 - **Integrations:** The `processed` clip left under
+  `clips/pending/` (`01KYGGCNH0HN292WZ1VQGVR2XW`) has been moved. Evidence: it
+  sits at `wiki/clips/clips/processed/2026/07/2026-07-27-x-com-...-01kyggcn/`,
+  and the inbox repository is now emptied by `clips pull` on every run (its
+  README), so the mover lives in the clips package, not here.
 - [x] 2026-10-11 - **Infrastructure:** `clip-metadata-schema.ts`'s three
   `z.string().url()` calls, and the fourth in `device-code-schema.ts`, are now
   `z.url()`, matching the copy in clips' `tools/clips`. Evidence: `grep -rn

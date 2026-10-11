@@ -44,17 +44,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Integrations
 
-- [x] Tell the user a page is already clipped, before they clip it again.
-  **Done 2026-08-04.** The toolbar icon carries the state of the page in the
-  tab - grey unclipped, amber captured or needs-claude, green ingested - read
-  from `GET /api/have` at the capture service and memoised per URL in
-  `chrome.storage.session`. On a known page the click opens a panel instead of
-  clipping, and the panel links to the clip and offers `Capture again`.
-  The index half came from the service rather than from `url-index.sqlite3`:
-  1485 rows were pushed to it, and the Mac now pushes each clip's state as it
-  lands. Design:
-  the wiki's `docs/superpowers/specs/2026-08-04-clip-state-in-the-browser-design.md`.
-
 - [ ] Report upstream that `extractorType` is unusable in Defuddle's published
   browser bundles: it comes from `constructor.name`, and `dist/index.js` and
   `dist/index.full.js` are minified, so it arrives as `v` or `a`. The unbundled
@@ -75,34 +64,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   minified, 229 KB gzipped) with Defuddle. It is injected on click rather than
   declared in the manifest, so nothing pays for it while browsing, but the build
   does not minify at all today - turning that on is the cheap fix if it matters.
-
-- [~] One clip is `status: processed` while still sitting under `clips/pending/`:
-  the Claude-skills clip (`01KYGGCNH0HN292WZ1VQGVR2XW`) was ingested into the
-  brain by hand on 2026-07-27 and its `state.json` updated with
-  `brainCommit: 4c97fb2`, but nothing moved the directory to `processed/`
-  because the mover is phase 4. Whatever implements the move must treat a
-  `processed` clip found under `pending/` as "move me", not as an error.
-
-- [~] Phase 4 - Mac-side ingest CLI at `the wiki's `tools/clips`` (TypeScript, not
-  bash): ledger at `brain/.ingest/clips/<clip_id>.json`, deterministic routing,
-  a throwaway worktree, patch validation, `needs-claude` routing. Lives in the
-  brain repo, not here. Milestone 1 is done and it removed the codex half:
-  **codex synthesis is disabled for phase 4**. `codex exec -s workspace-write`
-  leaves filesystem reads unrestricted - a probe read a canary outside the
-  workspace and listed all of `~/.ssh` - and no read-restricting boundary could
-  be found that codex still runs inside. Verdict, the ten mechanisms evaluated
-  and the evidence are in `the wiki's `tools/clips`/boundary-decision.json`, and
-  the reusable `sandbox-exec` boundary that DID pass all nine assertions for
-  plain commands is in that package. Milestone 2 plans the pipeline without a
-  synthesizer; codex candidates route to the manual Claude workflow.
-
-- [ ] Revisit codex synthesis only via a stronger boundary - a dedicated macOS
-  user account, a container, or an ephemeral VM, with `workspace-write` still
-  inside it and never `--dangerously-bypass-approvals-and-sandbox`. That attempt
-  was never tried, not tried and failed. Wrapping codex in an outer sandbox and
-  disabling its inner one is NOT a substitute: the orchestrator needs network to
-  reach the model, so the model's own commands inherit it, discarding the one
-  property `workspace-write` did provide.
 
 ## Security
 
@@ -130,37 +91,14 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   leases, exponential backoff honouring `Retry-After`.
 - [ ] Phase 5 - publish unlisted to the Chrome Web Store and ship `dist.zip`
   through GitHub Releases, replacing per-machine unpacked loads.
-- [ ] Pin `@types/node` to the major matching the Node >= 20 floor. The installed
-  major is far ahead and can admit typings for APIs missing on Node 20.
 
 ## Testing
 
-- [~] Confirm Defuddle's site extractors fire per site. Done for X (a real clip
-  of a long-form post: 28 KB of markdown, ten headings, seventeen fenced code
-  blocks, no X chrome) and, by running the shipped `buildCapturedPayload` bundle
-  over freshly fetched live html, for Hacker News, Reddit (nested comment threads
-  with scores and permalinks), GitHub and Wikipedia. A plain blog correctly
-  reports `site_extractor: false`.
-
-  YouTube needed the async path and now works: 133 KB of markdown from a
-  two-hour talk, `## Transcript` with the video's chapters as `###` headings and
-  timestamped paragraphs, in 0.7s, with all four requests going to
-  www.youtube.com. Confirmed in a real browser afterwards: a clipped video came
-  back `site_extractor: true` with sixty timestamped transcript paragraphs and no
-  YouTube chrome.
 - [ ] Phase 2 - Playwright against real Chromium for the extension lifecycle
   (permissions, commands, `OffscreenCanvas`, service worker termination and
   resume). jsdom cannot cover any of it.
 
 ## Pending Decisions
-
-- [x] Decide what a repeat clip does: blocked, warned about, or allowed as a
-  deliberate re-capture. **Answered 2026-08-04: allowed, always explicit, never
-  by accident.** A page that changed between captures is worth having twice, so
-  a hard block would trade one annoyance for a lost capability. The panel that
-  now opens on an already-clipped page is what makes it explicit, and a
-  re-capture mints a new clip id, so it lands in its own directory and the
-  first clip is untouched.
 
 - [ ] Decide whether `snapshot_mode` stays `sanitized` by default. The design was
   approved with a raw full-page archive, then narrowed to a sanitized snapshot
@@ -177,3 +115,7 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 - [ ] Migrate images to Cloudflare R2 if the clips repo approaches ~1 GB. Note
   the real cost: rewriting asset paths does not shrink history, so reclaiming
   space needs `git filter-repo`, a force-push and a re-clone everywhere.
+  Checked 2026-10-11: the inbox repository reports 413 MB (`gh api
+  repos/<owner>/<clips-repo> --jq .size`), all history, since `clips pull`
+  empties it on every run; the archive moved to the wiki. No images are
+  clipped yet (phase 3), so the trigger is still far off.
