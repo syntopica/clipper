@@ -125,10 +125,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Infrastructure
 
-- [~] Phase 2, do this FIRST - move `newClipId()` and `clippedAt` out of
-  `handleCapturedPage` to the enqueue boundary. A resumed job must reuse both or it
-  lands in a different directory and the `identical`/`conflict` rule never fires, which
-  is the whole basis of safe resumption.
 - [ ] Phase 2 - a `GithubRequestError` carrying status and response headers. Status
   currently lives only inside error message strings across six call sites, and the
   queue's state machine has to separate permanent (401/403, conflict) from transient

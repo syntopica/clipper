@@ -1,6 +1,6 @@
 import type { CaptureFailedPayload } from './capture-failed-payload'
 import type { ClipAgainPayload } from './clip-again-payload'
-import type { CapturedPagePayload } from './handle-captured-page'
+import type { CapturedPagePayload } from './captured-page-payload'
 
 // chrome.runtime.onMessage delivers whatever any extension context sent,
 // with no guarantee it came from capture-page.ts - guard the shape before

@@ -2,6 +2,7 @@ import { beginCapture } from './begin-capture'
 import { handleCapturedPage } from './handle-captured-page'
 import { hardenTokenStorageSafely } from './harden-token-storage-safely'
 import { isRuntimeMessage } from './is-runtime-message'
+import { newClipJob } from './new-clip-job'
 import { refreshTabStatus } from './refresh-tab-status'
 import { reportClipToService } from './report-clip-to-service'
 import { reportFailure } from './report-failure'
@@ -50,10 +51,13 @@ chrome.runtime.onMessage.addListener((message: unknown, sender) => {
     return
   }
   if (message.type !== 'clip-captured') return
+  // The enqueue boundary: the clip's id and timestamp are fixed here, once,
+  // so every attempt at this capture targets the same directory.
+  const job = newClipJob(message)
   void (async () => {
     await setBadge('working')
     try {
-      const clip = await handleCapturedPage(message)
+      const clip = await handleCapturedPage(job)
       await setBadge('ok')
       // A previous failure may have left an explanatory title behind (see
       // reportFailure); a successful capture clears it back to the manifest

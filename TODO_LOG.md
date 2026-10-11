@@ -6,6 +6,13 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Infrastructure:** Phase 2 prerequisite - `newClipId()`
+  and `clippedAt` moved out of `handleCapturedPage` to the enqueue boundary.
+  The service worker mints a `ClipJob` (`new-clip-job.ts`) when it accepts a
+  `clip-captured` message; `handleCapturedPage` takes the job and never mints
+  identity itself. Evidence: `pnpm test` - new test runs one job twice against
+  a GitHub mock that remembers commits: same `dirPath`, one ref update, the
+  second run stops as `identical`.
 - [x] 2026-10-11 - **Build:** `pnpm build` wrote the manifest `key` placeholder
   that the privacy pass left in `src/manifest.json`, which Chrome rejects as an
   invalid key. The build now derives the public key from the gitignored

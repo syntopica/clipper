@@ -1,4 +1,4 @@
-import type { CapturedPagePayload } from '../background/handle-captured-page'
+import type { CapturedPagePayload } from '../background/captured-page-payload'
 import { byteLength } from '../shared/byte-length'
 import { LIMITS } from '../shared/limits'
 import { appendDroppedLinks } from './append-dropped-links'
