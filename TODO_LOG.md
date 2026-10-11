@@ -6,6 +6,10 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Infrastructure:** `clip-metadata-schema.ts`'s three
+  `z.string().url()` calls, and the fourth in `device-code-schema.ts`, are now
+  `z.url()`, matching the copy in clips' `tools/clips`. Evidence: `grep -rn
+  "string().url" src` empty; `pnpm typecheck` and `pnpm test` green.
 - [x] 2026-10-11 - **Infrastructure:** Per-tab badge. `setBadge(state, tabId)`
   scopes the badge colour, text and its delayed clear to the capturing tab;
   `reportFailure` takes the tab too and scopes the explanatory title; the
