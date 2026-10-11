@@ -5,6 +5,8 @@
   body { font: 14px system-ui, sans-serif; margin: 2rem; max-width: 34rem; }
   label { display: block; margin: 0.75rem 0 0.25rem; }
   input, textarea { width: 100%; padding: 0.4rem; box-sizing: border-box; }
+  input[type='checkbox'] { width: auto; margin: 0 0.4rem 0 0; }
+  .hint { margin: 0.25rem 0 0; color: #555; }
   textarea { font: 13px ui-monospace, monospace; }
   .row { display: flex; gap: 0.5rem; margin-top: 1rem; }
   #authState { margin: 0; }
@@ -49,6 +51,12 @@
   >Mark clips from these hosts private (reviewed by hand instead of synthesised) - one per line</label
 >
 <textarea id="privateHostnames" rows="4" spellcheck="false"></textarea>
+<label for="downloadImages"
+  ><input id="downloadImages" type="checkbox" />Download images into the clip</label
+>
+<p class="hint">Off: clips link to images where they are hosted. On: up to 30 images per clip are fetched
+  from their hosts and committed beside the markdown. Chrome asks once for access to all https sites,
+  because image hosts are only known after a page is clipped. Applies on its own, without Save.</p>
 <div class="row">
   <button id="save">Save</button>
 </div>

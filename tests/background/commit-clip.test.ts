@@ -13,6 +13,7 @@ const clip = {
     'clips/pending/2026/07/x/metadata.json': '{}',
     'clips/pending/2026/07/x/state.json': '{}',
   },
+  assetFiles: {},
 } as unknown as Parameters<typeof commitClip>[1]['clip']
 
 interface Call { url: string; body: unknown }
@@ -63,6 +64,19 @@ test('creates four blobs and one commit on the happy path', async () => {
   expect(h.calls.filter((call) => call.url.endsWith('/git/blobs'))).toHaveLength(4)
   expect(h.calls.filter((call) => call.url.endsWith('/git/commits'))).toHaveLength(1)
   expect(h.refUpdateCount()).toBe(1)
+})
+
+test('an image goes up as a base64 blob and lands in the tree under assets/', async () => {
+  const h = harness({ failFirstRefUpdate: false })
+  const assetPath = 'clips/pending/2026/07/x/assets/01-abcdef12.webp'
+  const withImage = { ...clip, assetFiles: { [assetPath]: new Uint8Array([0, 255, 128]).buffer } }
+  await commitClip(context, { branch: 'main', clip: withImage })
+
+  const blobBodies = h.calls.filter((call) => call.url.endsWith('/git/blobs')).map((call) => call.body)
+  expect(blobBodies).toHaveLength(5)
+  expect(blobBodies[4]).toEqual({ content: 'AP+A', encoding: 'base64' })
+  const tree = h.calls.find((call) => call.url.endsWith('/git/trees'))?.body as { tree: Array<{ path: string }> }
+  expect(tree.tree.map((entry) => entry.path)).toContain(assetPath)
 })
 
 test('rebuilds tree and commit against the new head after a non-fast-forward', async () => {

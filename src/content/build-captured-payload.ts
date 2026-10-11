@@ -7,6 +7,8 @@ import { collectPageMetadata } from './collect-page-metadata'
 import { droppedContentLinks } from './dropped-content-links'
 import { extractContent } from './extract-content'
 import { getSelectionHtml } from './get-selection-html'
+import { imageUrlsInHtml } from './image-urls-in-html'
+import { pinImageSources } from './pin-image-sources'
 import { prepareXPage } from './prepare-x-page'
 import { resolveUrls } from './resolve-urls'
 import { sanitizeHtml } from './sanitize-html'
@@ -30,7 +32,7 @@ export async function buildCapturedPayload(
   // relative urls as authored, so only those need resolving here.
   const resolvedHtml =
     extracted.extractor === 'defuddle' ? extracted.html : resolveUrls(extracted.html, doc.baseURI)
-  const cleanExtracted = sanitizeHtml(resolvedHtml)
+  const cleanExtracted = sanitizeHtml(pinImageSources(resolvedHtml, doc))
 
   const wholePage = sanitizeHtml(doc.documentElement.outerHTML)
   const fitsWholePage = byteLength(wholePage) <= LIMITS.MAX_SOURCE_HTML_BYTES
@@ -46,5 +48,6 @@ export async function buildCapturedPayload(
     extractor: extracted.extractor,
     siteExtractor: extracted.siteExtractor,
     page: applyXPageMetadata(collectPageMetadata(doc, url), focalTweet),
+    imageUrls: imageUrlsInHtml(cleanExtracted),
   }
 }

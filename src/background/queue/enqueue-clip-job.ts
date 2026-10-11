@@ -13,5 +13,6 @@ export async function enqueueClipJob(job: ClipJob, tabId: number | null): Promis
     leaseExpiresAt: null,
     attemptCount: 0,
     lastError: null,
+    assets: null,
   })
 }

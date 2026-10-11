@@ -1,3 +1,4 @@
+import type { ClipAssets } from '../../shared/clip-assets'
 import type { ClipJob } from '../clip-job'
 import type { ClipJobState } from './clip-job-state'
 
@@ -15,4 +16,10 @@ export interface QueuedClipJob extends ClipJob {
   leaseExpiresAt: number | null
   attemptCount: number
   lastError: string | null
+  // The images prepared for this clip, null until the asset step has run.
+  // Kept across retries: the markdown points at these files, and fetching them
+  // again could store different ones and turn a resumed commit into a
+  // conflict with its own earlier attempt. A job written before this field
+  // existed reads it as undefined, which means the same as null.
+  assets: ClipAssets | null
 }

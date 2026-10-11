@@ -26,6 +26,8 @@ elsewhere).
   clips only the selection.
 - Each clip is one atomic commit: the markdown, the sanitized HTML, and a
   metadata file with the URL, title, author, dates and the extractor used.
+- Optional: download the page's images into the clip (off by default), so the
+  markdown keeps working when the original host does not.
 - Clips queue locally and retry, so a flaky connection does not lose one.
 - No server of its own: it talks to GitHub through a GitHub App you register
   and install on that one repository.
@@ -52,17 +54,24 @@ user owns.
   page.
 - storage: keep the settings, the GitHub authorization and the capture token.
 - alarms: retry clips that could not be committed yet.
+- offscreen: sanitise SVG images before they are committed; the service worker
+  has no DOM to parse them in. Used only when image downloads are on.
 - Host permission api.github.com: commit clips through the GitHub API.
 - Host permission github.com: the GitHub device-flow sign-in endpoints.
-- Optional host permission https://*/*: requested for one origin only, the
-  capture service the user configures.
+- Optional host permission https://*/*: requested in two cases, each from a
+  click on the options page. For one origin, the capture service the user
+  configures; and in full, only when the user switches on "Download images",
+  because the hosts a clipped page loads its images from are only known after
+  the page is clipped. Image fetches carry no cookies and go only to https
+  hosts on the standard port, never to local or private addresses.
 - Content scripts on x.com / twitter.com: keep the post data the page loads so a
   clipped thread is complete; nothing is sent until the user clips.
 - Remote code: none. All code ships in the package.
 
 ## Data usage disclosures
 
-Collected: website content (the clipped page), web history (tab URLs, only to a
+Collected: website content (the clipped page, and its images when the user
+switches image downloads on), web history (tab URLs, only to a
 capture service the user configures), authentication information (the GitHub
 authorization, stored locally). Not sold, not used or transferred for purposes
 unrelated to the single purpose, not used for creditworthiness or lending.

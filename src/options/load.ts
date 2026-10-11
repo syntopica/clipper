@@ -1,3 +1,4 @@
+import { imagesEnabled } from '../background/assets/images-enabled'
 import { defaultMachineName } from '../shared/default-machine-name'
 import { getCaptureToken } from '../shared/get-capture-token'
 import { getSettings } from '../shared/get-settings'
@@ -19,6 +20,7 @@ export async function load(): Promise<void> {
   field('captureToken').value = (await getCaptureToken()) ?? ''
   textArea('denylistedHostnames').value = (settings?.denylistedHostnames ?? []).join('\n')
   textArea('privateHostnames').value = (settings?.privateHostnames ?? []).join('\n')
+  field('downloadImages').checked = await imagesEnabled()
   await renderAuth()
   await renderFailedJobs()
 }

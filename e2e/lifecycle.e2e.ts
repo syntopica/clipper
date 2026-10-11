@@ -12,6 +12,7 @@ const payload = {
   snapshotMode: 'sanitized',
   extractor: 'defuddle',
   siteExtractor: false,
+  imageUrls: [],
   page: { title: 'Title', author: null, published: null, canonicalUrl: null, language: 'en', site: 'example.com' },
 }
 
@@ -169,4 +170,39 @@ test('a permanently failed clip is listed on the options page, retried by the wo
   await row.locator('button[data-action="discard"]').click()
   await expect(row).toHaveCount(0)
   expect(await readJobStates(worker)).toEqual([])
+})
+
+test('the service worker re-encodes as WebP on an OffscreenCanvas, with the long edge capped', async ({ worker }) => {
+  const encoded = await worker.evaluate(async () => {
+    const source = new OffscreenCanvas(3200, 800)
+    source.getContext('2d')!.fillRect(0, 0, 3200, 800)
+    const png = await source.convertToBlob({ type: 'image/png' })
+    const bitmap = await createImageBitmap(png)
+    const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height))
+    const canvas = new OffscreenCanvas(Math.round(bitmap.width * scale), Math.round(bitmap.height * scale))
+    canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+    const webp = await canvas.convertToBlob({ type: 'image/webp', quality: 0.82 })
+    const decoded = await createImageBitmap(webp)
+    return { type: webp.type, width: decoded.width, height: decoded.height }
+  })
+  expect(encoded).toEqual({ type: 'image/webp', width: 1600, height: 400 })
+})
+
+test('the offscreen document sanitises an SVG for the worker', async ({ worker }) => {
+  const clean = await worker.evaluate(async () => {
+    await chrome.offscreen.createDocument({
+      url: 'offscreen/offscreen.html',
+      reasons: ['DOM_PARSER' as chrome.offscreen.Reason],
+      justification: 'e2e',
+    })
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" onload="alert(1)"><script>alert(2)</script>' +
+      '<image href="https://track.example/p.png"/><rect width="1" height="1"/></svg>'
+    const refused = await chrome.runtime.sendMessage({ target: 'offscreen', type: 'sanitize-svg', svg: '<html></html>' })
+    const accepted = await chrome.runtime.sendMessage({ target: 'offscreen', type: 'sanitize-svg', svg })
+    return { refused, accepted }
+  })
+  expect(clean.refused).toEqual({ svg: null })
+  expect(clean.accepted.svg).toContain('<rect')
+  for (const gone of ['onload', 'script', 'track.example']) expect(clean.accepted.svg).not.toContain(gone)
 })

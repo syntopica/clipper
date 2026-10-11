@@ -19,6 +19,15 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Testing
 
+- [ ] Real-browser check of image downloads (phase 3). Unit tests and
+  `pnpm e2e` cover the pipeline in pieces, but no end-to-end clip with images
+  has run: the `https://*/*` prompt cannot be accepted in headless Playwright.
+  Smallest step: reload the extension (it now also asks for `offscreen`, which
+  shows no warning), tick "Download images into the clip" on the options page
+  and accept Chrome's prompt, clip a page with a few raster images, an SVG and a
+  lazy-loaded image (a Wikipedia article works), then check the commit has
+  `assets/01-<sha8>.webp` and friends, `index.md` points at them, and
+  `asset_count`/`asset_failures` add up.
 - [~] Verify the X thread repair on a real multi-thread clip. One captured X thread (clip 01KYN4S3) captured 4 tweets truncated behind "Show more" and
   one thread tweet missing from the virtualized DOM; the GraphQL-stash repair
   (x-page-hook / x-collector / prepare-x-page) fixes that in unit tests but has
@@ -65,20 +74,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Security
 
-- [!] Phase 3 - the asset pipeline that calls the policy in
-  `src/background/assets/`: collect `currentSrc`/`src`/`srcset`/`<picture>` and
-  lazy-loading candidates in the content script, request the optional host
-  permission per asset origin, dedupe by URL then sha256, concurrency 4 and at
-  most 30 images, SVG sanitising, WebP re-encode via `OffscreenCanvas` capped
-  at 1600px, the blob caps, `assets/*` in the commit, `asset_count` and
-  `asset_failures` filled, the `fetching-assets` and `ready` queue states. Decided
-  2026-10-11 (Codex, high): images are off by default and switched on by a
-  "Download images" control on the options page that requests `https://*/*`
-  once (a permission request needs a user gesture, and image hosts are only
-  known after the clip); redirects Chrome hides (`opaqueredirect`) stay
-  refused, remote URL kept, reason in `asset_failures`. Blocked (Codex,
-  medium): build it after the phase 2 real-browser smoke check - the reload
-  item at the top of this file - not before. Not started.
 - [!] Move the GitHub token out of `chrome.storage.local` into the OS keychain via
   native messaging. Deferred by design; the token is currently a persisted secret
   with no keychain protection. Decided 2026-10-11 (Codex, high): stay deferred.

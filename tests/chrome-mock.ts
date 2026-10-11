@@ -11,6 +11,9 @@ export interface ChromeMock {
   openOptionsPageCalls: unknown[]
   alarms: Map<string, number>
   sentMessages: unknown[]
+  // Host permissions held, and how the next `permissions.request` is answered.
+  grantedOrigins: Set<string>
+  permissionAnswer: { grant: boolean }
 }
 
 export function installChromeMock(): ChromeMock {
@@ -21,6 +24,10 @@ export function installChromeMock(): ChromeMock {
   const openOptionsPageCalls: unknown[] = []
   const alarms = new Map<string, number>()
   const sentMessages: unknown[] = []
+  const grantedOrigins = new Set<string>()
+  const permissionAnswer = { grant: true }
+  const covered = (origin: string) =>
+    grantedOrigins.has(origin) || (grantedOrigins.has('https://*/*') && origin.startsWith('https://'))
 
   const area = (store: Store) => ({
     get: async (keys: string[]) =>
@@ -38,6 +45,13 @@ export function installChromeMock(): ChromeMock {
 
   ;(globalThis as unknown as { chrome: unknown }).chrome = {
     storage: { sync: area(sync), local: area(local) },
+    permissions: {
+      contains: async ({ origins }: { origins: string[] }) => origins.every(covered),
+      request: async ({ origins }: { origins: string[] }) => {
+        if (permissionAnswer.grant) for (const origin of origins) grantedOrigins.add(origin)
+        return permissionAnswer.grant
+      },
+    },
     alarms: {
       create: async (name: string, info: { when: number }) => {
         alarms.set(name, info.when)
@@ -66,5 +80,5 @@ export function installChromeMock(): ChromeMock {
     },
   }
 
-  return { sync, local, actionTitles, iconPaths, openOptionsPageCalls, alarms, sentMessages }
+  return { sync, local, actionTitles, iconPaths, openOptionsPageCalls, alarms, sentMessages, grantedOrigins, permissionAnswer }
 }

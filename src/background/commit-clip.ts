@@ -1,4 +1,5 @@
 import type { ClipFiles } from '../shared/build-clip-files'
+import { bytesToBase64 } from '../shared/bytes-to-base64'
 import { checkExistingClip } from './check-existing-clip'
 import { ClipConflictError } from './clip-conflict-error'
 import { createBlob } from './create-blob'
@@ -28,10 +29,15 @@ export async function commitClip(
 
   // One blob at a time, each retried with backoff. Firing them concurrently is
   // the burst pattern GitHub's secondary rate limits watch for, and four
-  // requests in sequence cost well under a second.
+  // requests in sequence cost well under a second; a clip with thirty images
+  // takes a few seconds more, which is the price of not being throttled.
   const entries: Array<{ path: string; sha: string }> = []
   for (const [path, content] of Object.entries(input.clip.files)) {
     entries.push({ path, sha: await retryTransientGithub(() => createBlob(context, content), retry) })
+  }
+  for (const [path, bytes] of Object.entries(input.clip.assetFiles)) {
+    const content = bytesToBase64(bytes)
+    entries.push({ path, sha: await retryTransientGithub(() => createBlob(context, content, 'base64'), retry) })
   }
 
   const message = `Clip: ${input.clip.metadata.title}`

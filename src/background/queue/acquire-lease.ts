@@ -6,7 +6,8 @@ import type { QueuedClipJob } from './queued-clip-job'
 import { requestResult } from './request-result'
 import { transactionDone } from './transaction-done'
 
-// Claim a job for this worker and mark it `uploading`, in one readwrite
+// Claim a job for this worker and mark it `fetching-assets`, or `uploading`
+// when its assets were prepared by an earlier attempt, in one readwrite
 // transaction: IndexedDB serialises overlapping readwrite transactions on a
 // store, so a click, an alarm and `onStartup` racing for the same job cannot
 // both see it free. Returns the claimed job, or null when it is gone, not due,
@@ -27,7 +28,7 @@ export async function acquireLease(
     }
     const leased: QueuedClipJob = {
       ...job,
-      state: 'uploading',
+      state: (job.assets ?? null) === null ? 'fetching-assets' : 'uploading',
       leaseOwner: owner,
       leaseExpiresAt: now + LEASE_MS,
       attemptCount: job.attemptCount + 1,

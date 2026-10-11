@@ -267,6 +267,7 @@ clips/pending/YYYY/MM/<YYYY-MM-DD>-<site>-<title-slug>-<clip_id[:8]>/
   source.html     # sanitized HTML snapshot - see snapshot_mode below (may be absent)
   metadata.json   # schema_version, clip_id, url, site, extractor, content_sha256, etc.
   state.json      # { status: "pending", updatedAt, failure: null, brainCommit: null }
+  assets/         # only with image downloads on: 01-<sha8>.webp, 02-<sha8>.svg, ...
 ```
 
 `metadata.json`'s `snapshot_mode` records what `source.html` actually holds:
@@ -327,12 +328,55 @@ parent domain) is on the options page's "Mark clips from these hosts private"
 list, in which case it is `private`, which the ingest side routes to manual
 review instead of synthesis. Nothing emits `restricted` yet.
 
+## Images
+
+Off by default: a clip's markdown links to images where they are hosted, and
+`asset_count` is `0`. The **Download images into the clip** checkbox on the
+options page turns it on and, in the same click, asks Chrome for access to all
+https sites - a permission request needs a user gesture, and the hosts a page
+loads its images from are only known after it is clipped, far too late for one.
+Turning it off stops the downloads; Chrome keeps the granted access until you
+remove it under the extension's site access on `chrome://extensions`. The switch
+lives in `chrome.storage.local`, because the permission is per Chrome profile
+too.
+
+With it on, the capture script picks one URL per image in the extracted
+content - what the browser actually displayed (`currentSrc`), else `src`, else a
+lazy-loading attribute (`data-src` and kin) when `src` is a placeholder, else
+the largest `srcset` candidate of the image or its `<picture>` - and writes it
+into the markdown. The service worker then, for up to 30 distinct URLs, four at
+a time:
+
+1. vets the URL with the asset fetch policy (https, port 443, no credentials, no
+   local or private host) and checks the host permission for its origin;
+2. fetches it without cookies, refusing a redirect Chrome hides (an extension
+   worker's manual-redirect fetch is `opaqueredirect`, so its target cannot be
+   vetted);
+3. reads the format from the bytes: an SVG is sanitised in an offscreen
+   document (DOMPurify's SVG profile, no `<style>` or `<foreignObject>`, no
+   reference outside the file) and stored; a GIF is stored as it came, so it
+   keeps its animation; anything else must decode, and is re-encoded as WebP at
+   quality 0.82 with the long edge capped at 1600px - the original bytes are
+   kept when that came out larger without having to shrink the image;
+4. drops whatever is still over the 950 KB git blob cap, deduplicates by content
+   hash, and stops adding files once the clip's 12 MB image budget is spent.
+
+Stored images are committed in the same commit as `assets/01-<sha8>.webp`
+(numbered in page order), and the markdown points at them by that relative
+path. Every image that is not stored keeps its remote URL, and
+`asset_failures` lists it as `<url>: <reason>`. No image failure fails a clip.
+This needs the `offscreen` permission, which shows no warning.
+
 ## Durable queue (Phase 2)
 
 A capture is persisted to an IndexedDB job store (`clip-queue`) before any
 network call, with its `clip_id` and `clipped_at` fixed at that moment. Each
-attempt leases the job (five minutes, the longest Chrome lets one event run),
-marks it `uploading`, and keeps the service worker alive while it commits.
+attempt leases the job (five minutes, the longest Chrome lets one event run)
+and keeps the service worker alive while it works. A new job goes
+`fetching-assets` while its images are prepared, then `ready` once they are
+persisted with it, then `uploading`. A retry reuses those images rather than
+fetching them again: the markdown already points at them, and a different
+result would turn a resumed commit into a conflict with its own first attempt.
 A committed job is deleted. A transient failure - 429, a rate-limited 403,
 any 5xx, no network, or a ref that kept moving - leaves the job
 `transient-failure` with its next attempt time: `Retry-After` when GitHub
@@ -355,8 +399,6 @@ GitHub's secondary rate limits watch for.
 
 Deliberately out of scope so far:
 
-- No image or asset downloading - `asset_count` is always `0` and
-  `source.html` keeps only what was already inline.
 - No note or tags UI - `metadata.json` has `note` and `tags` fields, but
   nothing in the extension writes to them.
 - No context menu entry point - toolbar click and `Cmd+Shift+S` only.
@@ -368,10 +410,11 @@ Deliberately out of scope so far:
   unpacked load keeps the id derived from `key.pem`.
 - No broad host permissions granted up front - the extension reaches
   `https://api.github.com/*` and `https://github.com/*` (the latter solely for
-  the device-flow endpoints). The capture service's origin is a setting, so it
-  is an optional permission the options page requests for that one origin when
-  you save it, and nothing else. It does not read arbitrary page content beyond
-  the active tab it was explicitly invoked on.
+  the device-flow endpoints). `https://*/*` is declared optional and requested
+  only from a click on the options page: for the capture service's one origin
+  when you save it, and in full when you switch on **Download images** (see
+  [Images](#images)). It does not read arbitrary page content beyond the active
+  tab it was explicitly invoked on.
 
 An in-memory guard prevents a rapid double click on the same tab from
 producing two clips - it clears itself five seconds after the injection

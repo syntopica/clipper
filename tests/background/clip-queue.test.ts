@@ -19,6 +19,7 @@ const payload = {
   snapshotMode: 'sanitized' as const,
   extractor: 'defuddle' as const,
   siteExtractor: false,
+  imageUrls: [] as string[],
   page: { title: 'Title', author: null, published: null, canonicalUrl: null, language: 'en', site: 'example.com' },
 }
 
@@ -143,4 +144,48 @@ test('resuming the queue commits a job left behind, and clears the alarm when no
   expect(refUpdates).toBe(1)
   expect(await listJobs()).toEqual([])
   expect(chromeMock.alarms.has(RETRY_ALARM_NAME)).toBe(false)
+})
+
+test('the asset step persists its result as ready before the commit, and a retry reuses it', async () => {
+  const { ensureJobAssets } = await import('../../src/background/queue/ensure-job-assets')
+  const job = newClipJob({ ...payload, imageUrls: ['https://cdn.example/a.png'] })
+  await enqueueClipJob(job, null)
+  const leased = await acquireLease(job.clipId, 'worker-a')
+  expect(leased?.state).toBe('fetching-assets')
+
+  const assets = { files: [{ urls: ['https://cdn.example/a.png'], fileName: '01-abcdef12.webp', bytes: new Uint8Array([1, 2]).buffer }], failures: [] }
+  const states: string[] = []
+  const prepare = vi.fn(async () => {
+    states.push((await listJobs())[0]!.state)
+    return assets
+  })
+  const prepared = await ensureJobAssets(leased!, prepare)
+  expect(prepared.assets).toBe(assets)
+  expect(states).toEqual(['fetching-assets'])
+  const [stored] = await listJobs()
+  expect(stored).toMatchObject({ state: 'uploading', assets: { failures: [], files: [{ fileName: '01-abcdef12.webp' }] } })
+
+  // Already prepared: the step does not run again.
+  await ensureJobAssets(stored!, prepare)
+  expect(prepare).toHaveBeenCalledTimes(1)
+})
+
+test('a failure after the asset step keeps the assets, and the next attempt goes straight to uploading', async () => {
+  const job = newClipJob(payload)
+  await enqueueClipJob(job, null)
+  const outcome = await runQueuedJob(job.clipId, async (_job, loadAssets) => {
+    await loadAssets()
+    throw new GithubRequestError('blob creation', new Response('{}', { status: 503 }))
+  })
+  expect(outcome.kind).toBe('retrying')
+  const [stored] = await listJobs()
+  expect(stored).toMatchObject({ state: 'transient-failure', assets: { files: [], failures: [] } })
+
+  await putJob({ ...stored!, nextAttemptAt: null })
+  const seen: unknown[] = []
+  await runQueuedJob(job.clipId, async (retried, loadAssets) => {
+    seen.push((retried as { state?: string }).state, await loadAssets())
+    return { dirPath: 'x' }
+  })
+  expect(seen).toEqual(['uploading', { files: [], failures: [] }])
 })

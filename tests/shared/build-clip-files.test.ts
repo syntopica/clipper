@@ -111,3 +111,28 @@ test('a site-specific extraction is recorded as such', async () => {
   const siteSpecific = await buildClipFiles({ ...input, siteExtractor: true })
   expect(siteSpecific.metadata.site_extractor).toBe(true)
 })
+
+test('stored images are committed under assets/ and the markdown points at them; the rest keep their URL', async () => {
+  const assets = {
+    files: [{ urls: ['https://cdn.example/a.png'], fileName: '01-abcdef12.webp', bytes: new Uint8Array([1, 2, 3]).buffer }],
+    failures: ['https://cdn.example/b.png: HTTP 404'],
+  }
+  const markdown = '# Title\n\n![a](https://cdn.example/a.png)\n\n![b](https://cdn.example/b.png)\n'
+  const clip = await buildClipFiles({ ...input, markdown, assets })
+
+  expect(Object.keys(clip.assetFiles)).toEqual([`${clip.dirPath}/assets/01-abcdef12.webp`])
+  const body = clip.files[`${clip.dirPath}/index.md`]!.split('---\n').at(-1)!
+  expect(body).toContain('![a](assets/01-abcdef12.webp)')
+  expect(body).toContain('![b](https://cdn.example/b.png)')
+  expect(clip.metadata.asset_count).toBe(1)
+  expect(clip.metadata.asset_failures).toEqual(['https://cdn.example/b.png: HTTP 404'])
+  const committed = '# Title\n\n![a](assets/01-abcdef12.webp)\n\n![b](https://cdn.example/b.png)\n'
+  expect(clip.metadata.content_sha256).toBe(await sha256Hex(normalizeMarkdown(committed)))
+})
+
+test('a clip without assets commits no asset files and records none', async () => {
+  const clip = await buildClipFiles(input)
+  expect(clip.assetFiles).toEqual({})
+  expect(clip.metadata.asset_count).toBe(0)
+  expect(clip.metadata.asset_failures).toEqual([])
+})

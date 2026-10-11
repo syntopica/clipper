@@ -6,6 +6,34 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Security:** Phase 3 asset pipeline, calling the policy in
+  `src/background/assets/`. Images are off by default; the options page's
+  "Download images into the clip" checkbox requests `https://*/*` inside its
+  click and stores the switch in `chrome.storage.local`. The capture script pins
+  one URL per extracted `<img>` (`currentSrc`, `src`, lazy `data-src` and kin,
+  largest `srcset`/`<picture>` candidate) before sanitising and sends them as
+  `imageUrls`. The worker vets each URL, checks the host permission for its
+  origin, fetches without cookies (`opaqueredirect` refused, remote URL kept),
+  sniffs the format from the bytes, sanitises SVG in an offscreen document
+  (DOMPurify SVG profile, no style/foreignObject, no external references),
+  keeps GIFs as-is, re-encodes the rest as WebP q0.82 capped at 1600px on an
+  `OffscreenCanvas` (original kept when smaller and unresized), drops anything
+  over `MAX_GIT_BLOB_BYTES`, dedupes by URL then sha256, runs 4 at a time (20 s
+  deadline each) for at most 30, and stops at a 12 MB per-clip budget. Files commit as
+  `assets/NN-<sha8>.<ext>` (base64 blobs), the markdown points at them before
+  `content_sha256` is computed, and `asset_count`/`asset_failures` are filled.
+  The queue gained `fetching-assets` and `ready`; the prepared assets are
+  persisted on the job, so a retry commits the same files. Assets load only
+  after the denylist, settings and sign-in checks. New permission: `offscreen`
+  (no warning). README, PRIVACY.md and docs/chrome-web-store.md updated.
+  Evidence: `pnpm test` - 316 passed (asset pipeline 24 cases, SVG sanitiser,
+  image-source choice, queue asset states, base64 blob commit); `pnpm e2e` - 6
+  passed, including WebP re-encode on an `OffscreenCanvas` in the extension
+  worker and SVG sanitising through the real offscreen document. Not covered
+  end to end: the permission prompt cannot be accepted headless (real-browser
+  check kept in TODO.md). `fetch-image-asset.ts` is no longer on any path; left
+  in place with its tests.
+
 - [x] 2026-10-11 - **Infrastructure:** `permanent-failure` jobs no longer sit
   in the IndexedDB queue with no way out. The options page lists them under
   "Failed clips" (title, capture time, URL, last error) with *Retry* - reset

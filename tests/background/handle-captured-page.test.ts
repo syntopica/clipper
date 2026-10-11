@@ -10,6 +10,7 @@ const payload = {
   snapshotMode: 'sanitized' as const,
   extractor: 'defuddle' as const,
   siteExtractor: false,
+  imageUrls: [] as string[],
   page: {
     title: 'Title',
     author: null,
@@ -175,4 +176,28 @@ test('a host on the private list is clipped with sensitivity private; others sta
     await handleCapturedPage(newClipJob(payload))
   }
   expect(sensitivities).toEqual(['private', 'public'])
+})
+
+test('the images come from the queue only after the clip is known to be committable', async () => {
+  installChromeMock()
+  const loadAssets = vi.fn(async () => ({ files: [], failures: [] }))
+  await expect(handleCapturedPage(newClipJob(payload), loadAssets)).rejects.toThrow('settings are incomplete')
+  expect(loadAssets).not.toHaveBeenCalled()
+})
+
+test('stored images are committed with the clip', async () => {
+  const stores = installChromeMock()
+  Object.assign(stores.sync.data, { owner: 'o', repo: 'r', branch: 'main' })
+  stores.local.data.machineName = 'mac-cristian'
+  stores.local.data.githubCredential = { accessToken: 'tok', refreshToken: null, expiresAt: null, login: 'an-owner' }
+  const github = mockGithub()
+  const assets = {
+    files: [{ urls: ['https://cdn.example/a.png'], fileName: '01-abcdef12.webp', bytes: new Uint8Array([1]).buffer }],
+    failures: [],
+  }
+
+  await handleCapturedPage(newClipJob({ ...payload, markdown: '![a](https://cdn.example/a.png)' }), async () => assets)
+
+  expect(github.paths).toHaveLength(5)
+  expect(github.paths.some((path) => path.endsWith('/assets/01-abcdef12.webp'))).toBe(true)
 })

@@ -1,7 +1,10 @@
-// The phase 2 subset of the design's state machine. `fetching-assets` and
-// `ready` belong to phase 3, which has no asset pipeline to drive them yet.
+// The design's state machine, less `committed`: a committed job is deleted.
+// `fetching-assets` holds while images are fetched and prepared, `ready` once
+// they are persisted with the job, so a retry commits the very same files.
 export type ClipJobState =
   | 'captured'
+  | 'fetching-assets'
+  | 'ready'
   | 'uploading'
   | 'transient-failure'
   | 'permanent-failure'

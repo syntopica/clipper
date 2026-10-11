@@ -3,8 +3,10 @@ import { getAccessToken } from '../shared/get-access-token'
 import { getSettings } from '../shared/get-settings'
 import { isDenylistedHostname } from '../shared/is-denylisted-hostname'
 import { matchesHostnameList } from '../shared/matches-hostname-list'
+import { NO_CLIP_ASSETS } from '../shared/no-clip-assets'
 import type { ClipJob } from './clip-job'
 import { commitClip } from './commit-clip'
+import type { LoadAssets } from './queue/load-assets'
 
 // Returns where the clip landed, which the caller needs for two things the
 // commit itself does not do: telling the capture service the clip exists, and
@@ -12,8 +14,12 @@ import { commitClip } from './commit-clip'
 //
 // The clip's id and timestamp come from the job, never from here: running the
 // same job twice must target the same directory, so a retry after a lost
-// response finds its own clip and stops as `identical`.
-export async function handleCapturedPage(job: ClipJob): Promise<{ dirPath: string }> {
+// response finds its own clip and stops as `identical`. Its images come from
+// `loadAssets`, asked only once the clip is known to be committable.
+export async function handleCapturedPage(
+  job: ClipJob,
+  loadAssets: LoadAssets = async () => NO_CLIP_ASSETS,
+): Promise<{ dirPath: string }> {
   const { payload } = job
   const hostname = new URL(payload.url).hostname
   if (isDenylistedHostname(hostname)) {
@@ -27,6 +33,7 @@ export async function handleCapturedPage(job: ClipJob): Promise<{ dirPath: strin
   }
   const token = await getAccessToken()
   if (!token) throw new Error('not signed in to GitHub on this device - open the options page')
+  const assets = await loadAssets()
 
   const clip = await buildClipFiles({
     clipId: job.clipId,
@@ -41,6 +48,7 @@ export async function handleCapturedPage(job: ClipJob): Promise<{ dirPath: strin
     clippedAt: job.clippedAt,
     clippedFrom: settings.machineName,
     extensionVersion: chrome.runtime.getManifest().version,
+    assets,
   })
 
   await commitClip(

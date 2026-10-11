@@ -19,8 +19,14 @@ page. If you also configure a capture service (an origin you deploy yourself)
 and its token, the extension sends that service the URL of each tab you open,
 so the toolbar icon can show whether the page is already clipped; hosts on the
 built-in or your own denylist, and local or private addresses, are never sent.
-Without a capture service no browsing data leaves the browser. Nothing is sent
-anywhere else.
+Without a capture service no browsing data leaves the browser.
+
+Images are off by default. If you switch on "Download images" on the options
+page, Chrome asks you once for access to all https sites, and from then on the
+images a clip references (up to 30 per clip) are fetched from the hosts the
+clipped page loads them from - without your cookies - and committed to the same
+repository beside the markdown. Those hosts see a request for each image, as
+they did when the page displayed it. Nothing is sent anywhere else.
 
 ## What it stores on your device
 
@@ -29,8 +35,10 @@ anywhere else.
   Chrome account. The machine name recorded in each clip stays on this device.
 - Your GitHub authorization and the optional capture token, in local extension
   storage on this device only.
-- Clips waiting to be committed, in the extension's local database, until they
-  are committed or you remove them.
+- Clips waiting to be committed, with their downloaded images, in the
+  extension's local database, until they are committed or you discard them
+  under "Failed clips" on the options page.
+- Whether images are downloaded, on this device only.
 
 ## Sharing
 

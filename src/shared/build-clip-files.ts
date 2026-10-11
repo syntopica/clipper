@@ -1,14 +1,17 @@
 import type { Extractor } from '../content/extract-content'
 import type { PageMetadata } from '../content/collect-page-metadata'
 import { byteLength } from './byte-length'
+import type { ClipAssets } from './clip-assets'
 import { ClipMetadataSchema, type ClipMetadata } from './clip-metadata-schema'
 import { ClipStateSchema } from './clip-state-schema'
 import { LIMITS } from './limits'
 import { buildFrontmatter } from './build-frontmatter'
 import { clipDirName } from './clip-dir-name'
 import { clipPath } from './clip-path'
+import { NO_CLIP_ASSETS } from './no-clip-assets'
 import { normalizeMarkdown } from './normalize-markdown'
 import { normalizeUrl } from './normalize-url'
+import { rewriteImageReferences } from './rewrite-image-references'
 import { sha256Hex } from './sha256-hex'
 
 export interface BuildClipFilesInput {
@@ -24,16 +27,28 @@ export interface BuildClipFilesInput {
   clippedAt: string
   clippedFrom: string
   extensionVersion: string
+  // The images stored for this clip. Absent means none: every image keeps its
+  // remote URL.
+  assets?: ClipAssets
 }
 
 export interface ClipFiles {
   dirPath: string
   files: Record<string, string>
+  // Image files, committed as binary blobs beside the text files.
+  assetFiles: Record<string, ArrayBuffer>
   metadata: ClipMetadata
 }
 
 export async function buildClipFiles(input: BuildClipFilesInput): Promise<ClipFiles> {
-  const body = normalizeMarkdown(input.markdown)
+  const assets = input.assets ?? NO_CLIP_ASSETS
+  // The markdown points at the committed copies before it is hashed:
+  // `content_sha256` describes the body as committed, and a retried job
+  // reproduces it because its assets were persisted with it.
+  const assetPaths = new Map(
+    assets.files.flatMap((file) => file.urls.map((url) => [url, `assets/${file.fileName}`] as const)),
+  )
+  const body = normalizeMarkdown(rewriteImageReferences(input.markdown, assetPaths))
   if (byteLength(body) > LIMITS.MAX_MARKDOWN_BYTES) {
     throw new Error(`markdown exceeds ${LIMITS.MAX_MARKDOWN_BYTES} bytes`)
   }
@@ -66,8 +81,8 @@ export async function buildClipFiles(input: BuildClipFilesInput): Promise<ClipFi
     sensitivity: input.sensitivity,
     content_sha256: await sha256Hex(body),
     source_html_sha256: await sha256Hex(input.sourceHtml),
-    asset_count: 0,
-    asset_failures: [],
+    asset_count: assets.files.length,
+    asset_failures: assets.failures,
     note: '',
     tags: [],
     word_count: body.split(/\s+/).filter(Boolean).length,
@@ -99,8 +114,13 @@ export async function buildClipFiles(input: BuildClipFilesInput): Promise<ClipFi
     files[`${dirPath}/source.html`] = input.sourceHtml
   }
 
-  const total = Object.values(files).reduce((sum, value) => sum + byteLength(value), 0)
+  const assetFiles = Object.fromEntries(
+    assets.files.map((file) => [`${dirPath}/assets/${file.fileName}`, file.bytes]),
+  )
+
+  const textBytes = Object.values(files).reduce((sum, value) => sum + byteLength(value), 0)
+  const total = Object.values(assetFiles).reduce((sum, bytes) => sum + bytes.byteLength, textBytes)
   if (total > LIMITS.MAX_CLIP_BYTES) throw new Error(`clip exceeds ${LIMITS.MAX_CLIP_BYTES} bytes`)
 
-  return { dirPath, files, metadata }
+  return { dirPath, files, assetFiles, metadata }
 }

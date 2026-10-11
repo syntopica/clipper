@@ -99,6 +99,7 @@ test('blobs are created one at a time, and a throttled blob is retried', async (
     dirPath: 'clips/pending/2026/10/x',
     metadata: { clip_id: 'ID1', content_sha256: 'a'.repeat(64), title: 'T' },
     files: { 'a/index.md': '1', 'a/source.html': '2', 'a/metadata.json': '3', 'a/state.json': '4' },
+    assetFiles: {},
   } as unknown as Parameters<typeof commitClip>[1]['clip']
 
   await commitClip({ token: 't', owner: 'o', repo: 'r' }, { branch: 'main', clip }, options(waits))

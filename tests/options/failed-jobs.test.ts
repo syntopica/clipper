@@ -18,6 +18,7 @@ const payload = {
   snapshotMode: 'sanitized' as const,
   extractor: 'defuddle' as const,
   siteExtractor: false,
+  imageUrls: [] as string[],
   page: { title: 'A title', author: null, published: null, canonicalUrl: null, language: 'en', site: 'example.com' },
 }
 

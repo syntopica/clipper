@@ -21,7 +21,7 @@ await build({
 })
 
 await build({
-  entryPoints: ['src/options/options.ts', 'src/popup/popup.ts'],
+  entryPoints: ['src/options/options.ts', 'src/popup/popup.ts', 'src/offscreen/offscreen.ts'],
   outdir: 'dist',
   outbase: 'src',
   bundle: true,
@@ -34,6 +34,8 @@ await mkdir('dist/options', { recursive: true })
 await cp('src/options/options.html', 'dist/options/options.html')
 await mkdir('dist/popup', { recursive: true })
 await cp('src/popup/popup.html', 'dist/popup/popup.html')
+await mkdir('dist/offscreen', { recursive: true })
+await cp('src/offscreen/offscreen.html', 'dist/offscreen/offscreen.html')
 
 // The capture script carries Defuddle, about 1.2 MB unminified, and is parsed
 // on every click. It is the one bundle minified: the rest are small enough
