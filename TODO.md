@@ -96,6 +96,11 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Infrastructure
 
+- [ ] `permanent-failure` jobs stay in the IndexedDB queue indefinitely, each
+  holding its full page payload, and nothing offers to retry one (after
+  signing in again, say) or discard it. Found 2026-10-11 while building the
+  queue. Smallest step: list them in the popup or options page with "retry"
+  (reset to `captured`) and "discard" (delete) actions.
 - [!] Phase 5 - publish unlisted to the Chrome Web Store and ship `dist.zip`
   through GitHub Releases, replacing per-machine unpacked loads. Parked
   2026-10-11: publishing is an external release the owner performs. Steps:
