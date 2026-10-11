@@ -1,6 +1,5 @@
 # TODO
 
-
 > Consolidated from the accessible Claude, Codex, and Antigravity project
 > history. Last reviewed: 2026-07-26. History coverage: Partial.
 >
