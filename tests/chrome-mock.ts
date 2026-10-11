@@ -9,6 +9,7 @@ export interface ChromeMock {
   actionTitles: string[]
   iconPaths: Record<number, string>[]
   openOptionsPageCalls: unknown[]
+  alarms: Map<string, number>
 }
 
 export function installChromeMock(): ChromeMock {
@@ -17,6 +18,7 @@ export function installChromeMock(): ChromeMock {
   const actionTitles: string[] = []
   const iconPaths: Record<number, string>[] = []
   const openOptionsPageCalls: unknown[] = []
+  const alarms = new Map<string, number>()
 
   const area = (store: Store) => ({
     get: async (keys: string[]) =>
@@ -34,6 +36,12 @@ export function installChromeMock(): ChromeMock {
 
   ;(globalThis as unknown as { chrome: unknown }).chrome = {
     storage: { sync: area(sync), local: area(local) },
+    alarms: {
+      create: async (name: string, info: { when: number }) => {
+        alarms.set(name, info.when)
+      },
+      clear: async (name: string) => alarms.delete(name),
+    },
     action: {
       setBadgeText: async () => {},
       setBadgeBackgroundColor: async () => {},
@@ -53,5 +61,5 @@ export function installChromeMock(): ChromeMock {
     },
   }
 
-  return { sync, local, actionTitles, iconPaths, openOptionsPageCalls }
+  return { sync, local, actionTitles, iconPaths, openOptionsPageCalls, alarms }
 }

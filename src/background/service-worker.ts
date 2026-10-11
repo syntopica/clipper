@@ -1,16 +1,27 @@
 import { beginCapture } from './begin-capture'
-import { handleCapturedPage } from './handle-captured-page'
 import { hardenTokenStorageSafely } from './harden-token-storage-safely'
 import { isRuntimeMessage } from './is-runtime-message'
 import { newClipJob } from './new-clip-job'
+import { processJob } from './process-job'
+import { enqueueClipJob } from './queue/enqueue-clip-job'
+import { RETRY_ALARM_NAME } from './queue/retry-alarm-name'
 import { refreshTabStatus } from './refresh-tab-status'
-import { reportClipToService } from './report-clip-to-service'
 import { reportFailure } from './report-failure'
+import { resumeQueueSafely } from './resume-queue-safely'
 import { setBadge } from './set-badge'
-import { withKeepalive } from './with-keepalive'
 
-chrome.runtime.onInstalled.addListener(() => void hardenTokenStorageSafely())
-chrome.runtime.onStartup.addListener(() => void hardenTokenStorageSafely())
+chrome.runtime.onInstalled.addListener(() => {
+  void hardenTokenStorageSafely()
+  resumeQueueSafely()
+})
+chrome.runtime.onStartup.addListener(() => {
+  void hardenTokenStorageSafely()
+  resumeQueueSafely()
+})
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === RETRY_ALARM_NAME) resumeQueueSafely()
+})
 
 chrome.action.onClicked.addListener((tab) => {
   if (tab.id !== undefined) beginCapture(tab.id)
@@ -53,28 +64,17 @@ chrome.runtime.onMessage.addListener((message: unknown, sender) => {
   }
   if (message.type !== 'clip-captured') return
   // The enqueue boundary: the clip's id and timestamp are fixed here, once,
-  // so every attempt at this capture targets the same directory.
+  // and the job is persisted before any network call, so every later attempt
+  // - this one, or a retry after the worker died - targets the same directory.
   const job = newClipJob(message)
   const tabId = sender.tab?.id
-  void withKeepalive(async () => {
+  void (async () => {
     await setBadge('working', tabId)
     try {
-      const clip = await handleCapturedPage(job)
-      await setBadge('ok', tabId)
-      // A previous failure may have left an explanatory title behind (see
-      // reportFailure); a successful capture clears it back to the manifest
-      // default.
-      const defaultTitle = chrome.runtime.getManifest().action?.default_title ?? ''
-      await chrome.action.setTitle(
-        tabId === undefined ? { title: defaultTitle } : { title: defaultTitle, tabId },
-      )
-      // The service hears about the clip, and this tab is repainted, so the
-      // icon turns amber as the clip lands rather than on the next visit.
-      // Neither can fail the capture: it is already committed by here.
-      await reportClipToService(message.url, clip.dirPath)
-      if (tabId !== undefined) await refreshTabStatus(tabId, message.url)
+      await enqueueClipJob(job, tabId ?? null)
+      await processJob(job.clipId)
     } catch (error) {
-      reportFailure('clip failed', error, tabId)
+      reportFailure('could not queue the clip', error, tabId)
     }
-  })
+  })()
 })

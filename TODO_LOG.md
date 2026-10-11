@@ -6,6 +6,20 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Infrastructure:** Phase 2 durable IndexedDB job queue
+  (`src/background/queue/`). Jobs are persisted `captured` before any network
+  call; each transition (`uploading` under a five-minute lease,
+  `transient-failure` with `nextAttemptAt`, `permanent-failure`) is committed
+  before the next step; committed jobs are deleted. `alarms` permission added;
+  `onStartup`, `onInstalled` and the retry alarm run `resumeQueue()`. Backoff
+  honours `Retry-After`, else 30s doubling to 1h, 30 attempts. The lease is
+  taken in one readwrite transaction, so concurrent claimers serialise.
+  Evidence: `pnpm test` (`tests/background/clip-queue.test.ts`, 11 cases on
+  fake-indexeddb: persistence, deletion on commit, transient vs permanent,
+  `Retry-After`, lease race, dead-worker resume with the same identity, not-due
+  retry, end-to-end `resumeQueue`). Real-browser confirmation waits on the
+  extension reload parked at the top of TODO.md (the new `alarms` permission
+  needs it anyway).
 
 
 - [x] 2026-10-11 - **Testing:** Defuddle's site extractors confirmed per site:

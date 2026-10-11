@@ -291,8 +291,8 @@ differ; that hash is what lets a later pass recognise duplicate content, not
 anything in this extension. The path-exists check at commit time is an
 integrity guard, not a duplicate filter: if the target directory already has
 a `metadata.json` whose `clip_id` and `content_sha256` both match the clip
-being committed (the same in-flight commit retried, or a resumed job in
-Phase 2 reusing its `clip_id`), the commit is a no-op; if the directory
+being committed (the same in-flight commit retried, or a resumed queue job
+reusing its `clip_id`), the commit is a no-op; if the directory
 exists with a different `clip_id` or a different hash, the commit fails
 loudly with `ClipConflictError` instead of overwriting anything.
 
@@ -315,16 +315,31 @@ This starting list is not exhaustive - it is a starting point you are
 expected to extend in `denylisted-hostnames.ts` for your own banking, mail
 and admin domains before relying on this extension day to day.
 
-## Not yet implemented (Phase 1 scope)
+## Durable queue (Phase 2)
 
-This is Phase 1: one click, one clip, one commit, nothing durable across
-service-worker restarts. Deliberately out of scope, matching the Phase 1
-plan's exclusion list:
+A capture is persisted to an IndexedDB job store (`clip-queue`) before any
+network call, with its `clip_id` and `clipped_at` fixed at that moment. Each
+attempt leases the job (five minutes, the longest Chrome lets one event run),
+marks it `uploading`, and keeps the service worker alive while it commits.
+A committed job is deleted. A transient failure - 429, a rate-limited 403,
+any 5xx, no network, or a ref that kept moving - leaves the job
+`transient-failure` with its next attempt time: `Retry-After` when GitHub
+gives one, otherwise 30 seconds doubling to an hour, for up to 30 attempts.
+A `chrome.alarms` alarm wakes the worker for it, and `onStartup` and
+`onInstalled` resume anything left behind, including a job whose worker died
+mid-upload. Everything the user has to fix - settings, sign-in, a revoked
+token, a conflicting clip - is a `permanent-failure`: kept in the store,
+reported, never retried. The badge reads `...` in amber while a clip waits
+for its retry. This needs the `alarms` permission, which shows no warning.
 
-- No durable queue (no IndexedDB-backed job store).
-- No automatic retries beyond the in-request tree-rebuild-and-retry inside a
-  single commit attempt.
-- No `chrome.alarms`, no job leases, no multi-machine concurrency handling.
+Within one attempt, blobs are created one at a time, each retried with
+backoff on a transient failure, because concurrent blob POSTs are the burst
+GitHub's secondary rate limits watch for.
+
+## Not yet implemented
+
+Deliberately out of scope so far:
+
 - No image or asset downloading - `asset_count` is always `0` and
   `source.html` keeps only what was already inline.
 - No note or tags UI - `metadata.json` has `note` and `tags` fields, but
@@ -343,9 +358,9 @@ plan's exclusion list:
 
 An in-memory guard prevents a rapid double click on the same tab from
 producing two clips - it clears itself five seconds after the injection
-call, so it only covers a double click, not the whole service-worker
-lifetime, and it does not survive a service worker restart at all - durable
-cross-restart protection is deferred to the Phase 2 durable queue.
+call, so it only covers a double click. Each click that gets past it is a
+deliberate capture with its own `clip_id`; the queue makes each one durable,
+it does not merge them.
 
 ## Development
 

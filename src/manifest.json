@@ -12,6 +12,7 @@
   "key": "<extension-public-key>",
   "permissions": [
     "activeTab",
+    "alarms",
     "scripting",
     "storage",
     "tabs"

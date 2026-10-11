@@ -9,7 +9,7 @@ export async function setBadge(state: keyof typeof BADGES, tabId?: number): Prom
   const scope = tabId === undefined ? {} : { tabId }
   await chrome.action.setBadgeBackgroundColor({ color: badge.color, ...scope })
   await chrome.action.setBadgeText({ text: badge.text, ...scope })
-  if (state !== 'working') {
+  if (state === 'ok' || state === 'error') {
     setTimeout(() => {
       void chrome.action.setBadgeText({ text: '', ...scope }).catch(() => undefined)
     }, RESULT_VISIBLE_MS)

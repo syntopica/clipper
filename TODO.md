@@ -86,9 +86,6 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
 
 ## Infrastructure
 
-- [ ] Phase 2 - durable IndexedDB job queue, state machine persisted per
-  transition, `alarms` permission with `onStartup`/`onInstalled` resume, job
-  leases, exponential backoff honouring `Retry-After`.
 - [ ] Phase 5 - publish unlisted to the Chrome Web Store and ship `dist.zip`
   through GitHub Releases, replacing per-machine unpacked loads.
 
