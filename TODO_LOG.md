@@ -6,6 +6,14 @@
 
 ### 2026-10
 
+- [x] 2026-10-11 - **Dependencies:** defuddle 0.19.4 -> 0.19.5, which fixes
+  the `resource`-into-`src` lazy-image bug upstream (kepano/defuddle#374, PR
+  #388); the live-image matching from `3828ff4` stays as defence in depth.
+  `extractor_version` follows automatically (`DEFUDDLE_VERSION` is read from
+  the installed package by `build.mjs` and `vitest.config.ts`; `dist/` carries
+  `"0.19.5"`). `pnpm outdated` lists nothing else. Evidence: `pnpm test` - 340
+  passed; `pnpm e2e` - 6 passed.
+
 - [x] 2026-10-11 - **Security:** second review of the pre-decode size check.
   `gif-dimensions.ts` read only the logical screen, but a frame's image
   descriptor can reach past it and decoders grow the canvas; it now walks every

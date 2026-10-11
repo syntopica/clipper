@@ -58,6 +58,7 @@ Phase 1 plan: the wiki's `docs/superpowers/plans/2026-07-26-brain-clipper-phase-
   `extractorType: o.constructor.name.replace("Extractor", ...)` over classes
   minified to `class a extends`. Reported upstream 2026-10-11 as
   https://github.com/kepano/defuddle/issues/414 ; waiting on a fix there.
+  Re-checked 2026-10-11 on defuddle 0.19.5: unchanged.
 
 ## Security
 

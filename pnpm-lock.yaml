@@ -170,8 +170,8 @@ importers:
         specifier: ^0.3.3
         version: 0.3.3
       defuddle:
-        specifier: ^0.19.4
-        version: 0.19.4
+        specifier: ^0.19.5
+        version: 0.19.5
       dompurify:
         specifier: ^3.4.16
         version: 3.4.16
@@ -770,8 +770,8 @@ packages:
   decimal.js@10.6.0:
     resolution: {integrity: sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg==}
 
-  defuddle@0.19.4:
-    resolution: {integrity: sha512-Jz98aWlyEeuWcg9u2AavCEKknviI9GijMkrGFPk0wi1Lkfr1DDDw6XM+ak44Ol8kBDmDJsvU9Su2eUY09Fvh3Q==}
+  defuddle@0.19.5:
+    resolution: {integrity: sha512-WpgFv5TWA8s8bWRXMb+tosdEbdeZwgrKYw+BQiuTQfQc4XdCm69Yq/76Lzgvr0ALC1VxZcMWwjNGGgIstcxUtw==}
     hasBin: true
 
   detect-libc@2.1.2:
@@ -1549,7 +1549,7 @@ snapshots:
 
   decimal.js@10.6.0: {}
 
-  defuddle@0.19.4:
+  defuddle@0.19.5:
     dependencies:
       commander: 12.1.0
       mathml-to-latex: 1.8.0
