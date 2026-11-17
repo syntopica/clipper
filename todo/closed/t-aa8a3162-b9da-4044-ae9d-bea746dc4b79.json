@@ -1,0 +1,24 @@
+{
+  "tadu": 2,
+  "id": "t-aa8a3162-b9da-4044-ae9d-bea746dc4b79",
+  "title": "2026-10-11 - **Future idea:** `MIN_EXTRACTED_TEXT_LENGTH = 100`",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "revisited against real use and kept. In the wiki archive, every clip the",
+    "extension produced since the Defuddle swap (312) reports `extractor:",
+    "defuddle`; none fell through to the DOM-shape chain. The shortest two (16 and",
+    "35 words) are short X posts, correctly extracted. The `article` clips there",
+    "(1,909) come from `clips-harvest`, not from this extension. No clip shows a",
+    "wrong extractor choice, which was Codex's (high) condition for changing it.",
+    "Evidence: a Python pass over `wiki/clips/clips/**/metadata.json` grouping by",
+    "`extractor` and `clipped_from`."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Future idea:** `MIN_EXTRACTED_TEXT_LENGTH = 100`",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

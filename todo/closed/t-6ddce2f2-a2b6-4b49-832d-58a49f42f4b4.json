@@ -1,0 +1,23 @@
+{
+  "tadu": 2,
+  "id": "t-6ddce2f2-a2b6-4b49-832d-58a49f42f4b4",
+  "title": "2026-10-11 - **Future idea:** Non-ASCII titles are transliterated in",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "clip directory names. Codex decision (medium): a transliteration dependency",
+    "for new directory names, the Unicode title kept in metadata and frontmatter,",
+    "existing paths untouched. `slugify` runs `any-ascii` (ISC) before its NFKD",
+    "pass: `Москва` -> `moskva`, `日本語のタイトル` -> `ribenyunotaitoru`, accented",
+    "Latin unchanged. Cost: the service worker bundle grows from 869,799 to",
+    "1,425,216 bytes (any-ascii's tables). Evidence: `pnpm test`",
+    "(`tests/shared/slugify.test.ts`)."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Future idea:** Non-ASCII titles are transliterated in",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

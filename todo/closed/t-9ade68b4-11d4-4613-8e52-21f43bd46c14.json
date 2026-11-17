@@ -1,0 +1,21 @@
+{
+  "tadu": 2,
+  "id": "t-9ade68b4-11d4-4613-8e52-21f43bd46c14",
+  "title": "2026-10-11 - **Extension reload:** Chrome's Default profile listed",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "\"brain clipper\" in `Secure Preferences` but not on `chrome://extensions`",
+    "(startup load failure from the old placeholder key). After `pnpm build`,",
+    "\"Load unpacked\" on the dist directory restored it with the same id and its",
+    "stored settings; verified on `chrome://extensions` and in `Secure",
+    "Preferences` (`path` `~/p/clipper/dist`, no disable reasons)."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Extension reload:** Chrome's Default profile listed",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

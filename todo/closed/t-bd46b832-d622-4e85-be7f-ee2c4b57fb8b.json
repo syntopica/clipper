@@ -1,0 +1,25 @@
+{
+  "tadu": 2,
+  "id": "t-bd46b832-d622-4e85-be7f-ee2c4b57fb8b",
+  "title": "2026-10-11 - **Infrastructure:** MV3 keepalive around the commit",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "sequence. `withKeepalive()` calls `chrome.runtime.getPlatformInfo()` every",
+    "20s while a capture is committed and reported, and clears the interval",
+    "however the work ends. Chrome's lifecycle doc (checked 2026-10-11) says",
+    "events and extension API calls reset the 30s idle timer and does not list",
+    "`fetch`; it also stops a worker whose single `fetch` response takes over",
+    "30s, which a keepalive cannot prevent and the durable queue must absorb.",
+    "Evidence: `pnpm test` (`tests/background/with-keepalive.test.ts`, fake",
+    "timers: three pings in 65s, none after completion or failure). Not yet seen",
+    "in a real browser; needs the extension reload parked at the top of TODO.md."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Infrastructure:** MV3 keepalive around the commit",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

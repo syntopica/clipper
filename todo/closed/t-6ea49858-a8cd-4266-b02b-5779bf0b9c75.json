@@ -1,0 +1,22 @@
+{
+  "tadu": 2,
+  "id": "t-6ea49858-a8cd-4266-b02b-5779bf0b9c75",
+  "title": "Clip domain model — ids, slugs, normalization,",
+  "state": "done",
+  "category": "backend",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "hashing, schemas.",
+    "- Commits: `9c23587`, `6a350bf`."
+  ],
+  "closed": "2026-07-26",
+  "result": "`LIMITS`, `newClipId` (ULID), `slugify`, `normalizeMarkdown`, `sha256Hex`, `clipDirName`, `clipPath`, and the Zod schemas for clip metadata and clip state. `content_sha256` is the hash of the normalized markdown body only, so it stays stable across re-processing.",
+  "evidence": [
+    "10 tests passing, `pnpm typecheck` clean, TDD RED-then-GREEN evidence verified as genuine by the task reviewer."
+  ],
+  "files": [
+    "src/shared/*.ts",
+    "tests/shared/*.test.ts"
+  ]
+}

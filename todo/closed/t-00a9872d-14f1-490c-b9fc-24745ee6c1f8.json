@@ -1,0 +1,32 @@
+{
+  "tadu": 2,
+  "id": "t-00a9872d-14f1-490c-b9fc-24745ee6c1f8",
+  "title": "2026-10-11 - **Security:** review of the phase 3 asset code. Fixed:",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "(1) `fetch-vetted-asset.ts` read any body whole (`response.blob()`); it now",
+    "streams through `readCappedBody`, refusing past 20 MB by `Content-Length` or",
+    "while counting. (2) `prepare-image-asset.ts`/`reencode-as-webp.ts` decoded",
+    "whatever canvas a header declared (a few KB of PNG can ask for 1.6 GB of",
+    "RGBA); width and height are now read from the PNG/GIF/JPEG/WebP/AVIF header",
+    "and anything over 24 million pixels, or unreadable, or another format, is",
+    "refused before `createImageBitmap`. (3) `keep-svg-attribute.ts` let through",
+    "`url('https://x/a)b')` (a quoted `)` hid the URL from its regex),",
+    "CSS-escaped `u\\72l(...)` and `image-set('...')`; every `url(` must now open on",
+    "`#`, backslashes are refused, `image-set(`/`src(`/`@import` too, and the",
+    "`href` check covers any `*:href`. (4) `sanitize-svg.ts` XML-parsed input",
+    "with an internal DTD, open to entity expansion; such input is now refused",
+    "(external DTD references still pass). Evidence: `pnpm test` - 335 passed",
+    "(11 new SVG cases, 3 of which and the DTD case fail on the old code; pixel",
+    "cap per format; streaming cap against an endless body); `pnpm e2e` - 6",
+    "passed."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Security:** review of the phase 3 asset code. Fixed:",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

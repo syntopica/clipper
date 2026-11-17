@@ -1,0 +1,21 @@
+{
+  "tadu": 2,
+  "id": "t-64705d9a-f520-4923-a10c-f2e0c58e6387",
+  "title": "2026-10-11 - **Release prep:** version 0.2.0 in `src/manifest.json` and",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "`package.json` (image downloads and the failed-clips list are a feature",
+    "release). `pnpm store:zip` wrote `clipper-store.zip` (926,883 bytes,",
+    "manifest 0.2.0 without `key`, `offscreen` permission included). The GitHub",
+    "release and the store upload stay with the Phase 5 item. Evidence: `pnpm",
+    "test` - 350 passed; `pnpm e2e` - 6 passed."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Release prep:** version 0.2.0 in `src/manifest.json` and",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

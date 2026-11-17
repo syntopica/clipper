@@ -1,0 +1,10 @@
+{
+  "tadu": 2,
+  "id": "t-cca0f283-12f9-4189-a2c9-69b9b629202d",
+  "title": "2026-10-11 - **Decisions (asset pipeline, kept open in TODO.md):**",
+  "state": "blocked",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "blocker": "Codex, high: image downloads off by default, enabled by an options-page control that requests `https://*/*` once; redirects whose target Chrome hides are refused and recorded. Codex, medium: build the pipeline after the phase 2 real-browser smoke check."
+}

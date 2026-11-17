@@ -1,0 +1,28 @@
+{
+  "tadu": 2,
+  "id": "t-103c34b1-1eb1-49ce-8992-22a72dde286f",
+  "title": "2026-07-27 - **Testing:** the toolbar-click clip closes the loop - a page clipped on",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "the user's own Mac, authorized through the device flow, committed to the clip repository.",
+    "- Commit `2c77e11`, one parent, exactly four files under",
+    "  `clips/pending/2026/07/2026-07-27-x-com-...-01kyggcn/`.",
+    "- `clipped_from` is `mac-arm64-a3f2`: the generated default from",
+    "  `default-machine-name.ts`, on the user's real machine, with a different suffix from",
+    "  the `mac-arm64-a3f2` generated during the throwaway-profile run. Per-device",
+    "  uniqueness holds, which is the whole point of moving the field out of",
+    "  `chrome.storage.sync`.",
+    "- `extractor: readability` (0.6.0), `snapshot_mode: sanitized`, 1447 words,",
+    "  `asset_count: 0` - the phase 1 capture path is unaffected by the auth change.",
+    "- The token was necessarily the device-flow one: no PAT path remains in the code and",
+    "  the fine-grained PAT was never created."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-07-27 - **Testing:** the toolbar-click clip closes the loop - a page clipped on",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

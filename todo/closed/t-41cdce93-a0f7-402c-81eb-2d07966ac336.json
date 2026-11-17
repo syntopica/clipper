@@ -1,0 +1,18 @@
+{
+  "tadu": 2,
+  "id": "t-41cdce93-a0f7-402c-81eb-2d07966ac336",
+  "title": "2026-07-26 - **Bugs:** Whole-branch review corrections - 1 critical, 8 important",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "- Commits: `c5d3fb8`, `338fc8d`, `48822a0`, `8fd3b0b`, `3c70c04`, `8e33504`,",
+    "  `1254b25`, `a2a714d`, `e245ac6`, `c2a9053`."
+  ],
+  "closed": "2026-11-17",
+  "result": "a relative `rel=\"canonical\"` no longer discards the entire capture (it failed `z.string().url()` and threw); relative links and images are absolutized on every non-Readability branch, where they had been rendering as live links to the wrong place; an oversized snapshot is dropped as `snapshot_mode: 'omitted'` instead of taking the markdown down with it; failures now carry their reason in the action title and open the options page when they are settings or token failures; a hostname denylist refuses capture before anything is built; the token storage key has one home; the capture payload logic is extracted and tested.",
+  "evidence": [
+    "61 -> 105 tests. The denylist predicate was independently probed against the fifteen hostname forms `URL.hostname` actually produces, including the bracketed `[::1]` and trailing-dot FQDN bypasses that the first fix attempt missed."
+  ]
+}

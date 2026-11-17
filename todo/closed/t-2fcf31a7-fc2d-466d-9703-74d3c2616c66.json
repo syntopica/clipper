@@ -1,0 +1,23 @@
+{
+  "tadu": 2,
+  "id": "t-2fcf31a7-fc2d-466d-9703-74d3c2616c66",
+  "title": "2026-10-11 - **Infrastructure:** Per-tab badge. `setBadge(state, tabId)`",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "scopes the badge colour, text and its delayed clear to the capturing tab;",
+    "`reportFailure` takes the tab too and scopes the explanatory title; the",
+    "success path resets only that tab's title. Failures with no tab (token",
+    "hardening, a closed tab) stay global, as does the red icon flash by design",
+    "(`flash-error-icon.ts`). Evidence: `pnpm test`",
+    "(`tests/background/set-badge.test.ts`: tab 1's clear does not touch tab 2's",
+    "result)."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Infrastructure:** Per-tab badge. `setBadge(state, tabId)`",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

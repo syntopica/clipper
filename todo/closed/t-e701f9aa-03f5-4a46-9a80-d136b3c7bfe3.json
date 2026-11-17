@@ -1,0 +1,24 @@
+{
+  "tadu": 2,
+  "id": "t-e701f9aa-03f5-4a46-9a80-d136b3c7bfe3",
+  "title": "2026-10-11 - **Pending decision:** `snapshot_mode` stays `sanitized` by",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "default. Codex decision (high): raw `outerHTML` carries tokens, hydration",
+    "data and personal information. Correction to the old entry: `full-page` is",
+    "only a schema value; no UI or code path produces it, so it is not \"available",
+    "per clip\". The design spec in the clips repository",
+    "(`docs/superpowers/specs/2026-07-26-brain-clipper-design.md`) still says",
+    "otherwise. Not filed there: that checkout has another session's unpushed",
+    "commits and uncommitted edits, so a bookkeeping push from here would publish",
+    "them. Left in TODO.md below for whoever next owns that repository."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Pending decision:** `snapshot_mode` stays `sanitized` by",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

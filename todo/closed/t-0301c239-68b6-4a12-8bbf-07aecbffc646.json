@@ -1,0 +1,17 @@
+{
+  "tadu": 2,
+  "id": "t-0301c239-68b6-4a12-8bbf-07aecbffc646",
+  "title": "Three defects in the phase 1 plan caught by the",
+  "state": "done",
+  "category": "bugs",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "review loop before they could ship."
+  ],
+  "closed": "2026-07-26",
+  "result": "(1) `build.mjs` bundled entry points that later tasks create, so the build could not pass — each task now wires its own entry point. (2) The manifest declared `options_page` for a file shipped in Task 5, which makes Chrome refuse to load the extension — moved to Task 5. (3) `clipDirName` only bounded the title, so a long hostname produced a 221-character directory name against a 96-character cap, and an empty title slug left a double separator — every variable part is now bounded and the parts are joined non-empty.",
+  "evidence": [
+    "brain commits `0414f02`, `3f02e46`, `580db7d`; the clipper `441e4f1`, `4bb68a4`, `6a350bf`; tests added for the hostname and empty-title cases."
+  ]
+}

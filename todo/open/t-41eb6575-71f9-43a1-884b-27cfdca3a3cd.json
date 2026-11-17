@@ -1,0 +1,19 @@
+{
+  "tadu": 2,
+  "id": "t-41eb6575-71f9-43a1-884b-27cfdca3a3cd",
+  "title": "Migrate images to Cloudflare R2 if the clips repo approaches ~1 GB. Note",
+  "state": "pending",
+  "category": "future-ideas",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "the real cost: rewriting asset paths does not shrink history, so reclaiming",
+    "space needs `git filter-repo`, a force-push and a re-clone everywhere.",
+    "Checked 2026-10-11: the inbox repository reports 413 MB (`gh api",
+    "repos/<owner>/<clips-repo> --jq .size`), all history, since `clips pull`",
+    "empties it on every run; the archive moved to the wiki. No images are",
+    "clipped yet (phase 3), so the trigger is still far off.",
+    "Re-measured 2026-10-11 later: 423301 KB (~413 MiB) by the same `gh api`",
+    "call; unchanged, well under the ~1 GB trigger."
+  ]
+}

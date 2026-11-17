@@ -1,0 +1,19 @@
+{
+  "tadu": 2,
+  "id": "t-2515fa38-8744-4cfa-9b32-347873e35985",
+  "title": "2026-10-11 - **Release:** GitHub release v0.2.0 (tag on 5c846fc) with",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "`clipper-store.zip` attached:",
+    "https://github.com/syntopica/clipper/releases/tag/v0.2.0. Evidence: `pnpm",
+    "test` - 350 passed; zip manifest 0.2.0, no `key`."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Release:** GitHub release v0.2.0 (tag on 5c846fc) with",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "tadu": 2,
+  "id": "t-b1e4e387-ac24-458e-86ff-46c130e0fa64",
+  "title": "2026-10-11 - **Integrations:** Phase 4 Mac-side ingest CLI and \"revisit",
+  "state": "cancelled",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "codex synthesis via a stronger boundary\" are owned by the clips repository",
+    "(`~/p/clips`), not this extension. That repository shipped the ingest",
+    "pipeline and records, in `docs/sandbox-boundary.md` and",
+    "`boundary-decision.json`, the operator's 2026-07-28 override",
+    "(`CODEX_OPERATOR_OVERRIDE`) that superseded the codex-disabled verdict both",
+    "items were waiting on. Nothing left for the clipper to do."
+  ],
+  "closed": "2026-11-17",
+  "resolution": "legacy item migrated to format 2 without a recorded resolution"
+}

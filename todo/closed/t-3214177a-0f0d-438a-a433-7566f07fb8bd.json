@@ -1,0 +1,22 @@
+{
+  "tadu": 2,
+  "id": "t-3214177a-0f0d-438a-a433-7566f07fb8bd",
+  "title": "2026-10-11 - **Infrastructure:** Phase 2 prerequisite - `newClipId()`",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "and `clippedAt` moved out of `handleCapturedPage` to the enqueue boundary.",
+    "The service worker mints a `ClipJob` (`new-clip-job.ts`) when it accepts a",
+    "`clip-captured` message; `handleCapturedPage` takes the job and never mints",
+    "identity itself. Evidence: `pnpm test` - new test runs one job twice against",
+    "a GitHub mock that remembers commits: same `dirPath`, one ref update, the",
+    "second run stops as `identical`."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Infrastructure:** Phase 2 prerequisite - `newClipId()`",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "tadu": 2,
+  "id": "t-21051f9a-329e-45ec-a559-f4c1b2d35114",
+  "title": "One click opens a popup for a note and tags",
+  "state": "cancelled",
+  "category": "product",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "closed": "2026-07-26",
+  "resolution": "Superseded. `chrome.action.onClicked` does not fire when `default_popup` is declared, so the click captures immediately and the note flow moved to a context-menu entry."
+}

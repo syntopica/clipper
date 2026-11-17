@@ -1,0 +1,18 @@
+{
+  "tadu": 2,
+  "id": "t-95a0a2ad-aa1e-4eb5-9384-a96b0466beb5",
+  "title": "2026-10-11 - **Infrastructure:** Pin `@types/node` to the Node >= 20",
+  "state": "cancelled",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "floor. No such floor exists: the extension runs in Chrome, and Node only",
+    "runs the tooling, where vitest 5 already requires `^22.12 || ^24 || >=26`",
+    "and both CI and the local machine run Node 26. `@types/node` 26 matches",
+    "that, and the owner's standing rule is to take every dependency's latest",
+    "major and fix forward, never pin back."
+  ],
+  "closed": "2026-11-17",
+  "resolution": "legacy item migrated to format 2 without a recorded resolution"
+}

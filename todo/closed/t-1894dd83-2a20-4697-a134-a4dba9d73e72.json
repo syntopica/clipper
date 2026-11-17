@@ -1,0 +1,19 @@
+{
+  "tadu": 2,
+  "id": "t-1894dd83-2a20-4697-a134-a4dba9d73e72",
+  "title": "2026-07-26 - **Infrastructure:** Extension loaded unpacked into the daily Chrome",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "profile.",
+    "- Note: automation was ruled out first - Chrome ignores `--remote-debugging-port` on",
+    "  the default user data directory, so CDP cannot reach the daily profile."
+  ],
+  "closed": "2026-11-17",
+  "result": "Registered with `location: 4` (unpacked) and `path: <checkout>/dist`, id `<extension-id>`.",
+  "evidence": [
+    "entry present in the profile's `Secure Preferences`; the same build had already been verified in a throwaway profile via CDP, where its service worker target started on install."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "tadu": 2,
+  "id": "t-53cb6ffb-9c09-44e9-b7b1-c94b7a02038b",
+  "title": "Bootstrapped the MV3 extension repo",
+  "state": "done",
+  "category": "infrastructure",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "- Commits: `429cf1c`, `441e4f1`, `4bb68a4`."
+  ],
+  "closed": "2026-07-26",
+  "result": "pnpm + TypeScript strict + esbuild + Vitest, manifest with a real 2048-bit `manifest.key` so the extension id is stable across machines (`<extension-id>`), private repos `<owner>/<clipper-repo>` and `<owner>/<clips-repo>` created, signing key kept out of git and stored in the password manager.",
+  "evidence": [
+    "`pnpm build` exit 0 emitting `dist/manifest.json` and `dist/background/service-worker.js`; `pnpm typecheck` clean; reviewer independently re-derived the extension id from the DER key."
+  ],
+  "files": [
+    "package.json",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "tests/setup.ts",
+    "build.mjs",
+    "src/manifest.json",
+    "src/background/service-worker.ts"
+  ]
+}

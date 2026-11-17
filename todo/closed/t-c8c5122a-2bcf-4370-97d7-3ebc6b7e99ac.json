@@ -1,0 +1,22 @@
+{
+  "tadu": 2,
+  "id": "t-c8c5122a-2bcf-4370-97d7-3ebc6b7e99ac",
+  "title": "2026-10-11 - **Phase 2 real-browser smoke check:** clipping",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "https://github.com/kepano/defuddle/issues/414 from the toolbar produced",
+    "`CristianDeluxe/brain-clips@60ebb1c`. The first attempt failed with \"no",
+    "GitHub App client id is configured\": the setting made configurable in",
+    "`69200c7` was never filled on this device, so the client id compiled into",
+    "earlier builds (`git log -S` on `src/shared/github-app-client-id.ts`) was",
+    "entered on the options page."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Phase 2 real-browser smoke check:** clipping",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

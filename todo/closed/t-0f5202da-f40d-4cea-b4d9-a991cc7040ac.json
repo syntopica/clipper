@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-0f5202da-f40d-4cea-b4d9-a991cc7040ac",
+  "title": "2026-10-11 - **Testing:** Defuddle's site extractors confirmed per site:",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "X (real clip), Hacker News, Reddit, GitHub and Wikipedia (shipped bundle",
+    "over live html), YouTube (async transcript path, confirmed in a real",
+    "browser), and a plain blog correctly `site_extractor: false`. The entry had",
+    "stayed `[~]` with every listed site already verified."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Testing:** Defuddle's site extractors confirmed per site:",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

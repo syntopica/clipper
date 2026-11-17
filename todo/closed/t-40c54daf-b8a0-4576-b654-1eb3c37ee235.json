@@ -1,0 +1,17 @@
+{
+  "tadu": 2,
+  "id": "t-40c54daf-b8a0-4576-b654-1eb3c37ee235",
+  "title": "Design approved for a Chrome extension that clips",
+  "state": "done",
+  "category": "product",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "the current page to markdown into a private repo for later brain ingestion."
+  ],
+  "closed": "2026-07-26",
+  "result": "Revision 3 of the design, covering the untrusted-input trust model, the clip format, the capture pipeline and the ingest hybrid (codex first, Claude for complex or quota-exhausted clips).",
+  "evidence": [
+    "the wiki's `docs/superpowers/specs/2026-07-26-brain-clipper-design.md`, brain commits `b6fb882`, `4c42870`, `c667800`, `db212b8`."
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "tadu": 2,
+  "id": "t-a724a8a4-5025-4275-ad69-1174a6798d1a",
+  "title": "2026-10-11 - **Security (parked, decided):** OS keychain via native",
+  "state": "blocked",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "blocker": "messaging stays deferred. Codex decision (high): keep the token in `chrome.storage.local` behind `TRUSTED_CONTEXTS`. Reopens when a maintained per-machine native-host installer and update path exists, or evidence shows the current protection is insufficient. Kept open in TODO.md with that condition."
+}

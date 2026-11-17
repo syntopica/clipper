@@ -1,0 +1,29 @@
+{
+  "tadu": 2,
+  "id": "t-65acf0e5-c889-4f5d-88a2-2e713f206fc8",
+  "title": "2026-10-11 - **Infrastructure:** Phase 2 durable IndexedDB job queue",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "(`src/background/queue/`). Jobs are persisted `captured` before any network",
+    "call; each transition (`uploading` under a five-minute lease,",
+    "`transient-failure` with `nextAttemptAt`, `permanent-failure`) is committed",
+    "before the next step; committed jobs are deleted. `alarms` permission added;",
+    "`onStartup`, `onInstalled` and the retry alarm run `resumeQueue()`. Backoff",
+    "honours `Retry-After`, else 30s doubling to 1h, 30 attempts. The lease is",
+    "taken in one readwrite transaction, so concurrent claimers serialise.",
+    "Evidence: `pnpm test` (`tests/background/clip-queue.test.ts`, 11 cases on",
+    "fake-indexeddb: persistence, deletion on commit, transient vs permanent,",
+    "`Retry-After`, lease race, dead-worker resume with the same identity, not-due",
+    "retry, end-to-end `resumeQueue`). Real-browser confirmation waits on the",
+    "extension reload parked at the top of TODO.md (the new `alarms` permission",
+    "needs it anyway)."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Infrastructure:** Phase 2 durable IndexedDB job queue",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

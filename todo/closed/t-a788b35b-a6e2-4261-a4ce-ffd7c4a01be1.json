@@ -1,0 +1,27 @@
+{
+  "tadu": 2,
+  "id": "t-a788b35b-a6e2-4261-a4ce-ffd7c4a01be1",
+  "title": "2026-10-11 - **Testing:** Playwright against real Chromium for the",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "extension lifecycle. Codex decision (medium): local script now, CI job once",
+    "the durable queue ships - it shipped the same day, so both landed. `pnpm e2e`",
+    "builds and side-loads `dist/` into Playwright's Chromium (headless) and",
+    "checks: the manifest loads under the id its key pins; the options page saves",
+    "both hostname lists to real `chrome.storage.sync`; a capture whose blob POST",
+    "answers 503 `Retry-After: 45` is persisted `transient-failure` in the real",
+    "IndexedDB, survives `ServiceWorker.stopAllWorkers`, and is committed exactly",
+    "once (one ref PATCH) when the alarm wakes a fresh worker, leaving the queue",
+    "empty. GitHub is served by `context.route`, which does intercept the service",
+    "worker's requests. CI runs it as the `e2e` job. Evidence: `pnpm e2e` - 3",
+    "passed (1.1m). Not covered: keyboard commands and `OffscreenCanvas` (phase 3)."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Testing:** Playwright against real Chromium for the",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

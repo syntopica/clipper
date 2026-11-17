@@ -1,0 +1,23 @@
+{
+  "tadu": 2,
+  "id": "t-c010a302-6efb-4616-b3a4-aca8e78436e3",
+  "title": "2026-10-11 - **Infrastructure:** Phase 2 - `GithubRequestError` carries",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "status and response headers at all seven Git Database call sites (ref and",
+    "commit lookup, blob, tree, commit, ref update, existing-clip lookup), with",
+    "the old messages kept. `githubFailureKind()` separates permanent (401/403,",
+    "404, 422) from transient (429, 5xx, rate-limited 403, offline `TypeError`)",
+    "and `retryAfterMs()` reads `Retry-After` (seconds or HTTP date) or",
+    "`x-ratelimit-reset`. Evidence: `pnpm test`",
+    "(`tests/background/github-request-error.test.ts`, 14 cases)."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Infrastructure:** Phase 2 - `GithubRequestError` carries",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

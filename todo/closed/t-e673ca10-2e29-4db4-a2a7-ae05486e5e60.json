@@ -1,0 +1,19 @@
+{
+  "tadu": 2,
+  "id": "t-e673ca10-2e29-4db4-a2a7-ae05486e5e60",
+  "title": "2026-10-11 - **Infrastructure:** `clip-metadata-schema.ts`'s three",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "`z.string().url()` calls, and the fourth in `device-code-schema.ts`, are now",
+    "`z.url()`, matching the copy in clips' `tools/clips`. Evidence: `grep -rn",
+    "\"string().url\" src` empty; `pnpm typecheck` and `pnpm test` green."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Infrastructure:** `clip-metadata-schema.ts`'s three",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

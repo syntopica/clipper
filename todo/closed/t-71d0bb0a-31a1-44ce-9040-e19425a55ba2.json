@@ -1,0 +1,26 @@
+{
+  "tadu": 2,
+  "id": "t-71d0bb0a-31a1-44ce-9040-e19425a55ba2",
+  "title": "2026-10-11 - **Integrations:** MDN's \"See also\" and \"Browser",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "compatibility\" losses are accepted. Codex decision (medium): add a",
+    "`developer.mozilla.org` `contentSelector` override only if a fixture shows",
+    "both sections retained without navigation or footer; otherwise keep",
+    "Defuddle's result. Measured on live pages (`Web/API/Window/fetch`,",
+    "`Web/API/Fetch_API/Using_Fetch`) under Defuddle 0.19.4: with",
+    "`contentSelector: '.reference-layout__body'` neither section survives; adding",
+    "`removeExactSelectors/removePartialSelectors: false` brings back",
+    "compatibility but still not \"See also\", and switches off clutter removal for",
+    "the whole page. Condition not met, so no override. Reopens if a Defuddle",
+    "release keeps those sections or exposes a narrower knob."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Integrations:** MDN's \"See also\" and \"Browser",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

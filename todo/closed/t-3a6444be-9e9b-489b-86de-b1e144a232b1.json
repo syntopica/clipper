@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-3a6444be-9e9b-489b-86de-b1e144a232b1",
+  "title": "2026-10-11 - **Integrations:** The `processed` clip left under",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "`clips/pending/` (`01KYGGCNH0HN292WZ1VQGVR2XW`) has been moved. Evidence: it",
+    "sits at `wiki/clips/clips/processed/2026/07/2026-07-27-x-com-...-01kyggcn/`,",
+    "and the inbox repository is now emptied by `clips pull` on every run (its",
+    "README), so the mover lives in the clips package, not here."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Integrations:** The `processed` clip left under",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

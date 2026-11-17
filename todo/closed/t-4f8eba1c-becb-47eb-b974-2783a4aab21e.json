@@ -1,0 +1,22 @@
+{
+  "tadu": 2,
+  "id": "t-4f8eba1c-becb-47eb-b974-2783a4aab21e",
+  "title": "2026-10-11 - **Dependencies:** defuddle 0.19.4 -> 0.19.5, which fixes",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "the `resource`-into-`src` lazy-image bug upstream (kepano/defuddle#374, PR",
+    "#388); the live-image matching from `3828ff4` stays as defence in depth.",
+    "`extractor_version` follows automatically (`DEFUDDLE_VERSION` is read from",
+    "the installed package by `build.mjs` and `vitest.config.ts`; `dist/` carries",
+    "`\"0.19.5\"`). `pnpm outdated` lists nothing else. Evidence: `pnpm test` - 340",
+    "passed; `pnpm e2e` - 6 passed."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Dependencies:** defuddle 0.19.4 -> 0.19.5, which fixes",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

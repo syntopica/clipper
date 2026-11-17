@@ -1,0 +1,29 @@
+{
+  "tadu": 2,
+  "id": "t-0199380d-16b7-46c7-a9b5-ad050e2969a2",
+  "title": "2026-10-11 - **Security:** The hostname denylist is user-extendable from",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "the options page, and `sensitivity` is classified per clip. Codex decision",
+    "(high): an add-only `denylistedHostnames: string[]` in `chrome.storage.sync`,",
+    "one bare hostname per line, exact-or-subdomain match, applied to capture and",
+    "to capture-service status lookups; built-ins and loopback/private/`.local`",
+    "rules stay mandatory; invalid entries refused on save; an unreadable stored",
+    "list refuses capture and names nothing to the service. Codex decision",
+    "(medium): a separate `privateHostnames: string[]` (same contract) marks",
+    "matching clips `private`; denylist wins; everything else `public`;",
+    "`restricted` waits for an explicit manual-only choice. Configurations saved",
+    "before this load with both lists empty - no migration needed. Evidence:",
+    "`pnpm test` (`tests/shared/hostname-lists.test.ts`,",
+    "`tests/options/save-settings.test.ts`, new cases in",
+    "`handle-captured-page.test.ts` and `settings.test.ts`)."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Security:** The hostname denylist is user-extendable from",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

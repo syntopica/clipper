@@ -1,0 +1,24 @@
+{
+  "tadu": 2,
+  "id": "t-fb2e5506-3d06-45ec-9b1a-bbcbc43ffbb5",
+  "title": "2026-10-11 - **Integrations:** The capture-page bundle is minified",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "Codex decision (medium): minify only `capture-page` (the 1.2 MB Defuddle",
+    "bundle parsed on every click), without `keepNames` - Defuddle's published",
+    "bundle is already mangled, which is why `site_extractor` is a boolean. The",
+    "X hooks stay readable. 1,238,379 -> 814,942 bytes (237,681 gzipped).",
+    "Evidence: the minified and an unminified build of the same entry, run in",
+    "jsdom over `tests/fixtures/blog.html` and `url-labelled-links.html`,",
+    "produce byte-identical `clip-captured` payloads (md5 compared). A real",
+    "browser capture waits on the extension reload parked at the top of TODO.md."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Integrations:** The capture-page bundle is minified",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

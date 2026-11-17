@@ -1,0 +1,20 @@
+{
+  "tadu": 2,
+  "id": "t-94cb2783-dfb9-466a-a872-2fbb55d42916",
+  "title": "2026-10-11 - **Integrations:** Retiring the url-labelled-link recovery",
+  "state": "cancelled",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "is rejected on real-use evidence: it fires under Defuddle. Of 312",
+    "Defuddle clips in the wiki archive (`wiki/clips/clips/`), 9 carry",
+    "`## Links removed by the extractor`, recovering 55 links in total (GitHub",
+    "READMEs 8, 13 and 24; X posts 1-2; YouTube 4; a blog 1), the latest on",
+    "2026-09-03. Evidence: `grep -rl \"## Links removed by the extractor\"",
+    "--include=index.md wiki/clips/clips` (9 files) and the `\"extractor\":",
+    "\"defuddle\"` count (312). The recovery stays."
+  ],
+  "closed": "2026-11-17",
+  "resolution": "legacy item migrated to format 2 without a recorded resolution"
+}

@@ -1,0 +1,25 @@
+{
+  "tadu": 2,
+  "id": "t-facad051-49fa-498b-9c4e-05c2029eab20",
+  "title": "2026-07-27 - **Integrations:** the `brain clipper` GitHub App exists and the",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "extension carries its client id.",
+    "- Not evidence of a working sign-in: no grant has been completed through the extension",
+    "  UI yet. That end-to-end run is the open item in `TODO.md`.",
+    "- Gotcha for anyone editing the app form later: the permission controls and the",
+    "  Rails-style checkboxes both render a hidden input sharing the field name, so",
+    "  `input[name=...]` selects the hidden mirror and reads a permanently false value.",
+    "  Target `input[type=checkbox][name=...]`. A form re-render also invalidates a11y",
+    "  snapshot uids, so a stale uid silently clicks the wrong control - re-read state after",
+    "  every mutation rather than trusting the last snapshot."
+  ],
+  "closed": "2026-11-17",
+  "result": "app id `<app-id>`, client id `<client-id>`, owned by `the owner account`. Permissions are `Contents: read & write` plus the mandatory `Metadata: read` and nothing else; webhook off; Device Flow enabled; user-token expiration left on so a refresh token is issued. Installed on `<owner>/<clips-repo>` alone - repository id `<repository-id>`, verified against `gh api repos/<owner>/<clips-repo>` before installing, since the picker offers ids rather than names.",
+  "evidence": [
+    "`POST https://github.com/login/device/code` with only `client_id` returned `user_code`, `verification_uri`, `expires_in: 899` and `interval: 5` - which both proves Device Flow is live on the app and matches `DeviceCodeSchema` exactly."
+  ]
+}

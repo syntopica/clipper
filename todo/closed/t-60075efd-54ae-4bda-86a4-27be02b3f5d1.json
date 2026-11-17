@@ -1,0 +1,14 @@
+{
+  "tadu": 2,
+  "id": "t-60075efd-54ae-4bda-86a4-27be02b3f5d1",
+  "title": "Store the GitHub token in `chrome.storage.sync`",
+  "state": "cancelled",
+  "category": "security",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "so a second machine needs no setup."
+  ],
+  "closed": "2026-07-26",
+  "resolution": "Superseded. `local` and `sync` both default to `TRUSTED_AND_UNTRUSTED_CONTEXTS`, so a content script could read the token. It now lives in `chrome.storage.local` behind `setAccessLevel('TRUSTED_CONTEXTS')`, entered once per machine; only non-secret config syncs."
+}

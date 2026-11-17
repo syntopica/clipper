@@ -1,0 +1,19 @@
+{
+  "tadu": 2,
+  "id": "t-38de4ef8-8925-4f54-996e-55a4d8d05d51",
+  "title": "2026-10-11 - **Cross-repo bookkeeping:** the clips design spec now",
+  "state": "done",
+  "category": "general",
+  "type": "untriaged",
+  "priority": "untriaged",
+  "notes": [
+    "says `full-page` is reserved but never produced, and records that Chrome",
+    "hides manual-redirect targets, so such hops are refused (`syntopica/clips`",
+    "`dfa428f`, `71c911a`)."
+  ],
+  "closed": "2026-11-17",
+  "result": "2026-10-11 - **Cross-repo bookkeeping:** the clips design spec now",
+  "evidence": [
+    "legacy item migrated to format 2 without a recorded evidence"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "tadu": 2,
+  "categories": {
+    "backend": "Backend",
+    "bugs": "Bugs",
+    "future-ideas": "Future Ideas",
+    "general": "General",
+    "infrastructure": "Infrastructure",
+    "integrations": "Integrations",
+    "product": "Product",
+    "security": "Security",
+    "testing": "Testing"
+  }
+}
