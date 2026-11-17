@@ -46,7 +46,7 @@ pnpm e2e         # builds, then drives dist/ in Playwright's Chromium
 
 `key.pem` is the extension signing key: gitignored, canonical copy at the password manager.
 
-<!-- tadu:rule v4 -->
+<!-- tadu:rule v5 -->
 
 ## Continuous TODO, Work Log, and History Coverage
 
@@ -90,6 +90,8 @@ conversations more than once.
   (`--resolution`, or `--duplicate-of ID`). Close reports the tasks that no
   longer wait on it; decide for each whether it moves to pending. Every command
   is a dry run until `--write`.
+- In anything a person reads, such as a summary, a report or a question, name a
+  task by its title, never by its ID; IDs stay in commands and tool calls.
 - Before reviewing past conversations, consult the history index and skip
   unchanged records already marked `complete` or `irrelevant`. Update a record
   only after its findings are reconciled; interrupted work stays `partial`.
@@ -119,4 +121,3 @@ https://github.com/syntopica/tadu/blob/main/spec/todo-format-v1.md, and v2,
 https://github.com/syntopica/tadu/blob/main/spec/todo-format-v2.md. The
 tadu-create and tadu-work skills automate these workflows and are optional.
 <!-- /tadu:rule -->
-
