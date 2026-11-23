@@ -1,11 +1,13 @@
 {
   "tadu": 2,
   "id": "t-41eb6575-71f9-43a1-884b-27cfdca3a3cd",
-  "title": "Migrate images to Cloudflare R2 if the clips repo approaches ~1 GB. Note",
+  "title": "Migrate clipped images to Cloudflare R2 if the inbox repository (CristianDeluxe/brain-clips) nears ~1 GB",
   "state": "pending",
   "category": "future-ideas",
-  "type": "untriaged",
-  "priority": "untriaged",
+  "type": "chore",
+  "priority": "low",
+  "kind": "later",
+  "check_on": "2027-02-24",
   "notes": [
     "the real cost: rewriting asset paths does not shrink history, so reclaiming",
     "space needs `git filter-repo`, a force-push and a re-clone everywhere.",
@@ -14,6 +16,7 @@
     "empties it on every run; the archive moved to the wiki. No images are",
     "clipped yet (phase 3), so the trigger is still far off.",
     "Re-measured 2026-10-11 later: 423301 KB (~413 MiB) by the same `gh api`",
-    "call; unchanged, well under the ~1 GB trigger."
+    "call; unchanged, well under the ~1 GB trigger.",
+    "2026-11-24 audit: not done, trigger not reached. Re-measured today: gh api user/repos shows CristianDeluxe/brain-clips size 423301 KB (~413 MiB), identical to 2026-10-11, so ~41% of the 1 GB trigger. Note: the extension now has an optional \"Download images\" setting (docs/chrome-web-store.md), off by default, so growth could start; no R2 code exists. Next step: re-run the size check at check_on and only plan the R2 move (plus git filter-repo/force-push/re-clone) if above ~800 MB."
   ]
 }

@@ -1,10 +1,15 @@
 {
   "tadu": 2,
   "id": "t-3a1b9a3c-da5e-4a81-893b-68ed3cb33bbd",
-  "title": "Logged-out x.com is a different app the clipper cannot read: guest status",
+  "title": "Decide whether the clipper gets a guest-page fallback for logged-out x.com (mine Relay store); deferred until real guest captures fail",
   "state": "blocked",
   "category": "testing",
-  "type": "untriaged",
-  "priority": "untriaged",
-  "blocker": "pages are server-rendered by a Relay/TanStack app with none of the logged-in DOM (`cellInnerDiv`, `tweetText`, `User-Name` testids absent; articles carry `data-tweet-id` + Tailwind classes), they fire no GraphQL requests (so x-page-hook relays nothing), and Defuddle's twitter extractor finds no main tweet. The full data - complete note_tweet text, whole X Article draft-js blocks - sits hydrated in the page's Relay store, reachable from any article's React fiber (env with `getStore()`; records `TweetResults:<id>`, text under `result.details.full_text`, user under `core.user_results.result.core`). The 2026-07-29 clip rescue proved this path end to end (clip repository, commit ef86110); decide whether the extension grows a guest-page fallback that mines the store the same way. Decided 2026-10-11 (Codex, high): keep deferred - React fiber and Relay store internals are a brittle dependency for a mode the owner rarely uses. Unblocks after repeated real guest-page captures fail; use those captures to define the required content."
+  "type": "feature",
+  "priority": "low",
+  "kind": "decision",
+  "check_on": "2027-02-24",
+  "blocker": "pages are server-rendered by a Relay/TanStack app with none of the logged-in DOM (`cellInnerDiv`, `tweetText`, `User-Name` testids absent; articles carry `data-tweet-id` + Tailwind classes), they fire no GraphQL requests (so x-page-hook relays nothing), and Defuddle's twitter extractor finds no main tweet. The full data - complete note_tweet text, whole X Article draft-js blocks - sits hydrated in the page's Relay store, reachable from any article's React fiber (env with `getStore()`; records `TweetResults:<id>`, text under `result.details.full_text`, user under `core.user_results.result.core`). The 2026-07-29 clip rescue proved this path end to end (clip repository, commit ef86110); decide whether the extension grows a guest-page fallback that mines the store the same way. Decided 2026-10-11 (Codex, high): keep deferred - React fiber and Relay store internals are a brittle dependency for a mode the owner rarely uses. Unblocks after repeated real guest-page captures fail; use those captures to define the required content.",
+  "notes": [
+    "2026-11-24 audit: still blocked/deferred by design. No guest-page fallback in src/content (grep for getStore/fiber/guest finds nothing; only x-page-hook, x-collector, record-x-tweets for logged-in GraphQL). Rescue commit ef861104d \"Re-capture four truncated clips with full content\" exists in the wiki repo. Left: nothing until a real guest-page capture fails; then use that capture to define required content. Next step: none now, revisit at check_on."
+  ]
 }

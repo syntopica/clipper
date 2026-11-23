@@ -1,10 +1,13 @@
 {
   "tadu": 2,
   "id": "t-92fc86c1-b0a6-4432-823b-af62a120d622",
-  "title": "Upstream: `extractorType` is unusable in Defuddle's published",
-  "state": "blocked",
+  "title": "Upgrade defuddle to >=0.19.13 (upstream fix for minified extractorType) and optionally restore the extractor name in clip metadata instead of boolean site_extractor",
+  "state": "pending",
   "category": "integrations",
-  "type": "untriaged",
-  "priority": "untriaged",
-  "blocker": "browser bundles: it comes from `constructor.name`, and `dist/index.js` and `dist/index.full.js` are minified, so it arrives as `v` or `a`. The unbundled CJS under `dist/` keeps the names, which is why the node path reports `github` correctly and the extension cannot. `site_extractor` is a boolean because of this; restore the name if upstream sets `keep_classnames`. Re-checked 2026-10-11 on defuddle 0.19.4: `dist/index.full.js` still sets `extractorType: o.constructor.name.replace(\"Extractor\", ...)` over classes minified to `class a extends`. Reported upstream 2026-10-11 as https://github.com/kepano/defuddle/issues/414 ; waiting on a fix there. Re-checked 2026-10-11 on defuddle 0.19.5: unchanged. Re-checked 2026-10-11 later: 0.19.5 is still the latest npm release, the bundle still minifies the extractor classes (`class a extends`), issue #414 is open with no reply, and the two upstream commits since 0.19.5 touch only YouTube."
+  "type": "chore",
+  "priority": "low",
+  "kind": "task",
+  "notes": [
+    "2026-11-24 audit: upstream issue kepano/defuddle#414 closed 2026-11-18 by merged PR #443 (keep_classnames /Extractor$/). Verified defuddle@0.19.13 dist/index.full.js keeps class names (class GitHubExtractor etc). Repo still has defuddle ^0.19.6 (package.json:17, installed 0.19.6); src/content/extract-content.ts:70 uses only extractorType!==undefined, site_extractor stays boolean (src/shared/clip-metadata-schema.ts:31). Left: bump defuddle to latest (0.19.13), then optionally pass extractorType name through and change site_extractor to a string."
+  ]
 }

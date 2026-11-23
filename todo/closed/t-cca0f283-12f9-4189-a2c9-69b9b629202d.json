@@ -1,0 +1,18 @@
+{
+  "tadu": 2,
+  "id": "t-cca0f283-12f9-4189-a2c9-69b9b629202d",
+  "title": "Asset pipeline decisions (opt-in image downloads, redirect refusal) are implemented; ready to close",
+  "state": "done",
+  "category": "general",
+  "type": "feature",
+  "priority": "low",
+  "blocker": "Codex, high: image downloads off by default, enabled by an options-page control that requests `https://*/*` once; redirects whose target Chrome hides are refused and recorded. Codex, medium: build the pipeline after the phase 2 real-browser smoke check.",
+  "notes": [
+    "2026-11-24 audit: Both decisions are implemented, so the blocker (build after phase 2 smoke check) is stale. Evidence: src/options/toggle-download-images.ts requests chrome.permissions {origins:[https://*/*]}; src/manifest.json lists it under optional_host_permissions; src/background/assets/images-enabled.ts gates on permissions.contains (off by default); commits 528d382 (vet URLs and redirects), a4ee720 (download images when option on), plus hardening c5d1bbc, e54cee9, fc1ac4b; tests/background/assets/*. Closed sibling tasks cover the phase 3 security review. Left: nothing; close it."
+  ],
+  "closed": "2026-11-24",
+  "result": "Asset pipeline decisions (opt-in image downloads, redirect refusal) are implemented; ready to close",
+  "evidence": [
+    "Implemented: src/options/toggle-download-images.ts requests https://*/* (manifest optional_host_permissions); src/background/assets/images-enabled.ts gates on option+permissions.contains; src/background/assets/fetch-vetted-asset.ts refuses opaqueredirect, failures recorded via collect-clip-assets; commits 528d382, a4ee720, c5d1bbc, e54cee9, fc1ac4b; tests in tests/background/assets (opaque redirect refusal test). Phase 2 smoke check closed (t-c8c5122a, 5c7b398)."
+  ]
+}

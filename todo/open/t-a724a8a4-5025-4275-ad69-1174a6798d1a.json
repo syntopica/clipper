@@ -1,10 +1,14 @@
 {
   "tadu": 2,
   "id": "t-a724a8a4-5025-4275-ad69-1174a6798d1a",
-  "title": "2026-10-11 - **Security (parked, decided):** OS keychain via native",
+  "title": "Duplicate of the keychain/native-messaging token task: keep the GitHub token in chrome.storage.local (TRUSTED_CONTEXTS) until a native-host installer exists",
   "state": "blocked",
   "category": "general",
-  "type": "untriaged",
-  "priority": "untriaged",
-  "blocker": "messaging stays deferred. Codex decision (high): keep the token in `chrome.storage.local` behind `TRUSTED_CONTEXTS`. Reopens when a maintained per-machine native-host installer and update path exists, or evidence shows the current protection is insufficient. Kept open in TODO.md with that condition."
+  "type": "security",
+  "priority": "low",
+  "kind": "later",
+  "blocker": "messaging stays deferred. Codex decision (high): keep the token in `chrome.storage.local` behind `TRUSTED_CONTEXTS`. Reopens when a maintained per-machine native-host installer and update path exists, or evidence shows the current protection is insufficient. Kept open in TODO.md with that condition.",
+  "notes": [
+    "2026-11-24 audit: verified still not done and correctly deferred; token stays in chrome.storage.local hardened by setAccessLevel TRUSTED_CONTEXTS (src/shared/harden-token-storage.ts, tests/shared/credential.test.ts:39); no nativeMessaging in repo. Duplicate of open task t-1e952128 (Move the GitHub token ... OS keychain via native messaging); smallest next step: close this as duplicate-of that task."
+  ]
 }

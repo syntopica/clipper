@@ -1,10 +1,14 @@
 {
   "tadu": 2,
   "id": "t-1e952128-1984-4a56-bd39-030619f284e1",
-  "title": "Move the GitHub token out of `chrome.storage.local` into the OS keychain via",
+  "title": "Move the GitHub token from chrome.storage.local to the OS keychain via native messaging (deferred by design; reopen on trigger)",
   "state": "blocked",
   "category": "security",
-  "type": "untriaged",
-  "priority": "untriaged",
-  "blocker": "native messaging. Deferred by design; the token is currently a persisted secret with no keychain protection. Decided 2026-10-11 (Codex, high): stay deferred. Unblocks when a maintained per-machine native-host installer and update path exists, or evidence shows `TRUSTED_CONTEXTS` local storage is insufficient for this owner's threat model."
+  "type": "security",
+  "priority": "low",
+  "kind": "decision",
+  "blocker": "native messaging. Deferred by design; the token is currently a persisted secret with no keychain protection. Decided 2026-10-11 (Codex, high): stay deferred. Unblocks when a maintained per-machine native-host installer and update path exists, or evidence shows `TRUSTED_CONTEXTS` local storage is insufficient for this owner's threat model.",
+  "notes": [
+    "2026-11-24 audit: not done, still correctly blocked. Token still in chrome.storage.local (src/shared/set-credential.ts, get-credential.ts) hardened by setAccessLevel TRUSTED_CONTEXTS (src/shared/harden-token-storage.ts); no nativeMessaging or keychain code in repo (git grep). Decision 2026-10-11 stays. Smallest next step: none until a maintained native-host installer exists or the owner finds local storage insufficient."
+  ]
 }

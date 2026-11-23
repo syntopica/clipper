@@ -1,10 +1,14 @@
 {
   "tadu": 2,
   "id": "t-3f34b746-8cb7-49a1-90c2-8cb48581ae6f",
-  "title": "Phase 5 - publish unlisted to the Chrome Web Store. The GitHub release",
+  "title": "Publish clipper unlisted on the Chrome Web Store (deferred by owner): pay registration fee, upload clipper-store.zip, fill listing",
   "state": "blocked",
   "category": "infrastructure",
-  "type": "untriaged",
-  "priority": "untriaged",
-  "blocker": "half is done (v0.2.0, logged). Deferred by the owner on 2026-10-11: no store publication for now. When resumed: pay the one-time developer registration fee in the dashboard (Chrome profile of me@cristiandeluxe.dev), upload `clipper-store.zip` from the latest release and fill the listing from `docs/chrome-web-store.md`."
+  "type": "chore",
+  "priority": "low",
+  "kind": "later",
+  "blocker": "half is done (v0.2.0, logged). Deferred by the owner on 2026-10-11: no store publication for now. When resumed: pay the one-time developer registration fee in the dashboard (Chrome profile of me@cristiandeluxe.dev), upload `clipper-store.zip` from the latest release and fill the listing from `docs/chrome-web-store.md`.",
+  "notes": [
+    "2026-11-24 audit: verified v0.2.0 is latest release and tag, docs/chrome-web-store.md exists, owner deferral of 2026-10-11 stands; store listing not published and cannot be verified from here. Left: pay fee, upload clipper-store.zip, fill listing. Next: owner decides when to resume."
+  ]
 }
