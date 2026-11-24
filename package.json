@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "any-ascii": "^0.3.3",
-    "defuddle": "^0.19.6",
+    "defuddle": "^0.19.13",
     "dompurify": "^3.4.17",
     "js-yaml": "^5.5.0",
     "turndown": "^7.2.4",

@@ -2,12 +2,17 @@
   "tadu": 2,
   "id": "t-92fc86c1-b0a6-4432-823b-af62a120d622",
   "title": "Upgrade defuddle to >=0.19.13 (upstream fix for minified extractorType) and optionally restore the extractor name in clip metadata instead of boolean site_extractor",
-  "state": "pending",
+  "state": "done",
   "category": "integrations",
   "type": "chore",
   "priority": "low",
   "kind": "task",
   "notes": [
     "2026-11-24 audit: upstream issue kepano/defuddle#414 closed 2026-11-18 by merged PR #443 (keep_classnames /Extractor$/). Verified defuddle@0.19.13 dist/index.full.js keeps class names (class GitHubExtractor etc). Repo still has defuddle ^0.19.6 (package.json:17, installed 0.19.6); src/content/extract-content.ts:70 uses only extractorType!==undefined, site_extractor stays boolean (src/shared/clip-metadata-schema.ts:31). Left: bump defuddle to latest (0.19.13), then optionally pass extractorType name through and change site_extractor to a string."
+  ],
+  "closed": "2026-11-24",
+  "result": "Upgrade defuddle to >=0.19.13 (upstream fix for minified extractorType) and optionally restore the extractor name in clip metadata instead of boolean site_extractor",
+  "evidence": [
+    "defuddle 0.19.6 -> 0.19.13 (latest). pnpm typecheck exit 0, pnpm test 350/350, pnpm build exit 0; extractor class names survive in dist/content/capture-page.js. site_extractor stays boolean: clips validates it as z.boolean() (src/clips/clip-metadata-schema.ts:32). Carrying the name is a separate clips task."
   ]
 }
