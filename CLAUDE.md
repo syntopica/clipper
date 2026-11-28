@@ -46,7 +46,7 @@ pnpm e2e         # builds, then drives dist/ in Playwright's Chromium
 
 `key.pem` is the extension signing key: gitignored, canonical copy at the password manager.
 
-<!-- tadu:rule v5 -->
+<!-- tadu:rule v6 -->
 
 ## Continuous TODO, Work Log, and History Coverage
 
@@ -55,6 +55,9 @@ repository keeps one JSON file per task under `todo/` (format 2, `todo/tadu.json
 Use `TODO_HISTORY_INDEX.jsonl`, when present, to avoid parsing unchanged
 conversations more than once.
 
+- For pending-work consultation, use the provided Tadu snapshot or `tadu prime .`
+  once. A review does not authorize executing tasks. Query details only as needed;
+  use `tadu list --open --json --compact --limit 20` for a bounded inventory.
 - Never edit task files by hand. Use `tadu add` (with category, type and
   priority), `tadu set ID key=value`, `tadu claim ID --as agent:<name>` before
   working on a task, and `tadu close --id ID --evidence "<proof>"`
@@ -91,6 +94,11 @@ conversations more than once.
   implement unrelated TODO items unless requested. Immediately report critical
   security, destructive, or data-loss findings. Never put secrets in the
   backlog.
+- Keep formatters and linters off the backlog (`todo/`,
+  `TODO_HISTORY_INDEX.jsonl`): tadu writes its layout itself, so list it in
+  `.prettierignore` and in the excludes of hooks and lint jobs. A commit that
+  changes only the backlog needs `tadu doctor .` and no other check; let hooks
+  and CI skip the rest of the gate for it.
 
 Run `tadu doctor .` after changing the backlog and before committing. If `tadu`
 is not on PATH, install it as https://github.com/syntopica/tadu#install
